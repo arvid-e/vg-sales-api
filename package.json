@@ -1,0 +1,26 @@
+{
+  "name": "vg-sales-api",
+  "version": "1.0.0",
+  "description": "REST API that fetches video game sales data",
+  "homepage": "https://github.com/arvid-e/vg-sales-api#readme",
+  "bugs": {
+    "url": "https://github.com/arvid-e/vg-sales-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arvid-e/vg-sales-api.git"
+  },
+  "license": "ISC",
+  "author": "Arvid Edvinsson",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "tsc && node ./dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "typescript": "^5.9.3"
+  }
+}
