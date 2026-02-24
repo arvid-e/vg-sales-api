@@ -1,7 +1,9 @@
 import { Server } from 'http';
 import { app } from './app.js';
+import 'dotenv/config';
 
-const port = 3000;
+const port = process.env.API_PORT;
+
 let server: Server | undefined;
 
 const startServer = async () => {
