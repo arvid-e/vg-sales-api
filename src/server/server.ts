@@ -6,7 +6,7 @@ const port = process.env.API_PORT;
 
 let server: Server | undefined;
 
-const startServer = async () => {
+export const startServer = async () => {
   try {
     server = app.listen(port, () => {
       console.log(`Server running at port: ${port}`);
@@ -16,7 +16,7 @@ const startServer = async () => {
   }
 };
 
-const gracefulShutdown = async (signal: NodeJS.Signals) => {
+export const gracefulShutdown = async (signal: NodeJS.Signals) => {
   console.log(`\n${signal} signal received: Closing HTTP server.`);
 
   if (!server) {
@@ -29,7 +29,3 @@ const gracefulShutdown = async (signal: NodeJS.Signals) => {
   });
 };
 
-process.on('SIGINT', gracefulShutdown);
-process.on('SIGTERM', gracefulShutdown);
-
-startServer();
