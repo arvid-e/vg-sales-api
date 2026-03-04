@@ -1,12 +1,35 @@
 import csv from "csv-parser";
 import fs from "fs";
 import path from "path";
+import mongoose from 'mongoose';
 import Game from "../models/game.js";
 import Platform from "../models/platform.js";
 import Publisher from "../models/publisher.js";
+import dotenv from 'dotenv';
+
+
+dotenv.config();
+
+const runSeed = async () => {
+  try {
+    console.log("Connecting to MongoDB for seeding...");
+    
+    await mongoose.connect(process.env.MONGODB_URI as string);
+    console.log("Connected! Starting seed...");
+
+    await seedDatabase();
+
+    await mongoose.disconnect();
+    console.log("Seeding complete and disconnected.");
+    
+    process.exit(0); 
+  } catch (error) {
+    console.error("Critical Seed Error:", error);
+    process.exit(1);
+  }
+};
 
 const seedDatabase = async () => {
-
   try {
     await Promise.all([
       Game.deleteMany({}),
@@ -87,6 +110,6 @@ const seedDatabase = async () => {
   }
 };
 
-seedDatabase()
+runSeed()
   .then(() => console.log("Seed process finished"))
   .catch((err) => console.error("Seed process crashed", err));
