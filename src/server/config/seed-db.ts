@@ -6,14 +6,20 @@ import path from "path";
 import Game from "../models/game.js";
 import Platform from "../models/platform.js";
 import Publisher from "../models/publisher.js";
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+
 
 const runSeed = async () => {
   try {
     console.log("Connecting to MongoDB for seeding...");
 
-    await mongoose.connect(process.env.MONGODB_URI as string);
+    await mongoose.connect(process.env.MONGO_URI as string);
     console.log("Connected! Starting seed...");
 
     await seedDatabase();
