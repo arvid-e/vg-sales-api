@@ -18,11 +18,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "seed": "node dist/server/config/seed-db.js",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.0",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
