@@ -5,7 +5,7 @@ import Game from '../models/game.js';
 import Platform from '../models/platform.js';
 import Publisher from '../models/publisher.js';
 
-export const seedDatabase = async () => {
+const seedDatabase = async () => {
   try {
     await Promise.all([
       Game.deleteMany({}),
@@ -79,3 +79,7 @@ export const seedDatabase = async () => {
     process.exit(1);
   }
 };
+
+seedDatabase()
+  .then(() => console.log("Seed process finished"))
+  .catch(err => console.error("Seed process crashed", err));
