@@ -1,6 +1,10 @@
 services:
   api:
     build: .
+    command: >
+      sh -c "npm run build && 
+             node dist/server/config/seed-db.js && 
+             node dist/index.js"
     volumes:
       - ./data:/usr/src/app/data
     restart: always
