@@ -1,19 +1,18 @@
 import csv from "csv-parser";
+import dotenv from "dotenv";
 import fs from "fs";
+import mongoose from "mongoose";
 import path from "path";
-import mongoose from 'mongoose';
 import Game from "../models/game.js";
 import Platform from "../models/platform.js";
 import Publisher from "../models/publisher.js";
-import dotenv from 'dotenv';
-
 
 dotenv.config();
 
 const runSeed = async () => {
   try {
     console.log("Connecting to MongoDB for seeding...");
-    
+
     await mongoose.connect(process.env.MONGODB_URI as string);
     console.log("Connected! Starting seed...");
 
@@ -21,8 +20,8 @@ const runSeed = async () => {
 
     await mongoose.disconnect();
     console.log("Seeding complete and disconnected.");
-    
-    process.exit(0); 
+
+    process.exit(0);
   } catch (error) {
     console.error("Critical Seed Error:", error);
     process.exit(1);
@@ -38,75 +37,74 @@ const seedDatabase = async () => {
     ]);
 
     const csvPath = path.resolve("data/vgsales.csv");
+    const rawRows: any[] = [];
 
     await new Promise((resolve, reject) => {
-      const platformsMap = new Map();
-      const publishersMap = new Map();
-      let gamesToInsert: any[] = [];
-
       fs.createReadStream(csvPath)
         .pipe(csv())
-        .on("data", async (row) => {
-          // Handle Platform
-          if (!platformsMap.has(row.Platform)) {
-            const p = await Platform.findOneAndUpdate(
-              { platform: row.Platform },
-              { platform: row.Platform },
-              { upsert: true, new: true },
-            );
-            platformsMap.set(row.Platform, p._id);
-          }
-
-          // Handle Publisher
-          if (!publishersMap.has(row.Publisher)) {
-            const pub = await Publisher.findOneAndUpdate(
-              { publisher: row.Publisher },
-              { publisher: row.Publisher },
-              { upsert: true, new: true },
-            );
-            publishersMap.set(row.Publisher, pub._id);
-          }
-
-          // Prepare Game
-          gamesToInsert.push({
-            rank: Number(row.Rank),
-            name: row.Name,
-            year: Number(row.Year),
-            genre: row.Genre,
-            platform: platformsMap.get(row.Platform),
-            publisher: publishersMap.get(row.Publisher),
-            sales: {
-              na: Number(row.NA_Sales),
-              eu: Number(row.EU_Sales),
-              jp: Number(row.JP_Sales),
-              other: Number(row.Other_Sales),
-              global: Number(row.Global_Sales),
-            },
-          });
-
-          // Insert every 1000 rows to save memory
-          if (gamesToInsert.length >= 1000) {
-            const batch = gamesToInsert.splice(0, 1000);
-            await Game.insertMany(batch);
-            console.log(`Inserted ${batch.length} games...`);
-          }
-        })
-        .on("end", async () => {
-          // Final insert for remaining items
-          if (gamesToInsert.length > 0) {
-            await Game.insertMany(gamesToInsert);
-          }
-          console.log("Seeding complete!");
-          resolve(true);
-        })
-        .on("error", (err) => {
-          console.error("Stream Error:", err);
-          reject(err);
-        });
+        .on("data", (row) => rawRows.push(row))
+        .on("end", resolve)
+        .on("error", reject);
     });
+
+    console.log(`Read ${rawRows.length} rows. Starting processing...`);
+
+    const platformsMap = new Map();
+    const publishersMap = new Map();
+    let gamesToInsert: any[] = [];
+
+    for (const row of rawRows) {
+      // Handle Platform
+      if (!platformsMap.has(row.Platform)) {
+        const p = await Platform.findOneAndUpdate(
+          { platform: row.Platform },
+          { platform: row.Platform },
+          { upsert: true, new: true },
+        );
+        platformsMap.set(row.Platform, p._id);
+      }
+
+      // Handle Publisher
+      if (!publishersMap.has(row.Publisher)) {
+        const pub = await Publisher.findOneAndUpdate(
+          { publisher: row.Publisher },
+          { publisher: row.Publisher },
+          { upsert: true, new: true },
+        );
+        publishersMap.set(row.Publisher, pub._id);
+      }
+
+      gamesToInsert.push({
+        rank: Number(row.Rank),
+        name: row.Name,
+        year: Number(row.Year),
+        genre: row.Genre,
+        platform: platformsMap.get(row.Platform),
+        publisher: publishersMap.get(row.Publisher),
+        sales: {
+          na: Number(row.NA_Sales),
+          eu: Number(row.EU_Sales),
+          jp: Number(row.JP_Sales),
+          other: Number(row.Other_Sales),
+          global: Number(row.Global_Sales),
+        },
+      });
+
+      // Batch insert every 1000 rows to keep things moving
+      if (gamesToInsert.length >= 1000) {
+        await Game.insertMany(gamesToInsert);
+        console.log(`Successfully saved ${gamesToInsert.length} games...`);
+        gamesToInsert = [];
+      }
+    }
+
+    // Final insert for the remainder
+    if (gamesToInsert.length > 0) {
+      await Game.insertMany(gamesToInsert);
+    }
   } catch (error) {
     console.error("Seeding failed:", error);
-    process.exit(1);
+    throw error;
   }
 };
 
