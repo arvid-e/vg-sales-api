@@ -3,17 +3,15 @@ import dotenv from "dotenv";
 import fs from "fs";
 import mongoose from "mongoose";
 import path from "path";
+import { fileURLToPath } from "url";
 import Game from "../models/game.js";
 import Platform from "../models/platform.js";
 import Publisher from "../models/publisher.js";
-import { fileURLToPath } from 'url';
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
-
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 const runSeed = async () => {
   try {
@@ -80,19 +78,22 @@ const seedDatabase = async () => {
         publishersMap.set(row.Publisher, pub._id);
       }
 
+      const yearValue = Number(row.Year);
+
       gamesToInsert.push({
         rank: Number(row.Rank),
         name: row.Name,
-        year: Number(row.Year),
+        // Handle "N/A" values
+        year: isNaN(yearValue) ? 0 : yearValue,
         genre: row.Genre,
         platform: platformsMap.get(row.Platform),
         publisher: publishersMap.get(row.Publisher),
         sales: {
-          na: Number(row.NA_Sales),
-          eu: Number(row.EU_Sales),
-          jp: Number(row.JP_Sales),
-          other: Number(row.Other_Sales),
-          global: Number(row.Global_Sales),
+          na: Number(row.NA_Sales) || 0,
+          eu: Number(row.EU_Sales) || 0,
+          jp: Number(row.JP_Sales) || 0,
+          other: Number(row.Other_Sales) || 0,
+          global: Number(row.Global_Sales) || 0,
         },
       });
 
