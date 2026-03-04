@@ -63,9 +63,9 @@ const seedDatabase = async () => {
         const p = await Platform.findOneAndUpdate(
           { platform: row.Platform },
           { platform: row.Platform },
-          { upsert: true, new: true },
+          { upsert: true, returnDocument: "after" }, 
         );
-        platformsMap.set(row.Platform, p._id);
+        platformsMap.set(row.Platform, p?._id);
       }
 
       // Handle Publisher
@@ -73,9 +73,9 @@ const seedDatabase = async () => {
         const pub = await Publisher.findOneAndUpdate(
           { publisher: row.Publisher },
           { publisher: row.Publisher },
-          { upsert: true, new: true },
+          { upsert: true, returnDocument: "after" }, 
         );
-        publishersMap.set(row.Publisher, pub._id);
+        publishersMap.set(row.Publisher, pub?._id);
       }
 
       const yearValue = Number(row.Year);
