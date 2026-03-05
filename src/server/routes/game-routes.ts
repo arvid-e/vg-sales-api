@@ -10,6 +10,7 @@ const gameController = new GameController(gameService);
 
 const router = Router();
 
-router.get("/", gameController.getGameById);
+router.get("/", gameController.getAllGames)
+router.get("/:id", gameController.getGameById);
 
 export default router;

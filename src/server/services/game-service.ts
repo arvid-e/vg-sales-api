@@ -5,6 +5,13 @@ import type { IGameDocument } from "../interfaces/game.js";
 export class GameService implements IGameService {
   constructor(private gameRepo: IGameRepo) {}
 
+  public getAllGames = async (
+    page: number,
+    limit: number,
+  ): Promise<IGameDocument[]> => {
+    return this.gameRepo.getAllGames(page, limit);
+  };
+
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
     return this.gameRepo.getGameById(id);
   };
