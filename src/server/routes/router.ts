@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import salesRoutes from './sales-routes.js';
+import gameSalesRoutes from './game-sales-routes.js';
 
 const router = Router();
 
-router.use('/sales', salesRoutes);
+router.use('/sales', gameSalesRoutes);
 
 
 export default router;

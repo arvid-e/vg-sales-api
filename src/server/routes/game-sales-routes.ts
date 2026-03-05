@@ -1,12 +1,10 @@
 import { Router } from 'express';
-import { SalesController } from '../controllers/sales-controller.js';
+import { GameSalesController } from '../controllers/game-sales-controller.js';
 
-const controller = new SalesController();
+const controller = new GameSalesController();
 const router = Router();
 
-
 router.get('/test', controller.testApi);
-
 
 
 export default router;
