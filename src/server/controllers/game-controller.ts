@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import type { IGameService } from "../interfaces/game-service.js";
 
 export class GameController {
@@ -10,18 +11,22 @@ export class GameController {
 
     const game = await this.gameService.getAllGames(page, limit);
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       data: game,
     });
   };
 
   public getGameById = async (req: Request, res: Response) => {
-    const id = req.body.id;
+    const { id } = req.params;
 
-    const game = this.gameService.getGameById(id);
+    if (typeof id !== "string") {
+      return res.status(400).json({ status: "fail", message: "Invalid ID" });
+    }
 
-    res.status(200).json({
+    const game = await this.gameService.getGameById(id);
+
+    return res.status(200).json({
       status: "success",
       data: game,
     });
