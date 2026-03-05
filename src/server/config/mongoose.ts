@@ -1,22 +1,22 @@
-import mongoose from 'mongoose';
-import { isErrorWithMessage } from '../utils/is-error.js';
+import mongoose from 'mongoose'
+import { isErrorWithMessage } from '../utils/is-error.js'
 
 export const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGO_URI;
+    const mongoURI = process.env.MONGO_URI
 
     if (!mongoURI) {
-      throw new Error('MONGO_URI environment variable not found!');
+      throw new Error('MONGO_URI environment variable not found!')
     }
-    console.log('Waiting for MongoDB...');
+    console.log('Waiting for MongoDB...')
 
-    await mongoose.connect(mongoURI);
+    await mongoose.connect(mongoURI)
 
-    console.log('MongoDB Connected.');
+    console.log('MongoDB Connected.')
   } catch (err: unknown) {
     if (isErrorWithMessage(err)) {
-      console.error('MongoDB connection error:', err.message);
-      process.exit(1);
+      console.error('MongoDB connection error:', err.message)
+      process.exit(1)
     }
   }
-};
+}

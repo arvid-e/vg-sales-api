@@ -1,5 +1,5 @@
-import mongoose, { Schema, model } from "mongoose";
-import type { IGameDocument } from "../interfaces/game.js";
+import mongoose, { Schema, model } from 'mongoose'
+import type { IGameDocument } from '../interfaces/game.js'
 
 const gamesSchema = new Schema<IGameDocument>(
   {
@@ -12,12 +12,12 @@ const gamesSchema = new Schema<IGameDocument>(
     genre: String,
     platform: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Platform",
+      ref: 'Platform',
       required: true,
     },
     publisher: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Publisher",
+      ref: 'Publisher',
       required: true,
     },
     sales: {
@@ -32,8 +32,8 @@ const gamesSchema = new Schema<IGameDocument>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
-);
+  }
+)
 
-const GamesModel = model<IGameDocument>("Game", gamesSchema);
-export default GamesModel;
+const GamesModel = model<IGameDocument>('Game', gamesSchema)
+export default GamesModel

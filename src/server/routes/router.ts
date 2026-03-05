@@ -1,9 +1,8 @@
-import { Router } from 'express';
+import { Router } from 'express'
 import gameRoutes from './game-routes.js'
 
-const router = Router();
+const router = Router()
 
-router.use('/games', gameRoutes);
+router.use('/games', gameRoutes)
 
-
-export default router;
+export default router

@@ -1,36 +1,36 @@
-import csv from "csv-parser";
-import dotenv from "dotenv";
-import fs from "fs";
-import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from "url";
-import Game from "../models/GamesModel.js";
-import Platform from "../models/PlatformModel.js";
-import Publisher from "../models/PublisherModel.js";
+import csv from 'csv-parser'
+import dotenv from 'dotenv'
+import fs from 'fs'
+import mongoose from 'mongoose'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import Game from '../models/GamesModel.js'
+import Platform from '../models/PlatformModel.js'
+import Publisher from '../models/PublisherModel.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
 
 const runSeed = async () => {
   try {
-    console.log("Connecting to MongoDB for seeding...");
+    console.log('Connecting to MongoDB for seeding...')
 
-    await mongoose.connect(process.env.MONGO_URI as string);
-    console.log("Connected! Starting seed...");
+    await mongoose.connect(process.env.MONGO_URI as string)
+    console.log('Connected! Starting seed...')
 
-    await seedDatabase();
+    await seedDatabase()
 
-    await mongoose.disconnect();
-    console.log("Seeding complete and disconnected.");
+    await mongoose.disconnect()
+    console.log('Seeding complete and disconnected.')
 
-    process.exit(0);
+    process.exit(0)
   } catch (error) {
-    console.error("Critical Seed Error:", error);
-    process.exit(1);
+    console.error('Critical Seed Error:', error)
+    process.exit(1)
   }
-};
+}
 
 const seedDatabase = async () => {
   try {
@@ -38,24 +38,24 @@ const seedDatabase = async () => {
       Game.deleteMany({}),
       Platform.deleteMany({}),
       Publisher.deleteMany({}),
-    ]);
+    ])
 
-    const csvPath = path.resolve("data/vgsales.csv");
-    const rawRows: any[] = [];
+    const csvPath = path.resolve('data/vgsales.csv')
+    const rawRows: any[] = []
 
     await new Promise((resolve, reject) => {
       fs.createReadStream(csvPath)
         .pipe(csv())
-        .on("data", (row) => rawRows.push(row))
-        .on("end", resolve)
-        .on("error", reject);
-    });
+        .on('data', (row) => rawRows.push(row))
+        .on('end', resolve)
+        .on('error', reject)
+    })
 
-    console.log(`Read ${rawRows.length} rows. Starting processing...`);
+    console.log(`Read ${rawRows.length} rows. Starting processing...`)
 
-    const platformsMap = new Map();
-    const publishersMap = new Map();
-    let gamesToInsert: any[] = [];
+    const platformsMap = new Map()
+    const publishersMap = new Map()
+    let gamesToInsert: any[] = []
 
     for (const row of rawRows) {
       // Handle Platform
@@ -63,9 +63,9 @@ const seedDatabase = async () => {
         const p = await Platform.findOneAndUpdate(
           { platform: row.Platform },
           { platform: row.Platform },
-          { upsert: true, returnDocument: "after" },
-        );
-        platformsMap.set(row.Platform, p?._id);
+          { upsert: true, returnDocument: 'after' }
+        )
+        platformsMap.set(row.Platform, p?._id)
       }
 
       // Handle Publisher
@@ -73,12 +73,12 @@ const seedDatabase = async () => {
         const pub = await Publisher.findOneAndUpdate(
           { publisher: row.Publisher },
           { publisher: row.Publisher },
-          { upsert: true, returnDocument: "after" },
-        );
-        publishersMap.set(row.Publisher, pub?._id);
+          { upsert: true, returnDocument: 'after' }
+        )
+        publishersMap.set(row.Publisher, pub?._id)
       }
 
-      const yearValue = Number(row.Year);
+      const yearValue = Number(row.Year)
 
       gamesToInsert.push({
         rank: Number(row.Rank),
@@ -95,26 +95,26 @@ const seedDatabase = async () => {
           other: Number(row.Other_Sales) || 0,
           global: Number(row.Global_Sales) || 0,
         },
-      });
+      })
 
       // Batch insert every 1000 rows to keep things moving
       if (gamesToInsert.length >= 1000) {
-        await Game.insertMany(gamesToInsert);
-        console.log(`Successfully saved ${gamesToInsert.length} games...`);
-        gamesToInsert = [];
+        await Game.insertMany(gamesToInsert)
+        console.log(`Successfully saved ${gamesToInsert.length} games...`)
+        gamesToInsert = []
       }
     }
 
     // Final insert for the remainder
     if (gamesToInsert.length > 0) {
-      await Game.insertMany(gamesToInsert);
+      await Game.insertMany(gamesToInsert)
     }
   } catch (error) {
-    console.error("Seeding failed:", error);
-    throw error;
+    console.error('Seeding failed:', error)
+    throw error
   }
-};
+}
 
 runSeed()
-  .then(() => console.log("Seed process finished"))
-  .catch((err) => console.error("Seed process crashed", err));
+  .then(() => console.log('Seed process finished'))
+  .catch((err) => console.error('Seed process crashed', err))

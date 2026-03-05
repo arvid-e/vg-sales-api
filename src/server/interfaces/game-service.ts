@@ -1,6 +1,6 @@
-import type { IGameDocument } from "./game.js";
+import type { IGameDocument } from './game.js'
 
 export interface IGameService {
-    getAllGames(page: number, limit: number): Promise<IGameDocument[]>;
-    getGameById(id: string): Promise<IGameDocument | null>;
+  getAllGames(page: number, limit: number): Promise<IGameDocument[]>
+  getGameById(id: string): Promise<IGameDocument | null>
 }
