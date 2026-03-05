@@ -7,6 +7,6 @@ const router = Router();
 
 router.use('/games', gameRoutes);
 router.use('/platforms', platformRoutes);
-router.use('publishers', publisherRoutes);
+router.use('/publishers', publisherRoutes);
 
 export default router;

@@ -11,7 +11,7 @@ export class GameRepo implements IGameRepo {
   ): Promise<IGameDocument[]> => {
     const skip = (page - 1) * limit;
 
-    return await GamesModel.find().sort({ rank: 1 }).skip(skip).limit(limit);
+    return await this.gameModel.find().sort({ rank: 1 }).skip(skip).limit(limit);
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
