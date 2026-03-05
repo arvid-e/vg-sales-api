@@ -26,6 +26,6 @@ export class GameRepo implements IGameRepo {
   }
 
   public addGame = async (game: IGame): Promise<IGameDocument | null> => {
-    return await this.gameModel.create(game);
+    return await this.gameModel.create(game)
   }
 }

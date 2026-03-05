@@ -11,10 +11,14 @@ export class PublisherRepo implements IPublisherRepo {
   ): Promise<IPublisherDocument[]> => {
     const skip = (page - 1) * limit
 
-    return await this.publisherModel.find().sort({ rank: 1 }).skip(skip).limit(limit)
+    return await this.publisherModel
+      .find()
+      .sort({ rank: 1 })
+      .skip(skip)
+      .limit(limit)
   }
 
   getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {
-    return await this.publisherModel.findById(id);
+    return await this.publisherModel.findById(id)
   }
 }

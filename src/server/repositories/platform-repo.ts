@@ -11,10 +11,14 @@ export class PlatformRepo implements IPlatFormRepo {
   ): Promise<IPlatformDocument[]> => {
     const skip = (page - 1) * limit
 
-    return await this.platformModel.find().sort({ rank: 1 }).skip(skip).limit(limit)
+    return await this.platformModel
+      .find()
+      .sort({ rank: 1 })
+      .skip(skip)
+      .limit(limit)
   }
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
-    return await this.platformModel.findById(id);
+    return await this.platformModel.findById(id)
   }
 }

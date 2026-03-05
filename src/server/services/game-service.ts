@@ -21,6 +21,6 @@ export class GameService implements IGameService {
   }
 
   public addGame = async (game: IGame): Promise<IGameDocument | null> => {
-    return this.gameRepo.addGame(game);
+    return this.gameRepo.addGame(game)
   }
 }

@@ -17,4 +17,3 @@ export interface IGame {
 }
 
 export interface IGameDocument extends IGame, Document {}
-

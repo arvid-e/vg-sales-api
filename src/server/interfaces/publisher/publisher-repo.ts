@@ -1,6 +1,6 @@
-import type { IPublisher } from "./publisher.js" 
+import type { IPublisherDocument } from './publisher.js'
 
 export interface IPublisherRepo {
-  getAllPublishers(): Promise<IPublisher[]>
-  getPublisherById(id: string): Promise<IPublisher | null>
+  getAllPublishers(page: number, limit: number): Promise<IPublisherDocument[]>
+  getPublisherById(id: string): Promise<IPublisherDocument | null>
 }
