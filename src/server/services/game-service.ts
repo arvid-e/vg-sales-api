@@ -1,6 +1,6 @@
-import type { IGameRepo } from '../interfaces/game-repo.js'
-import type { IGameService } from '../interfaces/game-service.js'
-import type { IGame, IGameDocument } from '../interfaces/game.js'
+import type { IGameRepo } from '../interfaces/game/game-repo.js'
+import type { IGameService } from '../interfaces/game/game-service.js'
+import type { IGame, IGameDocument } from '../interfaces/game/game.js'
 
 export class GameService implements IGameService {
   constructor(private gameRepo: IGameRepo) {}

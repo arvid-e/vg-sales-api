@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose'
-import type { IGameDocument } from '../interfaces/game.js'
+import type { IGameDocument } from '../interfaces/game/game.js'
 
 const gamesSchema = new Schema<IGameDocument>(
   {

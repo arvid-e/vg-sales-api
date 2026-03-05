@@ -18,10 +18,3 @@ export interface IGame {
 
 export interface IGameDocument extends IGame, Document {}
 
-export interface IPublisherDocument extends Document {
-  publisher: string
-}
-
-export interface IPlatformDocument extends Document {
-  platform: string
-}

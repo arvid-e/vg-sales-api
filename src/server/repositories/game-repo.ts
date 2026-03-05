@@ -1,5 +1,5 @@
-import type { IGameRepo } from '../interfaces/game-repo.js'
-import type { IGame, IGameDocument } from '../interfaces/game.js'
+import type { IGameRepo } from '../interfaces/game/game-repo.js'
+import type { IGame, IGameDocument } from '../interfaces/game/game.js'
 import GamesModel from '../models/GamesModel.js'
 
 export class GameRepo implements IGameRepo {

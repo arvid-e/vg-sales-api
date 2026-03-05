@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import type { IPlatformDocument } from '../interfaces/game.js'
+import type { IPlatformDocument } from '../interfaces/platform/platform.js'
 
 const platformSchema = new Schema<IPlatformDocument>(
   {

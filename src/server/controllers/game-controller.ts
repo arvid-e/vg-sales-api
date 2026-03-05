@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
-import type { IGameService } from '../interfaces/game-service.js'
-import type { IGame } from '../interfaces/game.js'
+import type { IGameService } from '../interfaces/game/game-service.js'
+import type { IGame } from '../interfaces/game/game.js'
 
 export class GameController {
   constructor(private gameService: IGameService) {}
@@ -44,7 +44,7 @@ export class GameController {
     if (!game) {
       return res.status(404).json({
         status: 'failed',
-        message: "Game not found",
+        message: 'Game not found',
       })
     }
 
@@ -64,7 +64,7 @@ export class GameController {
       publisher,
       year,
       genre,
-      sales
+      sales,
     }
 
     const game = await this.gameService.addGame(gameProps)

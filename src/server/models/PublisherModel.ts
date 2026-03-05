@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import type { IPublisherDocument } from '../interfaces/game.js'
+import type { IPublisherDocument } from '../interfaces/publisher/publisher.js'
 
 const publisherSchema = new Schema<IPublisherDocument>(
   {
