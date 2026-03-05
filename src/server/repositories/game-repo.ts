@@ -1,5 +1,5 @@
 import type { IGameRepo } from '../interfaces/game-repo.js'
-import type { IGameDocument } from '../interfaces/game.js'
+import type { IGame, IGameDocument } from '../interfaces/game.js'
 import GamesModel from '../models/GamesModel.js'
 
 export class GameRepo implements IGameRepo {
@@ -23,5 +23,9 @@ export class GameRepo implements IGameRepo {
   public deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameModel.deleteOne({ _id: id })
     return deleted.deletedCount > 0
+  }
+
+  public addGame = async (game: IGame): Promise<IGameDocument | null> => {
+    return await this.gameModel.create(game);
   }
 }

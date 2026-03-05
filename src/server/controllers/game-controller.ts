@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import type { IGameService } from '../interfaces/game-service.js'
+import type { IGame } from '../interfaces/game.js'
 
 export class GameController {
   constructor(private gameService: IGameService) {}
@@ -50,6 +51,28 @@ export class GameController {
     return res.status(200).json({
       status: 'success',
       message: 'Game deleted',
+    })
+  }
+
+  public addGame = async (req: Request, res: Response) => {
+    const { rank, name, platform, publisher, year, genre, sales } = req.body
+
+    const gameProps: IGame = {
+      rank,
+      name,
+      platform,
+      publisher,
+      year,
+      genre,
+      sales
+    }
+
+    const game = await this.gameService.addGame(gameProps)
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Game added',
+      data: game,
     })
   }
 }

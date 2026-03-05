@@ -13,5 +13,6 @@ const router = Router()
 router.get('/', gameController.getAllGames)
 router.get('/:id', gameController.getGameById)
 router.delete('/:id', gameController.deleteGameById)
+router.post('/', gameController.addGame)
 
 export default router
