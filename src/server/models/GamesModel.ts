@@ -1,5 +1,5 @@
-import mongoose, { Schema, model } from 'mongoose'
-import type { IGameDocument } from '../interfaces/game/game.js'
+import mongoose, { Schema, model } from 'mongoose';
+import type { IGameDocument } from '../interfaces/game/game.js';
 
 const gamesSchema = new Schema<IGameDocument>(
   {
@@ -33,7 +33,7 @@ const gamesSchema = new Schema<IGameDocument>(
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
-)
+);
 
-const GamesModel = model<IGameDocument>('Game', gamesSchema)
-export default GamesModel
+const GamesModel = model<IGameDocument>('Game', gamesSchema);
+export default GamesModel;

@@ -1,7 +1,7 @@
-import { Router } from 'express'
-import gameRoutes from './game-routes.js'
-import platformRoutes from './platform-routes.js'
-import publisherRoutes from './publisher-routes.js'
+import { Router } from 'express';
+import gameRoutes from './game-routes.js';
+import platformRoutes from './platform-routes.js';
+import publisherRoutes from './publisher-routes.js';
 
 const router = Router();
 

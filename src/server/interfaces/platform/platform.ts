@@ -1,7 +1,7 @@
-import { Document } from 'mongoose'
+import { Document } from 'mongoose';
 
 export interface IPlatform {
-  platform: string
+  platform: string;
 }
 
 export interface IPlatformDocument extends IPlatform, Document {}

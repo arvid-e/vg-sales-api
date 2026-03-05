@@ -1,18 +1,18 @@
-import { Router } from 'express'
-import { GameController } from '../controllers/game-controller.js'
-import GamesModel from '../models/GamesModel.js'
-import { GameRepo } from '../repositories/game-repo.js'
-import { GameService } from '../services/game-service.js'
+import { Router } from 'express';
+import { GameController } from '../controllers/game-controller.js';
+import GamesModel from '../models/GamesModel.js';
+import { GameRepo } from '../repositories/game-repo.js';
+import { GameService } from '../services/game-service.js';
 
-const gameRepo = new GameRepo(GamesModel)
-const gameService = new GameService(gameRepo)
-const gameController = new GameController(gameService)
+const gameRepo = new GameRepo(GamesModel);
+const gameService = new GameService(gameRepo);
+const gameController = new GameController(gameService);
 
-const router = Router()
+const router = Router();
 
-router.get('/', gameController.getAllGames)
-router.get('/:id', gameController.getGameById)
-router.delete('/:id', gameController.deleteGameById)
-router.post('/', gameController.addGame)
+router.get('/', gameController.getAllGames);
+router.get('/:id', gameController.getGameById);
+router.delete('/:id', gameController.deleteGameById);
+router.post('/', gameController.addGame);
 
-export default router
+export default router;

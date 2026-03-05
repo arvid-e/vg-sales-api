@@ -1,7 +1,7 @@
-import { Document } from 'mongoose'
+import { Document } from 'mongoose';
 
 export interface IPublisher {
-  publisher: string
+  publisher: string;
 }
 
 export interface IPublisherDocument extends IPublisher, Document {}

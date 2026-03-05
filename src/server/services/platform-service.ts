@@ -1,6 +1,6 @@
-import type { IPlatformService } from '../interfaces/platform/platform-service.js'
-import type { IPlatformDocument } from '../interfaces/platform/platform.js'
-import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js'
+import type { IPlatformService } from '../interfaces/platform/platform-service.js';
+import type { IPlatformDocument } from '../interfaces/platform/platform.js';
+import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
 
 export class PlatformService implements IPlatformService {
   constructor(private platformRepo: IPlatFormRepo) {}
@@ -9,10 +9,10 @@ export class PlatformService implements IPlatformService {
     page: number,
     limit: number
   ): Promise<IPlatformDocument[]> => {
-    return await this.platformRepo.getAllPlatforms(page, limit)
-  }
+    return await this.platformRepo.getAllPlatforms(page, limit);
+  };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
-    return await this.platformRepo.getPlatformById(id)
-  }
+    return await this.platformRepo.getPlatformById(id);
+  };
 }
