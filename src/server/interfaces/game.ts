@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose'
 
-export interface IGameDocument extends Document {
+export interface IGame {
   rank: number
   name: string
   platform: mongoose.Schema.Types.ObjectId
@@ -15,6 +15,8 @@ export interface IGameDocument extends Document {
     global: number
   }
 }
+
+export interface IGameDocument extends IGame, Document {}
 
 export interface IPublisherDocument extends Document {
   publisher: string
