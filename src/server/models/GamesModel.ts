@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from "mongoose";
-import type { GameSalesDocument } from "../types/game-types.js";
+import type { IGameDocument } from "../interfaces/game.js";
 
-const gamesSchema = new Schema<GameSalesDocument>(
+const gamesSchema = new Schema<IGameDocument>(
   {
     rank: Number,
     name: {
@@ -35,5 +35,5 @@ const gamesSchema = new Schema<GameSalesDocument>(
   },
 );
 
-const GamesModel = model<GameSalesDocument>("Game", gamesSchema);
+const GamesModel = model<IGameDocument>("Game", gamesSchema);
 export default GamesModel;

@@ -4,9 +4,9 @@ import fs from "fs";
 import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
-import Game from "../models/game.js";
-import Platform from "../models/platform.js";
-import Publisher from "../models/publisher.js";
+import Game from "../models/GamesModel.js";
+import Platform from "../models/PlatformModel.js";
+import Publisher from "../models/PublisherModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,7 +63,7 @@ const seedDatabase = async () => {
         const p = await Platform.findOneAndUpdate(
           { platform: row.Platform },
           { platform: row.Platform },
-          { upsert: true, returnDocument: "after" }, 
+          { upsert: true, returnDocument: "after" },
         );
         platformsMap.set(row.Platform, p?._id);
       }
@@ -73,7 +73,7 @@ const seedDatabase = async () => {
         const pub = await Publisher.findOneAndUpdate(
           { publisher: row.Publisher },
           { publisher: row.Publisher },
-          { upsert: true, returnDocument: "after" }, 
+          { upsert: true, returnDocument: "after" },
         );
         publishersMap.set(row.Publisher, pub?._id);
       }

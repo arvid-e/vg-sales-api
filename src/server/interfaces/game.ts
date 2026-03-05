@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
-export interface GameSalesDocument extends Document {
+export interface IGameDocument extends Document {
   rank: number;
   name: string;
   platform: mongoose.Schema.Types.ObjectId;
@@ -16,11 +16,11 @@ export interface GameSalesDocument extends Document {
   };
 }
 
-export interface PublisherDocument extends Document {
+export interface IPublisherDocument extends Document {
   publisher: string;
 }
 
-export interface PlatformDocument extends Document {
+export interface IPlatformDocument extends Document {
   platform: string;
 }
 
