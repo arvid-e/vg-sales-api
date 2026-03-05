@@ -20,7 +20,7 @@ export class GameController {
     const { id } = req.params
 
     if (typeof id !== 'string') {
-      return res.status(400).json({ status: 'fail', message: 'Invalid ID' })
+      return res.status(400).json({ status: 'failed', message: 'Invalid ID' })
     }
 
     const game = await this.gameService.getGameById(id)
@@ -28,6 +28,28 @@ export class GameController {
     return res.status(200).json({
       status: 'success',
       data: game,
+    })
+  }
+
+  public deleteGameById = async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    if (typeof id !== 'string') {
+      return res.status(400).json({ status: 'failed', message: 'Invalid ID' })
+    }
+
+    const game = await this.gameService.deleteGameById(id)
+
+    if (!game) {
+      return res.status(404).json({
+        status: 'failed',
+        message: "Game not found",
+      })
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Game deleted',
     })
   }
 }

@@ -19,4 +19,9 @@ export class GameRepo implements IGameRepo {
 
     return game
   }
+
+  public deleteGameById = async (id: string): Promise<boolean> => {
+    const deleted = await this.gameModel.deleteOne({ _id: id })
+    return deleted.deletedCount > 0
+  }
 }

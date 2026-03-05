@@ -15,4 +15,8 @@ export class GameService implements IGameService {
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
     return this.gameRepo.getGameById(id)
   }
+
+  public deleteGameById = async (id: string): Promise<boolean> => {
+    return this.gameRepo.deleteGameById(id)
+  }
 }
