@@ -17,3 +17,20 @@ export interface IGame {
 }
 
 export interface IGameDocument extends IGame, Document {}
+
+export interface IUpdateGamePayload {
+  _id: string;
+  rank?: number;
+  name?: string;
+  platform?: mongoose.Schema.Types.ObjectId;
+  year?: number;
+  genre?: string;
+  publisher?: mongoose.Schema.Types.ObjectId;
+  sales?: {
+    na?: number;
+    eu?: number;
+    jp?: number;
+    other?: number;
+    global?: number;
+  };
+}

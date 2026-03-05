@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import type { IGameService } from '../interfaces/game/game-service.js';
-import type { IGame } from '../interfaces/game/game.js';
+import type { IGame, IUpdateGamePayload } from '../interfaces/game/game.js';
 
 export class GameController {
   constructor(private gameService: IGameService) {}
@@ -29,6 +29,35 @@ export class GameController {
     return res.status(200).json({
       status: 'success',
       data: game,
+    });
+  };
+
+  public updateGame = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (typeof id !== 'string') {
+      return res.status(400).json({ status: 'failed', message: 'Invalid ID' });
+    }
+
+    const updateFields: IUpdateGamePayload = req.body;
+
+    const gameUpdatePayload: IUpdateGamePayload = {
+      ...updateFields,
+      _id: id,
+    };
+
+    const wasUpdated = await this.gameService.updateGame(gameUpdatePayload);
+
+    if (wasUpdated) {
+      return res.status(200).json({
+        status: 'success',
+        message: 'Game updated successfully',
+      });
+    }
+
+    return res.status(404).json({
+      status: 'failed',
+      message: 'Game was not found or could not be updated',
     });
   };
 

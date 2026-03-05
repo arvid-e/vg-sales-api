@@ -1,6 +1,7 @@
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGame, IGameDocument } from '../interfaces/game/game.js';
 import GamesModel from '../models/GamesModel.js';
+import type { IUpdateGamePayload } from '../interfaces/game/game.js';
 
 export class GameRepo implements IGameRepo {
   constructor(private gameModel: typeof GamesModel) {}
@@ -19,6 +20,15 @@ export class GameRepo implements IGameRepo {
 
     return game;
   };
+
+  public updateGame = async (updatedGameData: IUpdateGamePayload): Promise<boolean> => {
+    const { _id, ...updateFields } = updatedGameData;
+    const updated = await this.gameModel.updateOne(
+      { _id },
+      { $set: updateFields }
+    );
+    return updated.modifiedCount > 0;
+  }
 
   public deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameModel.deleteOne({ _id: id });

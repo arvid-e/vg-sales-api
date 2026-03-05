@@ -12,6 +12,7 @@ const router = Router();
 
 router.get('/', gameController.getAllGames);
 router.get('/:id', gameController.getGameById);
+router.patch('/:id', gameController.updateGame);
 router.delete('/:id', gameController.deleteGameById);
 router.post('/', gameController.addGame);
 

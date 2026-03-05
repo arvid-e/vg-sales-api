@@ -1,6 +1,6 @@
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
-import type { IGame, IGameDocument } from '../interfaces/game/game.js';
+import type { IGame, IGameDocument, IUpdateGamePayload } from '../interfaces/game/game.js';
 
 export class GameService implements IGameService {
   constructor(private gameRepo: IGameRepo) {}
@@ -15,6 +15,10 @@ export class GameService implements IGameService {
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
     return this.gameRepo.getGameById(id);
   };
+
+  public updateGame = async (updateGamePayload: IUpdateGamePayload): Promise<boolean> => {
+    return this.gameRepo.updateGame(updateGamePayload);
+  }
 
   public deleteGameById = async (id: string): Promise<boolean> => {
     return this.gameRepo.deleteGameById(id);
