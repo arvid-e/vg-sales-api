@@ -10,7 +10,7 @@ interface GameParams {
 export class GameController {
   constructor(private gameService: IGameService) {}
 
-  public getAllGames = async (req: Request, res: Response) => {
+  public getAllGames = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
 
@@ -20,7 +20,7 @@ export class GameController {
       status: 'success',
       data: game,
     });
-  };
+  });
 
   public getGameById = catchAsync(
     async (req: Request<GameParams>, res: Response) => {
