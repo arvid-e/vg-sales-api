@@ -3,7 +3,7 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import { app } from './app.js';
 import { connectDB } from './config/mongoose.js';
-import { isErrorWithMessage } from './utils/is-error.js';
+import { isErrorWithMessage } from './utils/type-guards.js';
 
 const port = process.env.API_PORT;
 

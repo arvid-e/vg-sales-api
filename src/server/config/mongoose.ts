@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { isErrorWithMessage } from '../utils/is-error.js';
+import { isErrorWithMessage } from '../utils/type-guards.js';
 
 export const connectDB = async () => {
   try {

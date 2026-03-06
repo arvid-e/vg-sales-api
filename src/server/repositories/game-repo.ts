@@ -16,9 +16,7 @@ export class GameRepo implements IGameRepo {
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
-    const game = await this.gameModel.findById(id);
-
-    return game;
+    return await this.gameModel.findById(id);
   };
 
   public updateGame = async (updatedGameData: IUpdateGamePayload): Promise<boolean> => {

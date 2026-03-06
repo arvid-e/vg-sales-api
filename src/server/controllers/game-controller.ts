@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { IGameService } from '../interfaces/game/game-service.js';
 import type { IGame, IUpdateGamePayload } from '../interfaces/game/game.js';
+import { catchAsync } from '../utils/catch-async.js';
 
 export class GameController {
   constructor(private gameService: IGameService) {}
@@ -17,7 +18,7 @@ export class GameController {
     });
   };
 
-  public getGameById = async (req: Request, res: Response) => {
+  public getGameById = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (typeof id !== 'string') {
@@ -30,7 +31,7 @@ export class GameController {
       status: 'success',
       data: game,
     });
-  };
+  });
 
   public updateGame = async (req: Request, res: Response) => {
     const { id } = req.params;
