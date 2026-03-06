@@ -45,11 +45,12 @@ export class GameController {
         _id: id,
       };
 
-      await this.gameService.updateGame(gameUpdatePayload);
+      const updatedGame = await this.gameService.updateGame(gameUpdatePayload);
 
       return res.status(200).json({
         status: 'success',
         message: 'Game updated successfully',
+        data: updatedGame,
       });
     }
   );

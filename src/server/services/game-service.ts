@@ -23,8 +23,14 @@ export class GameService implements IGameService {
     return game;
   };
 
-  public updateGame = async (updateGamePayload: IUpdateGamePayload): Promise<boolean> => {
-    return this.gameRepo.updateGame(updateGamePayload);
+  public updateGame = async (updateGamePayload: IUpdateGamePayload): Promise<IGameDocument | null> => {
+    const game = await this.gameRepo.updateGame(updateGamePayload);
+
+    if (!game) {
+      throw new NotFoundError('Game');
+    }
+
+    return game;
   }
 
   public deleteGameById = async (id: string): Promise<boolean> => {
