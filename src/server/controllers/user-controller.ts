@@ -15,4 +15,15 @@ export class UserController {
       data: user,
     });
   });
+
+  loginUser = catchAsync(async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+
+    const user = await this.userService.loginUser({ username, password });
+
+    return res.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  });
 }
