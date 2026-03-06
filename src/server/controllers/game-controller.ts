@@ -55,27 +55,18 @@ export class GameController {
     }
   );
 
-  public deleteGameById = async (req: Request, res: Response) => {
-    const { id } = req.params;
+  public deleteGameById = catchAsync(
+    async (req: Request<GameParams>, res: Response) => {
+      const { id } = req.params;
 
-    if (typeof id !== 'string') {
-      return res.status(400).json({ status: 'failed', message: 'Invalid ID' });
-    }
+      await this.gameService.deleteGameById(id);
 
-    const game = await this.gameService.deleteGameById(id);
-
-    if (!game) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'Game not found',
+      return res.status(204).json({
+        status: 'success',
+        message: 'Game deleted successfully',
       });
     }
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Game deleted',
-    });
-  };
+  );
 
   public addGame = async (req: Request, res: Response) => {
     const { rank, name, platform, publisher, year, genre, sales } = req.body;

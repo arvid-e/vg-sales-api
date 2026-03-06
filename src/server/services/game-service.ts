@@ -34,10 +34,16 @@ export class GameService implements IGameService {
   }
 
   public deleteGameById = async (id: string): Promise<boolean> => {
-    return this.gameRepo.deleteGameById(id);
+    const deleted = await this.gameRepo.deleteGameById(id);
+
+    if (!deleted) {
+      throw new NotFoundError('Game');
+    }
+
+    return deleted;
   };
 
   public addGame = async (game: IGame): Promise<IGameDocument | null> => {
-    return this.gameRepo.addGame(game);
+    return await this.gameRepo.addGame(game);
   };
 }
