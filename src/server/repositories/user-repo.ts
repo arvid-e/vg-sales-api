@@ -10,6 +10,6 @@ export class UserRepo implements IUserRepo{
   }
 
   findUserByUsername = async (username: string): Promise<IUserDocument | null> => {
-      return await this.userModel.findOne({ username });
+      return await this.userModel.findOne({ username }).select('+password');;
   }
 }

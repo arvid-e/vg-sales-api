@@ -14,7 +14,10 @@ export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
 
   createUser = async (user: IUser): Promise<IUserDocument | null> => {
-    return await this.userRepo.createUser(user);
+    const hashedPassword = await bcrypt.hash(user.password, 12);
+    const newUser = { ...user, password: hashedPassword };
+    
+    return await this.userRepo.createUser(newUser);
   };
 
   loginUser = async (authPayload: IUser): Promise<IAuthResponse> => {

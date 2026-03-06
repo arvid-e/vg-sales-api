@@ -10,6 +10,7 @@ const userSchema = new Schema<IUserDocument>(
     password: {
       type: String,
       required: true,
+      select: false,
     },
   },
   {
