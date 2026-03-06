@@ -1,10 +1,15 @@
 import type { Request, Response } from 'express';
 import type { IPublisherService } from '../interfaces/publisher/publisher-service.js';
+import { catchAsync } from '../utils/catch-async.js';
+
+interface PublisherParams {
+  id: string;
+}
 
 export class PublisherController {
   constructor(private publisherService: IPublisherService) {}
 
-  public getAllpublishers = async (req: Request, res: Response) => {
+  public getAllpublishers = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
 
@@ -14,20 +19,18 @@ export class PublisherController {
       status: 'success',
       data: publisher,
     });
-  };
+  });
 
-  public getpublisherById = async (req: Request, res: Response) => {
-    const { id } = req.params;
+  public getpublisherById = catchAsync(
+    async (req: Request<PublisherParams>, res: Response) => {
+      const { id } = req.params;
 
-    if (typeof id !== 'string') {
-      return res.status(400).json({ status: 'failed', message: 'Invalid ID' });
+      const publisher = await this.publisherService.getPublisherById(id);
+
+      return res.status(200).json({
+        status: 'success',
+        data: publisher,
+      });
     }
-
-    const publisher = await this.publisherService.getPublisherById(id);
-
-    return res.status(200).json({
-      status: 'success',
-      data: publisher,
-    });
-  };
+  );
 }
