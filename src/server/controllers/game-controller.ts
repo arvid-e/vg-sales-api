@@ -3,6 +3,10 @@ import type { IGameService } from '../interfaces/game/game-service.js';
 import type { IGame, IUpdateGamePayload } from '../interfaces/game/game.js';
 import { catchAsync } from '../utils/catch-async.js';
 
+interface GameParams {
+  id: string;
+}
+
 export class GameController {
   constructor(private gameService: IGameService) {}
 
@@ -18,49 +22,37 @@ export class GameController {
     });
   };
 
-  public getGameById = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  public getGameById = catchAsync(
+    async (req: Request<GameParams>, res: Response) => {
+      const { id } = req.params;
 
-    if (typeof id !== 'string') {
-      return res.status(400).json({ status: 'failed', message: 'Invalid ID' });
+      const game = await this.gameService.getGameById(id);
+
+      return res.status(200).json({
+        status: 'success',
+        data: game,
+      });
     }
+  );
 
-    const game = await this.gameService.getGameById(id);
+  public updateGame = catchAsync(
+    async (req: Request<GameParams>, res: Response) => {
+      const { id } = req.params;
 
-    return res.status(200).json({
-      status: 'success',
-      data: game,
-    });
-  });
+      const updateFields: IUpdateGamePayload = req.body;
+      const gameUpdatePayload: IUpdateGamePayload = {
+        ...updateFields,
+        _id: id,
+      };
 
-  public updateGame = async (req: Request, res: Response) => {
-    const { id } = req.params;
+      await this.gameService.updateGame(gameUpdatePayload);
 
-    if (typeof id !== 'string') {
-      return res.status(400).json({ status: 'failed', message: 'Invalid ID' });
-    }
-
-    const updateFields: IUpdateGamePayload = req.body;
-
-    const gameUpdatePayload: IUpdateGamePayload = {
-      ...updateFields,
-      _id: id,
-    };
-
-    const wasUpdated = await this.gameService.updateGame(gameUpdatePayload);
-
-    if (wasUpdated) {
       return res.status(200).json({
         status: 'success',
         message: 'Game updated successfully',
       });
     }
-
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Game was not found or could not be updated',
-    });
-  };
+  );
 
   public deleteGameById = async (req: Request, res: Response) => {
     const { id } = req.params;
