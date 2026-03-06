@@ -10,6 +10,6 @@ const userController = new UserController(userService);
 
 const router = Router();
 
-router.get('/', userController.createUser);
+router.get('/register', userController.createUser);
 
 export default router;

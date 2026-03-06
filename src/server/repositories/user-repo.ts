@@ -5,7 +5,11 @@ import UserModel from "../models/UserModel.js";
 export class UserRepo implements IUserRepo{
   constructor(private userModel: typeof UserModel) {}
 
-  public createUser = async (user: IUser): Promise<IUserDocument | null> => {
+  createUser = async (user: IUser): Promise<IUserDocument | null> => {
       return await this.userModel.create(user);
+  }
+
+  findUserByUsername = async (username: string): Promise<IUserDocument | null> => {
+      return await this.userModel.findOne({ username });
   }
 }

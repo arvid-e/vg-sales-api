@@ -6,3 +6,8 @@ export interface IUser {
 }
 
 export interface IUserDocument extends IUser, Document{}; 
+
+export interface IAuthResponse {
+  user: IUserDocument;
+  token: string;
+}
