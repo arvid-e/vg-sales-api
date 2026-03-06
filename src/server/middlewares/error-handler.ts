@@ -11,8 +11,11 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
   }
 
   if (err.name === 'ValidationError') {
-    err.statusCode = 400
-    err.status = 'fail'
+    err.statusCode = 400;
+    err.status = 'fail';
+    
+    const messages = Object.values(err.errors).map((el: any) => el.message);
+    err.message = `Invalid input data: ${messages.join('. ')}`;
   }
 
   res.status(err.statusCode).json({

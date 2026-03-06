@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import type { IGameService } from '../interfaces/game/game-service.js';
-import type { IGame, IUpdateGamePayload } from '../interfaces/game/game.js';
+import type { IUpdateGamePayload } from '../interfaces/game/game.js';
 import { catchAsync } from '../utils/catch-async.js';
 
 interface GameParams {
@@ -61,32 +61,19 @@ export class GameController {
 
       await this.gameService.deleteGameById(id);
 
-      return res.status(204).json({
+      return res.status(200).json({
         status: 'success',
         message: 'Game deleted successfully',
       });
     }
   );
 
-  public addGame = async (req: Request, res: Response) => {
-    const { rank, name, platform, publisher, year, genre, sales } = req.body;
+  public addGame = catchAsync(async (req: Request, res: Response) => {
+    const game = await this.gameService.addGame(req.body);
 
-    const gameProps: IGame = {
-      rank,
-      name,
-      platform,
-      publisher,
-      year,
-      genre,
-      sales,
-    };
-
-    const game = await this.gameService.addGame(gameProps);
-
-    return res.status(200).json({
+    return res.status(201).json({
       status: 'success',
-      message: 'Game added',
       data: game,
     });
-  };
+  });
 }
