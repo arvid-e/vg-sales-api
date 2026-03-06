@@ -2,7 +2,7 @@
 
 ## Project Name
 
-*Replace with the name of your API project.*
+vg-sales-api
 
 ## Objective
 
@@ -12,9 +12,11 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 *Describe your API in a few sentences: what dataset does it serve, what are its main resources, and what can users do with it?*
 
+The vg-sales-api is a HATEOAS REST API which serves a video game sales dataset. 
+
 ## Implementation Type
 
-*Specify: REST or GraphQL*
+REST
 
 ## Links and Testing
 
@@ -36,14 +38,13 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 ## Dataset
 
-*Describe the dataset you chose:*
 
 | Field | Description |
 |---|---|
-| **Dataset source** | *e.g. Kaggle, public API, CSV, etc.* |
-| **Primary resource (CRUD)** | *e.g. Movies (id, title, release_year, genre, description)* |
-| **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
-| **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
+| **Dataset source** | CSV file downloaded from Kaggle |
+| **Primary resource (CRUD)** | Games (`rank`, `name`, `platformId`, `year`, `genre`, `publisherId`, `naSales`, `euSales`, `jpSales`, `otherSales`, `globalSales`) |
+| **Secondary resource 1 (read-only)** | Platform (`id`,`platform`)|
+| **Secondary resource 2 (read-only)** | Publisher (`id`, `publisher`) |
 
 
 ## Design Decisions
