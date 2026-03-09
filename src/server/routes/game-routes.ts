@@ -12,9 +12,9 @@ const gameController = new GameController(gameService);
 const router = Router();
 
 router.get('/', gameController.getAllGames);
-router.get('/:id', gameController.getGameById);
+router.get('/:id', gameController.getGame);
 router.patch('/:id', authorize, gameController.updateGame);
-router.delete('/:id', authorize, gameController.deleteGameById);
+router.delete('/:id', authorize, gameController.deleteGame);
 router.post('/', authorize, gameController.createGame);
 
 export default router;

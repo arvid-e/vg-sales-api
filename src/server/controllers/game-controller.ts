@@ -22,7 +22,7 @@ export class GameController {
     });
   });
 
-  public getGameById = catchAsync(
+  public getGame = catchAsync(
     async (req: Request<GameParams>, res: Response) => {
       const { id } = req.params;
 
@@ -55,7 +55,7 @@ export class GameController {
     }
   );
 
-  public deleteGameById = catchAsync(
+  public deleteGame = catchAsync(
     async (req: Request<GameParams>, res: Response) => {
       const { id } = req.params;
 
