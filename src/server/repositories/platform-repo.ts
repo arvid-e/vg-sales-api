@@ -8,14 +8,15 @@ export class PlatformRepo implements IPlatFormRepo {
   getAllPlatforms = async (
     page: number = 1,
     limit: number = 20
-  ): Promise<IPlatformDocument[]> => {
+  ): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
     const skip = (page - 1) * limit;
 
-    return await this.platformModel
-      .find()
-      .sort({ rank: 1 })
-      .skip(skip)
-      .limit(limit);
+    const [platforms, total] = await Promise.all([
+      this.platformModel.find().sort({ rank: 1 }).skip(skip).limit(limit),
+      this.platformModel.countDocuments(),
+    ]);
+
+    return { platforms, total };
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
