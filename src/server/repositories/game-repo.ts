@@ -46,7 +46,7 @@ export class GameRepo implements IGameRepo {
     return deleted.deletedCount > 0;
   };
 
-  public addGame = async (game: IGame): Promise<IGameDocument | null> => {
+  public createGame = async (game: IGame): Promise<IGameDocument | null> => {
     return await this.gameModel.create(game);
   };
 }

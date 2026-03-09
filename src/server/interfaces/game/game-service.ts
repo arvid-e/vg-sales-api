@@ -5,5 +5,5 @@ export interface IGameService {
   getGameById(id: string): Promise<IGameDocument | null>;
   deleteGameById(id: string): Promise<boolean>;
   updateGame(updateGamePayload: IUpdateGamePayload): Promise<IGameDocument | null>;
-  addGame(game: IGame): Promise<IGameDocument | null>;
+  createGame(game: IGame): Promise<IGameDocument | null>;
 }

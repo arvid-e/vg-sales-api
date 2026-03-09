@@ -68,8 +68,8 @@ export class GameController {
     }
   );
 
-  public addGame = catchAsync(async (req: Request, res: Response) => {
-    const game = await this.gameService.addGame(req.body);
+  public createGame = catchAsync(async (req: Request, res: Response) => {
+    const game = await this.gameService.createGame(req.body);
 
     return res.status(201).json({
       status: 'success',

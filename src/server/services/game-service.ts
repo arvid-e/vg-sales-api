@@ -43,7 +43,7 @@ export class GameService implements IGameService {
     return deleted;
   };
 
-  public addGame = async (game: IGame): Promise<IGameDocument | null> => {
-    return await this.gameRepo.addGame(game);
+  public createGame = async (game: IGame): Promise<IGameDocument | null> => {
+    return await this.gameRepo.createGame(game);
   };
 }
