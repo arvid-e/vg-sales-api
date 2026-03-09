@@ -14,9 +14,7 @@ export class GameService implements IGameService {
     page: number,
     limit: number
   ): Promise<{ games: IGameDocument[]; total: number }> => {
-    const { games, total } = await this.gameRepo.getAllGames(page, limit);
-
-    return { games, total };
+    return await this.gameRepo.getAllGames(page, limit);
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {

@@ -48,7 +48,7 @@ export class PlatformController {
     if (req.user) {
       links.push({ rel: 'create', method: 'POST', href: baseUrl });
     }
-
+    
     return res.status(200).json({
       status: 'success',
       count: platformsWithLinks.length,
