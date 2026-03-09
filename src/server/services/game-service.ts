@@ -1,7 +1,11 @@
+import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
-import type { IGame, IGameDocument, IUpdateGamePayload } from '../interfaces/game/game.js';
-import { NotFoundError } from '../errors/not-found-error.js';
+import type {
+  IGame,
+  IGameDocument,
+  IUpdateGamePayload,
+} from '../interfaces/game/game.js';
 
 export class GameService implements IGameService {
   constructor(private gameRepo: IGameRepo) {}
@@ -9,8 +13,10 @@ export class GameService implements IGameService {
   public getAllGames = async (
     page: number,
     limit: number
-  ): Promise<IGameDocument[]> => {
-    return this.gameRepo.getAllGames(page, limit);
+  ): Promise<{ games: IGameDocument[]; total: number }> => {
+    const { games, total } = await this.gameRepo.getAllGames(page, limit);
+
+    return { games, total };
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
@@ -23,7 +29,9 @@ export class GameService implements IGameService {
     return game;
   };
 
-  public updateGame = async (updateGamePayload: IUpdateGamePayload): Promise<IGameDocument | null> => {
+  public updateGame = async (
+    updateGamePayload: IUpdateGamePayload
+  ): Promise<IGameDocument | null> => {
     const game = await this.gameRepo.updateGame(updateGamePayload);
 
     if (!game) {
@@ -31,7 +39,7 @@ export class GameService implements IGameService {
     }
 
     return game;
-  }
+  };
 
   public deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameRepo.deleteGameById(id);

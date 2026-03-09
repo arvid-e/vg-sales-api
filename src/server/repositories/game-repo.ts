@@ -12,14 +12,15 @@ export class GameRepo implements IGameRepo {
   public getAllGames = async (
     page: number = 1,
     limit: number = 20
-  ): Promise<IGameDocument[]> => {
+  ): Promise<{ games: IGameDocument[]; total: number }> => {
     const skip = (page - 1) * limit;
 
-    return await this.gameModel
-      .find()
-      .sort({ rank: 1 })
-      .skip(skip)
-      .limit(limit);
+    const [games, total] = await Promise.all([
+      this.gameModel.find().sort({ rank: 1 }).skip(skip).limit(limit),
+      this.gameModel.countDocuments(),
+    ]);
+
+    return { games, total };
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
