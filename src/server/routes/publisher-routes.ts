@@ -10,7 +10,7 @@ const publisherController = new PublisherController(publisherService);
 
 const router = Router();
 
-router.get('/', publisherController.getAllpublishers);
+router.get('/', publisherController.getAllPublishers);
 router.get('/:id', publisherController.getpublisherById);
 
 export default router;
