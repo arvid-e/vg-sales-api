@@ -1,7 +1,9 @@
 import type { Request, Response } from 'express';
+import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
 import type { IUpdateGamePayload } from '../interfaces/game/game.js';
 import { catchAsync } from '../utils/catch-async.js';
+import type { UserRequest } from '../interfaces/user/user.js';
 
 interface GameParams {
   id: string;
@@ -22,18 +24,23 @@ export class GameController {
     });
   });
 
-  public getGame = catchAsync(
-    async (req: Request<GameParams>, res: Response) => {
-      const { id } = req.params;
+  public getGame = catchAsync(async (req: Request<any>, res: Response) => {
+    const { id } = req.params as GameParams;
 
-      const game = await this.gameService.getGameById(id);
+    const game = await this.gameService.getGameById(id);
 
-      return res.status(200).json({
-        status: 'success',
-        data: game,
-      });
+    if (!game) {
+      throw new NotFoundError('Game');
     }
-  );
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        ...game.toObject(),
+        links: this.createLinks(req, id),
+      },
+    });
+  });
 
   public updateGame = catchAsync(
     async (req: Request<GameParams>, res: Response) => {
@@ -76,4 +83,22 @@ export class GameController {
       data: game,
     });
   });
+
+  private createLinks(req: UserRequest, gameId: string) {
+    const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+
+    const links = [
+      { rel: 'self', method: 'GET', href: `${baseUrl}/${gameId}` },
+      { rel: 'all-games', method: 'GET', href: `${baseUrl}` },
+    ];
+
+    if (req.user) {
+      links.push(
+        { rel: 'update', method: 'PUT', href: `${baseUrl}/${gameId}` },
+        { rel: 'delete', method: 'DELETE', href: `${baseUrl}/${gameId}` }
+      );
+    }
+
+    return links;
+  }
 }
