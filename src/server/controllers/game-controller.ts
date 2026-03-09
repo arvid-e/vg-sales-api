@@ -94,6 +94,7 @@ export class GameController {
 
     if (req.user) {
       links.push(
+        { rel: 'create', method: 'POST', href: `${baseUrl}/${gameId}` },
         { rel: 'update', method: 'PUT', href: `${baseUrl}/${gameId}` },
         { rel: 'delete', method: 'DELETE', href: `${baseUrl}/${gameId}` }
       );
