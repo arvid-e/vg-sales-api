@@ -2,8 +2,8 @@ import type { Request, Response } from 'express';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
 import type { IUpdateGamePayload } from '../interfaces/game/game.js';
-import { catchAsync } from '../utils/catch-async.js';
 import type { UserRequest } from '../interfaces/user/user.js';
+import { catchAsync } from '../utils/catch-async.js';
 
 interface GameParams {
   id: string;
@@ -42,45 +42,57 @@ export class GameController {
     });
   });
 
-  public updateGame = catchAsync(
-    async (req: Request<GameParams>, res: Response) => {
-      const { id } = req.params;
+  public updateGame = catchAsync(async (req: Request<any>, res: Response) => {
+    const { id } = req.params as GameParams;
 
-      const updateFields: IUpdateGamePayload = req.body;
-      const gameUpdatePayload: IUpdateGamePayload = {
-        ...updateFields,
-        _id: id,
-      };
+    const updateFields: IUpdateGamePayload = req.body;
+    const gameUpdatePayload: IUpdateGamePayload = {
+      ...updateFields,
+      _id: id,
+    };
 
-      const updatedGame = await this.gameService.updateGame(gameUpdatePayload);
+    const game = await this.gameService.updateGame(gameUpdatePayload);
 
-      return res.status(200).json({
-        status: 'success',
-        message: 'Game updated successfully',
-        data: updatedGame,
-      });
+    if (!game) {
+      throw new NotFoundError('Game');
     }
-  );
 
-  public deleteGame = catchAsync(
-    async (req: Request<GameParams>, res: Response) => {
-      const { id } = req.params;
+    return res.status(200).json({
+      status: 'success',
+      message: 'Game updated successfully',
+      data: {
+        ...game.toObject(),
+        links: this.createLinks(req, id),
+      },
+    });
+  });
 
-      await this.gameService.deleteGameById(id);
+  public deleteGame = catchAsync(async (req: Request<any>, res: Response) => {
+    const { id } = req.params as GameParams;
 
-      return res.status(200).json({
-        status: 'success',
-        message: 'Game deleted successfully',
-      });
-    }
-  );
+    await this.gameService.deleteGameById(id);
 
-  public createGame = catchAsync(async (req: Request, res: Response) => {
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        links: this.createLinks(req, id),
+      },
+    });
+  });
+
+  public createGame = catchAsync(async (req: UserRequest, res: Response) => {
     const game = await this.gameService.createGame(req.body);
+
+    if (!game || !game._id) {
+      throw new Error('Internal error');
+    }
 
     return res.status(201).json({
       status: 'success',
-      data: game,
+      data: {
+        ...game.toObject(),
+        links: this.createLinks(req, game._id.toString()),
+      },
     });
   });
 
