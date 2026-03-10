@@ -1,25 +1,22 @@
 import type { Request, Response, NextFunction } from 'express'
 
 export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  err.statusCode = err.statusCode || 500
-  err.status = err.status || 'error'
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 500;
 
   if (err.name === 'CastError') {
-    err.statusCode = 400
-    err.status = 'fail'
-    err.message = `Invalid path ${err.path}: ${err.value}. This ID is not a valid MongoDB ObjectId.`
+    statusCode = 400
+    message = `Invalid path ${err.path}: ${err.value}. This ID is not a valid MongoDB ObjectId.`
   }
 
   if (err.name === 'ValidationError') {
-    err.statusCode = 400;
-    err.status = 'fail';
+    statusCode = 400;
     
     const messages = Object.values(err.errors).map((el: any) => el.message);
-    err.message = `Invalid input data: ${messages.join('. ')}`;
+    message = `Invalid input data: ${messages.join('. ')}`;
   }
 
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  })
+  return res.status(statusCode).json({
+    error: message,
+  });
 }

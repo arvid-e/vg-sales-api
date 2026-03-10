@@ -1,6 +1,7 @@
 import type { NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import type { UserRequest } from '../interfaces/user/user.js';
+import { AuthError } from '../errors/auth-error.js';
 
 export const authorize = async (
   req: UserRequest,
@@ -18,9 +19,7 @@ export const authorize = async (
     }
 
     if (!token) {
-      return res.status(401).json({
-        message: 'No authorization token provided',
-      });
+      return next(new AuthError('No authorization token provided'));
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
@@ -31,7 +30,7 @@ export const authorize = async (
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid authorization token' });
+    return next(new AuthError('Invalid or expired authorization token'));
   }
 };
 
