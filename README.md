@@ -91,7 +91,7 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 | Data acquisition — choose and document a dataset (1000+ data points) | [#1](../../issues/1) | :white_check_mark: |
 | Full CRUD for primary resource, read-only for secondary resources | [#2](../../issues/2) | :white_check_mark: |
 | JWT authentication for write operations | [#3](../../issues/3) | :white_check_mark: |
-| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_large_square: |
+| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_check_mark: |
 | Filtering and pagination for large result sets | [#17](../../issues/17) | :white_large_square: |
 
 ### Functional Requirements — REST
