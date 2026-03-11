@@ -1,8 +1,10 @@
 import type { Request, Response } from 'express';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IPlatformService } from '../interfaces/platform/platform-service.js';
-import { catchAsync } from '../utils/catch-async.js';
 import type { UserRequest } from '../interfaces/user/user.js';
+import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
+import { catchAsync } from '../utils/catch-async.js';
+
 
 interface PlatformParams {
   id: string;
@@ -19,35 +21,16 @@ export class PlatformController {
 
     const totalPages = Math.ceil(total / limit);
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+    const hasUser = !!req.user 
+
 
     const platformsWithLinks = platforms.map((platform) => ({
       ...platform.toObject(),
       links: this.createLinks(req, platform._id.toString()),
     }));
 
-    const links: any[] = [
-      { rel: 'self', href: `${baseUrl}?page=${page}&limit=${limit}` },
-      { rel: 'first', href: `${baseUrl}?page=1&limit=${limit}` },
-      { rel: 'last', href: `${baseUrl}?page=${totalPages}&limit=${limit}` },
-    ];
-
-    if (page < totalPages) {
-      links.push({
-        rel: 'next',
-        href: `${baseUrl}?page=${page + 1}&limit=${limit}`,
-      });
-    }
-
-    if (page > 1) {
-      links.push({
-        rel: 'prev',
-        href: `${baseUrl}?page=${page - 1}&limit=${limit}`,
-      });
-    }
-
-    if (req.user) {
-      links.push({ rel: 'create', method: 'POST', href: baseUrl });
-    }
+    const paginationLinks = createPaginationLinks({ baseUrl, page, limit, totalPages, hasUser})
+    
     
     return res.status(200).json({
       status: 'success',
@@ -56,7 +39,7 @@ export class PlatformController {
       totalPages,
       currentPage: page,
       data: platformsWithLinks,
-      links, 
+      links: paginationLinks, 
     });
   });
 
