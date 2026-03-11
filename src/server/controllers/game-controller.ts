@@ -21,14 +21,20 @@ export class GameController {
 
     const totalPages = Math.ceil(total / limit);
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
-    const hasUser = !!req.user 
+    const hasUser = !!req.user;
 
     const gamesWithLinks = games.map((game) => ({
       ...game.toObject(),
       links: this.createLinks(req, game._id.toString()),
     }));
 
-    const paginationLinks = createPaginationLinks({ baseUrl, page, limit, totalPages, hasUser})
+    const paginationLinks = createPaginationLinks({
+      baseUrl,
+      page,
+      limit,
+      totalPages,
+      hasUser,
+    });
 
     return res.status(200).json({
       status: 'success',
@@ -37,7 +43,7 @@ export class GameController {
       totalPages,
       currentPage: page,
       data: gamesWithLinks,
-      links: paginationLinks, 
+      links: paginationLinks,
     });
   });
 

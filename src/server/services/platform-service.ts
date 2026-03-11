@@ -8,7 +8,7 @@ export class PlatformService implements IPlatformService {
   getAllPlatforms = async (
     page: number,
     limit: number
-  ): Promise<{ platforms: IPlatformDocument[]; total: number; }> => {
+  ): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
     return await this.platformRepo.getAllPlatforms(page, limit);
   };
 

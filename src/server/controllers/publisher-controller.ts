@@ -22,16 +22,20 @@ export class PublisherController {
 
       const totalPages = Math.ceil(total / limit);
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
-      const hasUser = !!req.user 
-
+      const hasUser = !!req.user;
 
       const publishersWithLinks = publishers.map((publisher) => ({
         ...publisher.toObject(),
         links: this.createLinks(req, publisher._id.toString()),
       }));
 
-      const paginationLinks = createPaginationLinks({ baseUrl, page, limit, totalPages, hasUser})
-      
+      const paginationLinks = createPaginationLinks({
+        baseUrl,
+        page,
+        limit,
+        totalPages,
+        hasUser,
+      });
 
       return res.status(200).json({
         status: 'success',

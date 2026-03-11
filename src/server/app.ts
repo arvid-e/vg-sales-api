@@ -17,4 +17,3 @@ app.get('/', (req, res) => {
     status: 'ok',
   });
 });
-

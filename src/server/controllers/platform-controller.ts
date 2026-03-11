@@ -5,7 +5,6 @@ import type { UserRequest } from '../interfaces/user/user.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
 
-
 interface PlatformParams {
   id: string;
 }
@@ -13,35 +12,44 @@ interface PlatformParams {
 export class PlatformController {
   constructor(private platformService: IPlatformService) {}
 
-  public getAllPlatforms = catchAsync(async (req: UserRequest, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+  public getAllPlatforms = catchAsync(
+    async (req: UserRequest, res: Response) => {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
 
-    const { platforms, total } = await this.platformService.getAllPlatforms(page, limit);
+      const { platforms, total } = await this.platformService.getAllPlatforms(
+        page,
+        limit
+      );
 
-    const totalPages = Math.ceil(total / limit);
-    const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
-    const hasUser = !!req.user 
+      const totalPages = Math.ceil(total / limit);
+      const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+      const hasUser = !!req.user;
 
+      const platformsWithLinks = platforms.map((platform) => ({
+        ...platform.toObject(),
+        links: this.createLinks(req, platform._id.toString()),
+      }));
 
-    const platformsWithLinks = platforms.map((platform) => ({
-      ...platform.toObject(),
-      links: this.createLinks(req, platform._id.toString()),
-    }));
+      const paginationLinks = createPaginationLinks({
+        baseUrl,
+        page,
+        limit,
+        totalPages,
+        hasUser,
+      });
 
-    const paginationLinks = createPaginationLinks({ baseUrl, page, limit, totalPages, hasUser})
-    
-    
-    return res.status(200).json({
-      status: 'success',
-      count: platformsWithLinks.length,
-      total,
-      totalPages,
-      currentPage: page,
-      data: platformsWithLinks,
-      links: paginationLinks, 
-    });
-  });
+      return res.status(200).json({
+        status: 'success',
+        count: platformsWithLinks.length,
+        total,
+        totalPages,
+        currentPage: page,
+        data: platformsWithLinks,
+        links: paginationLinks,
+      });
+    }
+  );
 
   public getPlatformById = catchAsync(
     async (req: Request<any>, res: Response) => {

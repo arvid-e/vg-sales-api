@@ -8,7 +8,7 @@ export class PublisherService implements IPublisherService {
   getAllPublishers = async (
     page: number,
     limit: number
-  ): Promise<{ publishers: IPublisherDocument[]; total: number; }> => {
+  ): Promise<{ publishers: IPublisherDocument[]; total: number }> => {
     return await this.publisherRepo.getAllPublishers(page, limit);
   };
 
