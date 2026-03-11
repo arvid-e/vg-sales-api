@@ -1,7 +1,8 @@
 import { Document } from 'mongoose';
 
 export interface IPlatform {
-  platform: string;
+  platformId: string,
+  name: string;
 }
 
 export interface IPlatformDocument extends IPlatform, Document {}

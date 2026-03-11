@@ -3,7 +3,15 @@ import type { IPlatformDocument } from '../interfaces/platform/platform.js';
 
 const platformSchema = new Schema<IPlatformDocument>(
   {
-    platform: { type: String, required: true, unique: true },
+    platformId: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
   { timestamps: true }
 );

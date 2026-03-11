@@ -61,8 +61,8 @@ const seedDatabase = async () => {
       // Handle Platform
       if (!platformsMap.has(row.Platform)) {
         const p = await Platform.findOneAndUpdate(
-          { platform: row.Platform },
-          { platform: row.Platform },
+          { platformId: row.Platform },
+          { platformId: row.Platform, name: row.Platform },
           { upsert: true, returnDocument: 'after' }
         );
         platformsMap.set(row.Platform, p?._id);
@@ -71,8 +71,8 @@ const seedDatabase = async () => {
       // Handle Publisher
       if (!publishersMap.has(row.Publisher)) {
         const pub = await Publisher.findOneAndUpdate(
-          { publisher: row.Publisher },
-          { publisher: row.Publisher },
+          { publisherId: row.Publisher },
+          { publisherId: row.Publisher, name: row.Publisher },
           { upsert: true, returnDocument: 'after' }
         );
         publishersMap.set(row.Publisher, pub?._id);

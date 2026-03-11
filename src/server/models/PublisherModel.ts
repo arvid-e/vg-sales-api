@@ -3,7 +3,15 @@ import type { IPublisherDocument } from '../interfaces/publisher/publisher.js';
 
 const publisherSchema = new Schema<IPublisherDocument>(
   {
-    publisher: { type: String, required: true, unique: true },
+    publisherId: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
