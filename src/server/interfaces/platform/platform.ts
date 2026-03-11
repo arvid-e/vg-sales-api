@@ -1,8 +1,10 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IPlatform {
-  platformId: string,
   name: string;
 }
 
-export interface IPlatformDocument extends IPlatform, Document {}
+export interface IPlatformDocument extends IPlatform, Document {
+  _id: Types.ObjectId;
+  platformId: string;
+}

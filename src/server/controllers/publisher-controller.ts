@@ -24,10 +24,14 @@ export class PublisherController {
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
       const hasUser = !!req.user;
 
-      const publishersWithLinks = publishers.map((publisher) => ({
-        ...publisher.toObject(),
-        links: this.createLinks(req, publisher._id.toString()),
-      }));
+      const publishersWithLinks = publishers.map((publisher) => {
+        const publisherJson = publisher.toJSON();
+
+        return {
+          ...publisherJson,
+          links: this.createLinks(req, publisherJson.publisherId),
+        };
+      });
 
       const paginationLinks = createPaginationLinks({
         baseUrl,

@@ -3,8 +3,8 @@ import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
 import type { IUpdateGamePayload } from '../interfaces/game/game.js';
 import type { UserRequest } from '../interfaces/user/user.js';
-import { catchAsync } from '../utils/catch-async.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
+import { catchAsync } from '../utils/catch-async.js';
 
 interface GameParams {
   id: string;
@@ -23,10 +23,14 @@ export class GameController {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
     const hasUser = !!req.user;
 
-    const gamesWithLinks = games.map((game) => ({
-      ...game.toObject(),
-      links: this.createLinks(req, game._id.toString()),
-    }));
+    const gamesWithLinks = games.map((game) => {
+      const gameJson = game.toJSON();
+
+      return {
+        ...gameJson,
+        links: this.createLinks(req, gameJson.gameId),
+      };
+    });
 
     const paginationLinks = createPaginationLinks({
       baseUrl,

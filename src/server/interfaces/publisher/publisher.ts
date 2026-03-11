@@ -1,8 +1,10 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IPublisher {
-  publisherId: string,
   name: string;
 }
 
-export interface IPublisherDocument extends IPublisher, Document {}
+export interface IPublisherDocument extends IPublisher, Document {
+  _id: Types.ObjectId;
+  platformId: string;
+}

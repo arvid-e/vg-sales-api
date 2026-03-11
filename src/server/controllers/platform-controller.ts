@@ -26,10 +26,14 @@ export class PlatformController {
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
       const hasUser = !!req.user;
 
-      const platformsWithLinks = platforms.map((platform) => ({
-        ...platform.toObject(),
-        links: this.createLinks(req, platform._id.toString()),
-      }));
+      const platformsWithLinks = platforms.map((platform) => {
+        const platformJson = platform.toJSON();
+
+        return {
+          ...platformJson,
+          links: this.createLinks(req, platformJson.platformId),
+        };
+      });
 
       const paginationLinks = createPaginationLinks({
         baseUrl,

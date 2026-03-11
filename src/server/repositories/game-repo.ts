@@ -16,7 +16,14 @@ export class GameRepo implements IGameRepo {
     const skip = (page - 1) * limit;
 
     const [games, total] = await Promise.all([
-      this.gameModel.find().sort({ rank: 1 }).skip(skip).limit(limit),
+      this.gameModel
+        .find()
+        .populate('platform')
+        .populate('publisher')
+        .sort({ rank: 1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
       this.gameModel.countDocuments(),
     ]);
 

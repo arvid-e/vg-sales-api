@@ -30,7 +30,20 @@ const gamesSchema = new Schema<IGameDocument>(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: (doc, ret: any) => {
+        ret.gameId = ret._id.toString();
+
+        delete ret._id;
+        delete ret.id;
+        delete ret.__v;
+        delete ret.createdAt;
+        delete ret.updatedAt;
+        return ret;
+      },
+    },
     toObject: { virtuals: true },
   }
 );
