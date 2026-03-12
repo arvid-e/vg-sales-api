@@ -34,3 +34,9 @@ export interface IUpdateGamePayload {
     global?: number;
   };
 }
+
+export interface IGameFilter {
+  platform?: string;
+  publisher?: string;
+  genre?: string;
+}

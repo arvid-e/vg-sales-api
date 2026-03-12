@@ -4,6 +4,7 @@ import type { IGameService } from '../interfaces/game/game-service.js';
 import type {
   IGame,
   IGameDocument,
+  IGameFilter,
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
 
@@ -12,9 +13,10 @@ export class GameService implements IGameService {
 
   public getAllGames = async (
     page: number,
-    limit: number
+    limit: number,
+    filter: IGameFilter
   ): Promise<{ games: IGameDocument[]; total: number }> => {
-    return await this.gameRepo.getAllGames(page, limit);
+    return await this.gameRepo.getAllGames(page, limit, filter);
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {

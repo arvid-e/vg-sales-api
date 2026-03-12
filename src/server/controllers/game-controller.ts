@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
-import type { IUpdateGamePayload } from '../interfaces/game/game.js';
+import type {
+  IGameFilter,
+  IUpdateGamePayload,
+} from '../interfaces/game/game.js';
 import type { UserRequest } from '../interfaces/user/user.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
@@ -16,8 +19,23 @@ export class GameController {
   public getAllGames = catchAsync(async (req: UserRequest, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
+    const filter: IGameFilter = {};
 
-    const { games, total } = await this.gameService.getAllGames(page, limit);
+    if (typeof req.query.platform === 'string') {
+      filter.platform = req.query.platform;
+    }
+    if (typeof req.query.publisher === 'string') {
+      filter.publisher = req.query.publisher;
+    }
+    if (typeof req.query.genre === 'string') {
+      filter.genre = req.query.genre;
+    }
+
+    const { games, total } = await this.gameService.getAllGames(
+      page,
+      limit,
+      filter
+    );
 
     const totalPages = Math.ceil(total / limit);
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
