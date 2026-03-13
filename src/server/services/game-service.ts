@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
@@ -7,16 +8,40 @@ import type {
   IGameFilter,
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
+import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
+import type { IPublisherRepo } from '../interfaces/publisher/publisher-repo.js';
 
 export class GameService implements IGameService {
-  constructor(private gameRepo: IGameRepo) {}
+  constructor(
+    private gameRepo: IGameRepo,
+    private platformRepo: IPlatFormRepo,
+    private publisherRepo: IPublisherRepo
+  ) {}
 
   public getAllGames = async (
     page: number,
     limit: number,
     filter: IGameFilter
   ): Promise<{ games: IGameDocument[]; total: number }> => {
-    return await this.gameRepo.getAllGames(page, limit, filter);
+    const query: any = {};
+
+    if (filter.genre) {
+      query.genre = { $regex: new RegExp(filter.genre, 'i') };
+    }
+
+    if (filter.platform) {
+      const platformId = await this.platformRepo.getIdByName(filter.platform);
+      query.platform = platformId || new mongoose.Types.ObjectId();
+    }
+
+    if (filter.publisher) {
+      const publisherId = await this.publisherRepo.getIdByName(
+        filter.publisher
+      );
+      query.publisher = publisherId || new mongoose.Types.ObjectId();
+    }
+
+    return await this.gameRepo.getAllGames(page, limit, query);
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {

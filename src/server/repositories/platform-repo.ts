@@ -19,7 +19,16 @@ export class PlatformRepo implements IPlatFormRepo {
     return { platforms, total };
   };
 
-  getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
+  getById = async (id: string): Promise<IPlatformDocument | null> => {
     return await this.platformModel.findById(id);
+  };
+
+  getIdByName = async (name: string): Promise<string | null> => {
+    const platform = await this.platformModel
+      .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+      .select('_id')
+      .exec();
+
+    return platform ? platform._id.toString() : null;
   };
 }

@@ -19,7 +19,16 @@ export class PublisherRepo implements IPublisherRepo {
     return { publishers, total };
   };
 
-  getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {
+  getById = async (id: string): Promise<IPublisherDocument | null> => {
     return await this.publisherModel.findById(id);
+  };
+
+  getIdByName = async (name: string): Promise<string | null> => {
+    const publisher = await this.publisherModel
+      .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+      .select('_id')
+      .exec();
+
+    return publisher ? publisher._id.toString() : null;
   };
 }

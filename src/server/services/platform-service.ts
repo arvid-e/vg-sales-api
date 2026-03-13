@@ -13,6 +13,6 @@ export class PlatformService implements IPlatformService {
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
-    return await this.platformRepo.getPlatformById(id);
+    return await this.platformRepo.getById(id);
   };
 }

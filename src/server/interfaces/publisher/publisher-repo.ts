@@ -5,5 +5,6 @@ export interface IPublisherRepo {
     page: number,
     limit: number
   ): Promise<{ publishers: IPublisherDocument[]; total: number }>;
-  getPublisherById(id: string): Promise<IPublisherDocument | null>;
+  getById(id: string): Promise<IPublisherDocument | null>;
+  getIdByName(name: string): Promise<string | null>;
 }

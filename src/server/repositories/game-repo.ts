@@ -2,7 +2,6 @@ import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type {
   IGame,
   IGameDocument,
-  IGameFilter,
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
 import GamesModel from '../models/GamesModel.js';
@@ -13,16 +12,13 @@ export class GameRepo implements IGameRepo {
   public getAllGames = async (
     page: number = 1,
     limit: number = 20,
-    filter: IGameFilter
+    query: any
   ): Promise<{ games: IGameDocument[]; total: number }> => {
     const skip = (page - 1) * limit;
 
-    // REMINDER: Add query filter
-    // const query: any = {};
-
     const [games, total] = await Promise.all([
       this.gameModel
-        .find()
+        .find(query)
         .populate('platform')
         .populate('publisher')
         .sort({ rank: 1 })

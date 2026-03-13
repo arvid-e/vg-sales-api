@@ -13,6 +13,6 @@ export class PublisherService implements IPublisherService {
   };
 
   getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {
-    return await this.publisherRepo.getPublisherById(id);
+    return await this.publisherRepo.getById(id);
   };
 }

@@ -5,5 +5,6 @@ export interface IPlatFormRepo {
     page: number,
     limit: number
   ): Promise<{ platforms: IPlatformDocument[]; total: number }>;
-  getPlatformById(id: string): Promise<IPlatformDocument | null>;
+  getById(id: string): Promise<IPlatformDocument | null>;
+  getIdByName(name: string): Promise<string | null>;
 }
