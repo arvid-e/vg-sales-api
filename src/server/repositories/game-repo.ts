@@ -25,7 +25,7 @@ export class GameRepo implements IGameRepo {
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.gameModel.countDocuments(),
+      this.gameModel.countDocuments(query),
     ]);
 
     return { games, total };
