@@ -20,6 +20,9 @@ const runSeed = async () => {
     await mongoose.connect(process.env.MONGO_URI as string);
     console.log('Connected! Starting seed...');
 
+    if (mongoose.connection.db) await mongoose.connection.db.dropDatabase();
+    console.log('Database dropped successfully.');
+
     await seedDatabase();
 
     await mongoose.disconnect();
