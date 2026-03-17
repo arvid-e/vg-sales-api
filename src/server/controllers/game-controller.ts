@@ -81,7 +81,7 @@ export class GameController {
     return res.status(200).json({
       status: 'success',
       data: {
-        ...game.toObject(),
+        ...game.toJSON(),
         links: this.createLinks(req, id),
       },
     });
@@ -106,7 +106,7 @@ export class GameController {
       status: 'success',
       message: 'Game updated successfully',
       data: {
-        ...game.toObject(),
+        ...game.toJSON(),
         links: this.createLinks(req, id),
       },
     });
@@ -135,7 +135,7 @@ export class GameController {
     return res.status(201).json({
       status: 'success',
       data: {
-        ...game.toObject(),
+        ...game.toJSON(),
         links: this.createLinks(req, game._id.toString()),
       },
     });

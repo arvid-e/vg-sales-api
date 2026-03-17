@@ -32,7 +32,11 @@ export class GameRepo implements IGameRepo {
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
-    return await this.gameModel.findById(id);
+    return await this.gameModel
+      .findById(id)
+      .populate('platform')
+      .populate('publisher')
+      .exec();
   };
 
   public updateGame = async (
@@ -40,14 +44,18 @@ export class GameRepo implements IGameRepo {
   ): Promise<IGameDocument | null> => {
     const { _id, ...updateFields } = updatedGameData;
 
-    return await this.gameModel.findOneAndUpdate(
-      { _id },
-      { $set: updateFields },
-      {
-        returnDocument: 'after',
-        runValidators: true,
-      }
-    );
+    return await this.gameModel
+      .findOneAndUpdate(
+        { _id },
+        { $set: updateFields },
+        {
+          returnDocument: 'after',
+          runValidators: true,
+        }
+      )
+      .populate('platform')
+      .populate('publisher')
+      .exec();
   };
 
   public deleteGameById = async (id: string): Promise<boolean> => {
