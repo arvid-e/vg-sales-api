@@ -66,7 +66,7 @@ export class PublisherController {
       return res.status(200).json({
         status: 'success',
         data: {
-          ...publisher.toObject(),
+          ...publisher.toJSON(),
           links: this.createLinks(req, id),
         },
       });

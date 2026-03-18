@@ -68,7 +68,7 @@ export class PlatformController {
       return res.status(200).json({
         status: 'success',
         data: {
-          ...platform.toObject(),
+          ...platform.toJSON(),
           links: this.createLinks(req, id),
         },
       });
