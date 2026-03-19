@@ -25,6 +25,10 @@ export class UserService implements IUserService {
     return await this.userRepo.createUser(newUser);
   };
 
+  deleteUser = async (userId: string): Promise<boolean> => {
+    return await this.userRepo.deleteUserById(userId);
+  };
+
   loginUser = async (authPayload: IUser): Promise<IAuthResponse> => {
     const { username, password } = authPayload;
 

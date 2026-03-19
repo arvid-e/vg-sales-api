@@ -16,6 +16,17 @@ export class UserController {
     });
   });
 
+  deleteUser = catchAsync(async (req: Request, res: Response) => {
+    const { userId } = req.body;
+
+    await this.userService.deleteUser(userId);
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'User deleted successfully',
+    });
+  });
+
   loginUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 

@@ -9,6 +9,11 @@ export class UserRepo implements IUserRepo {
     return await this.userModel.create(user);
   };
 
+  deleteUserById = async (id: string): Promise<boolean> => {
+    const deleted = await this.userModel.deleteOne({ _id: id });
+    return deleted.deletedCount > 0;
+  };
+
   findUserByUsername = async (
     username: string
   ): Promise<IUserDocument | null> => {
