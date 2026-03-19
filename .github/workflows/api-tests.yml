@@ -45,7 +45,7 @@ jobs:
           retention-days: 1
 
   api-tests:
-    needs: build-image 
+    needs: build 
     runs-on: ubuntu-latest
     env:
       MONGO_USER: ${{ secrets.MONGO_USER }}
