@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import type { SignOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import { NotFoundError } from '../errors/not-found-error.js';
+import { AuthError } from '../errors/auth-error.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import type {
@@ -26,14 +26,14 @@ export class UserService implements IUserService {
     const user = await this.userRepo.findUserByUsername(username);
 
     if (!user) {
-      throw new NotFoundError('User');
+      throw new AuthError('Invalid username or password');
     }
 
     const savedPassword = user.password;
     const match = await bcrypt.compare(password, savedPassword);
 
     if (!match) {
-      throw new Error('Invalid username or password');
+      throw new AuthError('Invalid username or password');
     }
 
     const secret = process.env.JWT_SECRET;

@@ -1,6 +1,7 @@
+import { NotFoundError } from '../errors/not-found-error.js';
+import type { IPublisherRepo } from '../interfaces/publisher/publisher-repo.js';
 import type { IPublisherService } from '../interfaces/publisher/publisher-service.js';
 import type { IPublisherDocument } from '../interfaces/publisher/publisher.js';
-import type { IPublisherRepo } from '../interfaces/publisher/publisher-repo.js';
 
 export class PublisherService implements IPublisherService {
   constructor(private publisherRepo: IPublisherRepo) {}
@@ -13,6 +14,12 @@ export class PublisherService implements IPublisherService {
   };
 
   getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {
-    return await this.publisherRepo.getById(id);
+    const publisher = this.publisherRepo.getById(id);
+
+    if (publisher == null) {
+      throw new NotFoundError('Publisher');
+    }
+
+    return publisher;
   };
 }

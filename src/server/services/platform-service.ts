@@ -1,6 +1,7 @@
+import { NotFoundError } from '../errors/not-found-error.js';
+import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
 import type { IPlatformService } from '../interfaces/platform/platform-service.js';
 import type { IPlatformDocument } from '../interfaces/platform/platform.js';
-import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
 
 export class PlatformService implements IPlatformService {
   constructor(private platformRepo: IPlatFormRepo) {}
@@ -13,6 +14,12 @@ export class PlatformService implements IPlatformService {
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
-    return await this.platformRepo.getById(id);
+    const platform = this.platformRepo.getById(id);
+
+    if (platform == null) {
+      throw new NotFoundError('Platform');
+    }
+
+    return platform;
   };
 }
