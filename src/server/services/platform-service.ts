@@ -14,7 +14,7 @@ export class PlatformService implements IPlatformService {
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {
-    const platform = this.platformRepo.getById(id);
+    const platform = await this.platformRepo.getById(id);
 
     if (platform == null) {
       throw new NotFoundError('Platform');

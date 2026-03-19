@@ -14,7 +14,7 @@ export class PublisherService implements IPublisherService {
   };
 
   getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {
-    const publisher = this.publisherRepo.getById(id);
+    const publisher = await this.publisherRepo.getById(id);
 
     if (publisher == null) {
       throw new NotFoundError('Publisher');
