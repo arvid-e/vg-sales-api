@@ -69,7 +69,7 @@ export class GameService implements IGameService {
   public deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameRepo.deleteGameById(id);
 
-    if (deleted == null) {
+    if (!deleted) {
       throw new NotFoundError('Game');
     }
 
