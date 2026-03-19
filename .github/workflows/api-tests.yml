@@ -2,7 +2,7 @@ name: API CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ feat/newman-api-test-pipeline ]
 
 jobs:
   lint:
