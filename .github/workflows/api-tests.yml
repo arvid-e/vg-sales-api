@@ -1,35 +1,49 @@
 name: API Integration Tests
-on: [push]
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
-  newman-tests:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm install
 
-      - name: Start Server
-        run: npm start & 
+      - name: Build Project
+        run: npm run build
+
+      - name: Start API Server
+        run: node dist/app.js & 
         env:
           PORT: 3000
           MONGO_USER: ${{ secrets.MONGO_USER }}
           MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Run Newman
+      - name: Wait for Server
+        run: npx wait-on -v http://localhost:3000 --timeout 60000
+
+      - name: Run Postman Tests
         run: |
           npx newman run ./tests/collection.json \
-          -e ./tests/environment.template.json \
-          --env-var "base_url=http://localhost:3000"
+          -e ./tests/environment.json \
+          --env-var "base_url=http://localhost:3000" \
+          --env-var "test_username=${{ secrets.TEST_USERNAME }}" \
+          --env-var "test_password=${{ secrets.TEST_PASSWORD }}" \
+          --reporters cli,htmlextra
 
-      - name: Upload Test Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: postman-report
-          path: newman/*.html
