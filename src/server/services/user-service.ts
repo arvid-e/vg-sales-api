@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { SignOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { AuthError } from '../errors/auth-error.js';
+import { BadRequestError } from '../errors/bad-request-error.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import type {
@@ -14,6 +15,10 @@ export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
 
   createUser = async (user: IUser): Promise<IUserDocument | null> => {
+    if (user.password == null || user.password.length < 10) {
+      throw new BadRequestError('Password must be at least 10 characters long');
+    }
+
     const hashedPassword = await bcrypt.hash(user.password, 12);
     const newUser = { ...user, password: hashedPassword };
 
