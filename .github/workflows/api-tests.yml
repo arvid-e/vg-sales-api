@@ -37,7 +37,7 @@ jobs:
       - name: Run Newman Tests
         run: |
           npx newman run ./tests/collection.json \
-          -e ./tests/environment.json \
+          -e ./tests/environment.template.json \
           --env-var "base_url=http://localhost:3000" \
           --env-var "test_username=${{ secrets.TEST_USERNAME }}" \
           --env-var "test_password=${{ secrets.TEST_PASSWORD }}"
