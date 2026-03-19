@@ -24,9 +24,6 @@ jobs:
           MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Wait for Server (Health Check)
-        run: npx wait-on http://localhost:3000/health
-
       - name: Run Newman Tests
         run: |
           npx newman run ./tests/collection.json \
