@@ -2,7 +2,7 @@ name: API Integration Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ feat/newman-api-test-pipeline ]
   pull_request:
     branches: [ main, master ]
 
@@ -46,4 +46,6 @@ jobs:
           --env-var "test_username=${{ secrets.TEST_USERNAME }}" \
           --env-var "test_password=${{ secrets.TEST_PASSWORD }}" \
           --reporters cli,htmlextra
+
+      
 
