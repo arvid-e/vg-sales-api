@@ -33,7 +33,7 @@ jobs:
           MONGO_USER="${{ env.MONGO_USER }}"
           MONGO_PASSWORD="${{ env.MONGO_PASSWORD }}"
           JWT_SECRET="${{ env.JWT_SECRET }}"
-          JWT_EXPIRES_IN="${{JWT_EXPIRES_IN}}"
+          JWT_EXPIRES_IN="${{ env.JWT_EXPIRES_IN }}"
           docker compose -f docker-compose.test.yml up -d --build
 
       - name: Wait for API (Seeding + Boot)
