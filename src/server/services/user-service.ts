@@ -25,21 +25,21 @@ export class UserService implements IUserService {
 
     const user = await this.userRepo.findUserByUsername(username);
 
-    if (!user) {
+    if (user == null) {
       throw new AuthError('Invalid username or password');
     }
 
     const savedPassword = user.password;
     const match = await bcrypt.compare(password, savedPassword);
 
-    if (!match) {
+    if (match == null) {
       throw new AuthError('Invalid username or password');
     }
 
     const secret = process.env.JWT_SECRET;
     const expires = process.env.JWT_EXPIRES_IN;
 
-    if (!secret || !expires) {
+    if (secret == null || expires == null) {
       throw new Error('JWT configuration is missing in environment variables');
     }
 
