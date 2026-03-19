@@ -29,11 +29,11 @@ jobs:
           echo "Mongo User is set: ${{ env.MONGO_USER != '' }}"
 
       - name: Start Services
-        run: docker compose -f docker-compose.test.yml up -d --build
-        env:
-          MONGO_USER: ${{ env.MONGO_USER }}
-          MONGO_PASSWORD: ${{ env.MONGO_PASSWORD }}
-          JWT_SECRET: ${{ env.JWT_SECRET }}
+        run: |
+          export MONGO_USER="${{ env.MONGO_USER }}"
+          export MONGO_PASSWORD="${{ env.MONGO_PASSWORD }}"
+          export JWT_SECRET="${{ env.JWT_SECRET }}"
+          docker compose -f docker-compose.test.yml up -d --build
 
       - name: Wait for API (Seeding + Boot)
         run: npx wait-on -v http-get://127.0.0.1:3000/health --timeout 90000
