@@ -21,6 +21,11 @@ export const globalErrorHandler = (
     message = `Invalid input data: ${messages.join('. ')}`;
   }
 
+  if (err.code === 11000) {
+    statusCode = 409;
+    message = 'Username is already taken';
+  }
+
   return res.status(statusCode).json({
     error: message,
   });
