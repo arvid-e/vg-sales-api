@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
+  api-tests:
     runs-on: ubuntu-latest
     env:
       MONGO_USER: ${{ secrets.MONGO_USER }}
@@ -36,11 +36,20 @@ jobs:
 
       - name: Run Newman Tests
         run: |
+          npm install -g newman-reporter-htmlextra
+
           npx newman run ./tests/collection.json \
           -e ./tests/environment.template.json \
           --env-var "base_url=http://localhost:3000" \
           --env-var "test_username=${{ secrets.TEST_USERNAME }}" \
           --env-var "test_password=${{ secrets.TEST_PASSWORD }}"
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: API-Test-Report
+          path: ./newman/report.html
 
       - name: Stop Services
         if: always()
