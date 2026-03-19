@@ -74,7 +74,7 @@ export class GameController {
 
     const game = await this.gameService.getGameById(id);
 
-    if (!game) {
+    if (game == null) {
       throw new NotFoundError('Game');
     }
 
@@ -98,7 +98,7 @@ export class GameController {
 
     const game = await this.gameService.updateGame(gameUpdatePayload);
 
-    if (!game) {
+    if (game == null) {
       throw new NotFoundError('Game');
     }
 
@@ -129,7 +129,7 @@ export class GameController {
   public createGame = catchAsync(async (req: UserRequest, res: Response) => {
     const game = await this.gameService.createGame(req.body);
 
-    if (!game || !game._id) {
+    if (game == null || game._id == null) {
       throw new Error('Internal error');
     }
 

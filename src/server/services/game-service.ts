@@ -47,7 +47,7 @@ export class GameService implements IGameService {
   public getGameById = async (id: string): Promise<IGameDocument | null> => {
     const game = await this.gameRepo.getGameById(id);
 
-    if (!game) {
+    if (game == null) {
       throw new NotFoundError('Game');
     }
 
@@ -59,7 +59,7 @@ export class GameService implements IGameService {
   ): Promise<IGameDocument | null> => {
     const game = await this.gameRepo.updateGame(updateGamePayload);
 
-    if (!game) {
+    if (game == null) {
       throw new NotFoundError('Game');
     }
 
@@ -69,7 +69,7 @@ export class GameService implements IGameService {
   public deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameRepo.deleteGameById(id);
 
-    if (!deleted) {
+    if (deleted == null) {
       throw new NotFoundError('Game');
     }
 
