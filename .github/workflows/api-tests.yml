@@ -36,13 +36,14 @@ jobs:
 
       - name: Run Newman Tests
         run: |
-          npm install -g newman-reporter-htmlextra
+          npm install newman newman-reporter-htmlextra
           mkdir -p newman
-          npx newman run ./tests/collection.json \
+
+          ./node_modules/.bin/newman run ./tests/collection.json \
           -e ./tests/environment.template.json \
           --env-var "base_url=http://localhost:3000" \
           --reporters cli,htmlextra \
-          --reporter-htmlextra-export ./newman/report.html || true
+          --reporter-htmlextra-export ./newman/report.html
 
       - name: Upload Test Report
         if: always()
