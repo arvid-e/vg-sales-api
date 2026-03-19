@@ -32,7 +32,7 @@ export class UserService implements IUserService {
     const savedPassword = user.password;
     const match = await bcrypt.compare(password, savedPassword);
 
-    if (match == null) {
+    if (!match) {
       throw new AuthError('Invalid username or password');
     }
 
