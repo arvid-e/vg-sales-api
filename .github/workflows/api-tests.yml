@@ -1,0 +1,41 @@
+name: API Integration Tests
+on: [push]
+
+jobs:
+  newman-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Start Server in Background
+        run: npm start & 
+        env:
+          PORT: 3000
+          MONGO_USER: ${{ secrets.MONGO_USER }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Wait for Server (Health Check)
+        run: npx wait-on http://localhost:3000/health
+
+      - name: Run Newman Tests
+        run: |
+          npx newman run ./tests/collection.json \
+          -e ./tests/environment.json \
+          --env-var "baseUrl=http://localhost:3000" \
+          --reporters cli,htmlextra
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-report
+          path: newman/*.html
