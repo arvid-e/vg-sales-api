@@ -23,6 +23,11 @@ jobs:
         with:
           node-version: '20' 
 
+      - name: Debug Environment
+        run: |
+          echo "JWT Secret is set: ${{ env.JWT_SECRET != '' }}"
+          echo "Mongo User is set: ${{ env.MONGO_USER != '' }}"
+
       - name: Start Services
         run: docker compose -f docker-compose.test.yml up -d --build
         env:
