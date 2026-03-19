@@ -18,34 +18,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Project
-        run: npm run build
-
-      - name: Start API Server
-        run: node dist/app.js & 
+      - name: Start Services
+        run: docker-compose -f docker-compose.test.yml up -d --build
         env:
-          PORT: 3000
           MONGO_USER: ${{ secrets.MONGO_USER }}
           MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Wait for Server
-        run: npx wait-on -v http://localhost:3000 --timeout 60000
+      - name: Wait for API
+        run: npx wait-on -v http://localhost:3000/health --timeout 60000
 
-      - name: Run Postman Tests
+      - name: Run Newman Tests
         run: |
           npx newman run ./tests/collection.json \
           -e ./tests/environment.json \
           --env-var "base_url=http://localhost:3000" \
           --env-var "test_username=${{ secrets.TEST_USERNAME }}" \
-          --env-var "test_password=${{ secrets.TEST_PASSWORD }}" \
-          --reporters cli,htmlextra
+          --env-var "test_password=${{ secrets.TEST_PASSWORD }}"
 
-      
-
+      - name: Stop Services
+        if: always()
+        run: docker-compose -f docker-compose.test.yml down
