@@ -119,6 +119,7 @@ export class GameController {
 
     return res.status(200).json({
       status: 'success',
+      message: 'Game deleted successfully',
       data: {
         links: this.createLinks(req, id),
       },
