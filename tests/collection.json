@@ -13,8 +13,8 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "const randomUser = \"user\" + pm.variables.replaceIn('{{$randomInt}}') + \"_user\";",
-              "const randomPass = \"Pass\" + pm.variables.replaceIn('{{$randomInt}}') + \"!\";",
+              "const randomUser = \"user\" + pm.variables.replaceIn('{{$randomInt * $randomInt}}') + \"_user\";",
+              "const randomPass = \"Password123\" + pm.variables.replaceIn('{{$randomInt * $randomInt}}') + \"!\";",
               "",
               "",
               "pm.environment.set(\"test_username\", randomUser);",
@@ -59,6 +59,204 @@
             {
               "key": "password",
               "value": "{{test_password}}",
+              "type": "text",
+              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/auth/register - Username taken",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 409\", () => {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Username is already taken\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{test_username}}",
+              "type": "text",
+              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
+            },
+            {
+              "key": "password",
+              "value": "{{test_password}}",
+              "type": "text",
+              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/auth/register - Invalid username",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", () => {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Username must be at least\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "h",
+              "type": "text",
+              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
+            },
+            {
+              "key": "password",
+              "value": "{{test_password}}",
+              "type": "text",
+              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/auth/register - Invalid password",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", () => {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Password must be at least\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{test_username}}",
+              "type": "text",
+              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
+            },
+            {
+              "key": "password",
+              "value": "11",
               "type": "text",
               "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
             }
@@ -256,7 +454,7 @@
             },
             {
               "key": "password",
-              "value": "{{test_password}}123",
+              "value": "123123123123123",
               "type": "text",
               "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
             }
@@ -399,7 +597,7 @@
       "response": []
     },
     {
-      "name": "/games - Filter",
+      "name": "/games - Filter Publisher",
       "event": [
         {
           "listen": "test",
@@ -433,7 +631,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/games?limit=10&publisher=nintendo",
+          "raw": "{{base_url}}/games?publisher=nintendo",
           "host": [
             "{{base_url}}"
           ],
@@ -442,12 +640,158 @@
           ],
           "query": [
             {
-              "key": "limit",
-              "value": "10"
-            },
-            {
               "key": "publisher",
               "value": "nintendo"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Filter Genre",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", () => {",
+              "    pm.response.to.have.status(200); ",
+              "});",
+              "",
+              "pm.test(\"Filters applied correctly\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    jsonData.data.forEach(game => {",
+              "        pm.expect(game.genre).to.eql(\"Sports\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Results are sorted by Rank\", () => {",
+              "    const data = pm.response.json().data;",
+              "    if (data.length > 1) {",
+              "        pm.expect(data[0].rank).to.be.below(data[1].rank);",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games?genre=sports",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ],
+          "query": [
+            {
+              "key": "genre",
+              "value": "sports"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Filter Platform",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", () => {",
+              "    pm.response.to.have.status(200); ",
+              "});",
+              "",
+              "pm.test(\"Filters applied correctly\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    jsonData.data.forEach(game => {",
+              "        pm.expect(game.platform.name).to.eql(\"PSP\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Results are sorted by Rank\", () => {",
+              "    const data = pm.response.json().data;",
+              "    if (data.length > 1) {",
+              "        pm.expect(data[0].rank).to.be.below(data[1].rank);",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games?platform=psp",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ],
+          "query": [
+            {
+              "key": "platform",
+              "value": "psp"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Filter Nothing Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status is 200\", () => {",
+              "    pm.response.to.have.status(200); ",
+              "});",
+              "",
+              "pm.test(\"Response is an empty array\", function () {",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "    pm.expect(jsonData.data).to.have.lengthOf(0);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games?platform=asdasd",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ],
+          "query": [
+            {
+              "key": "platform",
+              "value": "asdasd"
             }
           ]
         }
@@ -1550,6 +1894,107 @@
       "response": []
     },
     {
+      "name": "/games - Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}123",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "_id",
+              "value": "2",
+              "type": "text",
+              "uuid": "029b4f5f-d22d-4a1f-9d2e-23a34758c05f",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "Wii Sports - Updated Edition",
+              "type": "text",
+              "uuid": "aed7b800-963b-4828-83aa-6982a826ea91"
+            },
+            {
+              "key": "platform",
+              "value": "{{platform_ps4}}",
+              "type": "text",
+              "uuid": "f372bef3-c533-4650-b605-823c25ebbd8c",
+              "disabled": true
+            },
+            {
+              "key": "publisher",
+              "value": "{{publisher_activision}}",
+              "type": "text",
+              "uuid": "8dc8867e-4852-48dd-86b1-4856e2fa7ff0",
+              "disabled": true
+            },
+            {
+              "key": "year",
+              "value": "1999",
+              "type": "text",
+              "uuid": "22476620-cb5f-4b3c-88cf-db37f9ca745f",
+              "disabled": true
+            },
+            {
+              "key": "genre",
+              "value": "Genre",
+              "type": "text",
+              "uuid": "54da2485-ef38-4af6-8d55-1703b4db3252",
+              "disabled": true
+            },
+            {
+              "key": "sales",
+              "value": "Sales",
+              "type": "text",
+              "uuid": "debd24b3-3d60-4ec4-ac99-9805e28eaec2",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{new_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "/games/:id",
       "event": [
         {
@@ -1603,6 +2048,54 @@
     },
     {
       "name": "/games/:id - Unauthorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}123",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{new_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games/:id - Not Found",
       "event": [
         {
           "listen": "test",
