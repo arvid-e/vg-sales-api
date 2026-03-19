@@ -30,8 +30,9 @@ jobs:
       - name: Run Newman Tests
         run: |
           npx newman run ./tests/collection.json \
-          -e ./tests/environment.json \
-          --env-var "baseUrl=http://localhost:3000" \
+          -e ./tests/environment.template.json \
+          --env-var "base_url=${{ secrets.BASE_URL }}" \
+          --env-var "non_existent_id=69b3c5080867c4ceb8a176ff" \
           --reporters cli,htmlextra
 
       - name: Upload Test Report
