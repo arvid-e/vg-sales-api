@@ -2,6 +2,11 @@ import type { Request, Response } from 'express';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import { catchAsync } from '../utils/catch-async.js';
 
+interface UserParams {
+  id: string;
+}
+
+
 export class UserController {
   constructor(private userService: IUserService) {}
 
@@ -16,10 +21,10 @@ export class UserController {
     });
   });
 
-  deleteUser = catchAsync(async (req: Request, res: Response) => {
-    const { userId } = req.body;
+  deleteUser = catchAsync(async (req: Request<UserParams>, res: Response) => {
+    const { id } = req.params;
 
-    await this.userService.deleteUser(userId);
+    await this.userService.deleteUser(id);
 
     return res.status(200).json({
       status: 'success',
