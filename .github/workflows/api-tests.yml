@@ -37,6 +37,7 @@ jobs:
       - name: Run Newman Tests
         run: |
           npm install -g newman-reporter-htmlextra
+          mkdir -p newman
 
           npx newman run ./tests/collection.json \
           -e ./tests/environment.template.json \
