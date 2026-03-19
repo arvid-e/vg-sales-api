@@ -9,6 +9,7 @@ services:
       - PORT=3000
       - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/testdb?authSource=admin
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=&{JWT_EXPIRES_IN}
 
   mongodb:
     image: mongo:latest

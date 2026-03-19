@@ -10,8 +10,7 @@ export const authorize = async (
 ) => {
   try {
     if (!process.env.JWT_SECRET) {
-      console.error("CRITICAL: JWT_SECRET is missing from environment variables.");
-      return next(new Error('JWT configuration is missing in environment variables!!'));
+      return next(new Error('JWT configuration is missing in environment variables'));
     }
 
     let token: string | undefined;

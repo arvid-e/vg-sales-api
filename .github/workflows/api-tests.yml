@@ -33,6 +33,7 @@ jobs:
           export MONGO_USER="${{ env.MONGO_USER }}"
           export MONGO_PASSWORD="${{ env.MONGO_PASSWORD }}"
           export JWT_SECRET="${{ env.JWT_SECRET }}"
+          export JWT_EXPIRES_IN="${{JWT_EXPIRES_IN}}"
           docker compose -f docker-compose.test.yml up -d --build
 
       - name: Wait for API (Seeding + Boot)
