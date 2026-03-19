@@ -12,8 +12,11 @@ let server: Server | undefined;
 export const startServer = async () => {
   try {
     await connectDB();
-    server = app.listen(port, () => {
-      console.log(`Server running at port: ${port}`);
+
+    const PORT = process.env.PORT || 3000;
+
+    server = app.listen(Number(PORT), '0.0.0.0', () => {
+      console.log(`Server running at port: ${PORT}`);
     });
   } catch (error: unknown) {
     if (isErrorWithMessage(error)) {

@@ -1,0 +1,91 @@
+name: API CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Check Formatting (Prettier)
+        run: npx prettier --check ./src/
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Export Image
+        run: |
+          docker build -t my-api-image:latest .
+          docker save my-api-image:latest > api-image.tar
+
+      - name: Upload Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: api-image.tar
+          retention-days: 1
+
+  api-tests:
+    needs: build 
+    runs-on: ubuntu-latest
+    env:
+      MONGO_USER: ${{ secrets.MONGO_USER }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Image Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Load Docker Image
+        run: docker load < api-image.tar
+
+      - name: Start Services
+        run: docker compose -f docker-compose.test.yml up -d
+        env:
+          MONGO_USER: ${{ env.MONGO_USER }}
+          MONGO_PASSWORD: ${{ env.MONGO_PASSWORD }}
+          JWT_SECRET: ${{ env.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
+
+      - name: Run Newman Tests
+        run: |
+          npm install newman newman-reporter-htmlextra
+          mkdir -p newman
+          ./node_modules/.bin/newman run ./tests/collection.json \
+          -e ./tests/test.postman_environment.json \
+          --env-var "base_url=http://localhost:3000" \
+          --reporters cli,htmlextra \
+          --reporter-htmlextra-export ./newman/report.html
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: API-Test-Report
+          path: ./newman/report.html

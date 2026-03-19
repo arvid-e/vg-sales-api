@@ -1,0 +1,1699 @@
+{
+  "info": {
+    "_postman_id": "854dea1d-2d17-4e18-b4a2-e1dda7b9357b",
+    "name": "Games API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52481288"
+  },
+  "item": [
+    {
+      "name": "/auth/register",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const randomUser = \"user\" + pm.variables.replaceIn('{{$randomInt}}') + \"_user\";",
+              "const randomPass = \"Pass\" + pm.variables.replaceIn('{{$randomInt}}') + \"!\";",
+              "",
+              "",
+              "pm.environment.set(\"test_username\", randomUser);",
+              "pm.environment.set(\"test_password\", randomPass);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 (Created)\", () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response contains success message\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"success\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{test_username}}",
+              "type": "text",
+              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
+            },
+            {
+              "key": "password",
+              "value": "{{test_password}}",
+              "type": "text",
+              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/auth/login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Login successful\", () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"JWT token is returned\", () => {",
+              "    pm.expect(jsonData.data.token).to.be.a('string');",
+              "});",
+              "",
+              "pm.environment.set(\"token\", jsonData.data.token);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{test_username}}",
+              "type": "text",
+              "uuid": "7b7b5c30-de96-4905-ad35-6b921152821b"
+            },
+            {
+              "key": "password",
+              "value": "{{test_password}}",
+              "type": "text",
+              "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/auth/login - Invalid username",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid username or password\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{test_username}}123",
+              "type": "text",
+              "uuid": "7b7b5c30-de96-4905-ad35-6b921152821b"
+            },
+            {
+              "key": "password",
+              "value": "{{test_password}}",
+              "type": "text",
+              "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/auth/login - Invalid password",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid username or password\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{test_username}}",
+              "type": "text",
+              "uuid": "7b7b5c30-de96-4905-ad35-6b921152821b"
+            },
+            {
+              "key": "password",
+              "value": "{{test_password}}123",
+              "type": "text",
+              "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Root contains pagination links\", () => {",
+              "    pm.expect(jsonData.links).to.be.an('array');",
+              "    ",
+              "    const relations = jsonData.links.map(l => l.rel);",
+              "    pm.expect(relations).to.include.members(['self', 'first', 'last', 'next']);",
+              "});",
+              "",
+              "pm.test(\"Next page link points to page 2\", () => {",
+              "    const nextLink = jsonData.links.find(l => l.rel === 'next');",
+              "    pm.expect(nextLink.href).to.include(\"page=2\");",
+              "});",
+              "",
+              "pm.test(\"Each game contains individual HATEOAS links\", () => {",
+              "    jsonData.data.forEach((game, index) => {",
+              "        pm.expect(game.links, `Game at index ${index} is missing links`).to.be.an('array');",
+              "        ",
+              "        const selfLink = game.links.find(l => l.rel === 'self');",
+              "        const allGamesLink = game.links.find(l => l.rel === 'all-games');",
+              "        ",
+              "        pm.expect(selfLink.method).to.equal(\"GET\");",
+              "        pm.expect(selfLink.href).to.include(game.gameId);",
+              "        pm.expect(allGamesLink.rel).to.equal(\"all-games\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Game objects have correct data types\", () => {",
+              "    const game = jsonData.data[0];",
+              "    pm.expect(game.name).to.be.a('string');",
+              "    pm.expect(game.rank).to.be.a('number');",
+              "    pm.expect(game.year).to.be.a('number');",
+              "    pm.expect(game.sales).to.be.an('object');",
+              "    pm.expect(game.sales.global).to.be.a('number');",
+              "});",
+              "",
+              "pm.test(\"Nested Platform and Publisher objects are valid\", () => {",
+              "    jsonData.data.forEach((game) => {",
+              "        pm.expect(game.platform.name).to.not.be.null;",
+              "        pm.expect(game.publisher.name).to.not.be.null;",
+              "        pm.expect(game.platform.platformId).to.be.a('string');",
+              "        pm.expect(game.publisher.publisherId).to.be.a('string');",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Pagination metadata is correct\", () => {",
+              "    pm.expect(jsonData.count).to.equal(jsonData.data.length);",
+              "    pm.expect(jsonData.total).to.be.a('number');",
+              "    pm.expect(jsonData.totalPages).to.be.at.least(1);",
+              "    pm.expect(jsonData.currentPage).to.equal(1);",
+              "});",
+              "",
+              "pm.test(\"Response time is under 500ms\", () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});",
+              "",
+              "if (jsonData.data && jsonData.data.length > 0) {",
+              "    const firstGame = jsonData.data[0];",
+              "    ",
+              "    pm.environment.set(\"active_game_id\", firstGame.gameId);",
+              "    ",
+              "    const selfLink = firstGame.links.find(l => l.rel === 'self');",
+              "    ",
+              "    if (selfLink) {",
+              "        pm.environment.set(\"game_self_url\", selfLink.href);",
+              "    }",
+              "}",
+              "",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MzQ21c",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "id",
+              "value": "{{game_id}}",
+              "type": "text",
+              "uuid": "ac7dc0cd-506e-450a-9272-3adadcbfcc1e",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/games",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Filter",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", () => {",
+              "    pm.response.to.have.status(200); ",
+              "});",
+              "",
+              "pm.test(\"Filters applied correctly\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    jsonData.data.forEach(game => {",
+              "        pm.expect(game.publisher.name).to.eql(\"Nintendo\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Results are sorted by Rank\", () => {",
+              "    const data = pm.response.json().data;",
+              "    if (data.length > 1) {",
+              "        pm.expect(data[0].rank).to.be.below(data[1].rank);",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games?limit=10&publisher=nintendo",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "publisher",
+              "value": "nintendo"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games/:id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON with success status\", () => {",
+              "    pm.expect(jsonData.status).to.equal(\"success\");",
+              "    pm.expect(jsonData.data).to.be.an('object');",
+              "});",
+              "",
+              "pm.test(\"Returned Game ID matches the request\", () => {",
+              "    pm.expect(jsonData.data.gameId).to.equal(pm.environment.get(\"active_game_id\"));",
+              "});",
+              "",
+              "pm.test(\"Game has required fields and valid data types\", () => {",
+              "    const game = jsonData.data;",
+              "    pm.expect(game.name).to.be.a('string');",
+              "    pm.expect(game.rank).to.be.a('number');",
+              "    pm.expect(game.sales).to.be.an('object');",
+              "    pm.expect(game.sales.global).to.be.a('number');",
+              "});",
+              "",
+              "pm.test(\"Resource contains HATEOAS links\", () => {",
+              "    pm.expect(jsonData.data.links).to.be.an('array');",
+              "    ",
+              "    const rels = jsonData.data.links.map(l => l.rel);",
+              "    pm.expect(rels).to.include(\"self\");",
+              "    pm.expect(rels).to.include(\"all-games\");",
+              "});",
+              "",
+              "pm.test(\"Self link is accurate\", () => {",
+              "    const selfLink = jsonData.data.links.find(l => l.rel === 'self');",
+              "    pm.expect(selfLink.href).to.include(pm.environment.get(\"active_game_id\"));",
+              "    pm.expect(selfLink.method).to.equal(\"GET\");",
+              "});",
+              "",
+              "pm.test(\"Platform and Publisher are fully resolved\", () => {",
+              "    pm.expect(jsonData.data.platform.name).to.not.be.undefined;",
+              "    pm.expect(jsonData.data.publisher.name).to.not.be.undefined;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzAzNzQ0NiwiZXhwIjoxNzgwODEzNDQ2fQ.Anc0b4bACaG78oed1-K1US0KA-UQ4SZ4cauabZLOG1c",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games/{{active_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{active_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games/:id - Not Found",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const chars = 'abcdef0123456789';",
+              "let fakeId = '';",
+              "for (let i = 0; i < 24; i++) {",
+              "    fakeId += chars.charAt(Math.floor(Math.random() * chars.length));",
+              "}",
+              "pm.environment.set(\"non_existent_id\", fakeId);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games/{{non_existent_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{non_existent_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games/:id - Invalid ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", () => {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid path\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games/{{active_game_id}}123",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{active_game_id}}123"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/platforms",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Root contains pagination links\", () => {",
+              "    pm.expect(jsonData.links).to.be.an('array');",
+              "    ",
+              "    const relations = jsonData.links.map(l => l.rel);",
+              "    pm.expect(relations).to.include.members(['self', 'first', 'last', 'next']);",
+              "});",
+              "",
+              "pm.test(\"Next page link points to page 2\", () => {",
+              "    const nextLink = jsonData.links.find(l => l.rel === 'next');",
+              "    pm.expect(nextLink.href).to.include(\"page=2\");",
+              "});",
+              "",
+              "pm.test(\"Each platform contains individual HATEOAS links\", () => {",
+              "    jsonData.data.forEach((platform, index) => {",
+              "        pm.expect(platform.links, `Platform at index ${index} is missing links`).to.be.an('array');",
+              "        ",
+              "        const selfLink = platform.links.find(l => l.rel === 'self');",
+              "        const allPlatformsLink = platform.links.find(l => l.rel === 'all-platforms');",
+              "        ",
+              "        pm.expect(selfLink.method).to.equal(\"GET\");",
+              "        pm.expect(selfLink.href).to.include(platform.platformId);",
+              "        pm.expect(allPlatformsLink.rel).to.equal(\"all-platforms\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Platform objects have correct data types\", () => {",
+              "    const platform = jsonData.data[0];",
+              "    pm.expect(platform.name).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Pagination metadata is correct\", () => {",
+              "    pm.expect(jsonData.count).to.equal(jsonData.data.length);",
+              "    pm.expect(jsonData.total).to.be.a('number');",
+              "    pm.expect(jsonData.totalPages).to.be.at.least(1);",
+              "    pm.expect(jsonData.currentPage).to.equal(1);",
+              "});",
+              "",
+              "if (jsonData.data && jsonData.data.length > 0) {",
+              "    const firstPlatform = jsonData.data[0];",
+              "    ",
+              "    pm.environment.set(\"active_platform_id\", firstPlatform.platformId);",
+              "    pm.environment.set(\"active_platform_name\", firstPlatform.name);",
+              "}",
+              "",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzA1MTg0MywiZXhwIjoxNzczMDczNDQzfQ.Aq7hCtQ7QU2gqj-EvDw70UZ-dFqJRibCLXNku1P0Bu4",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": []
+        },
+        "url": {
+          "raw": "{{base_url}}/platforms",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "platforms"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/platforms/:id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON with success status\", () => {",
+              "    pm.expect(jsonData.status).to.equal(\"success\");",
+              "    pm.expect(jsonData.data).to.be.an('object');",
+              "});",
+              "",
+              "pm.test(\"Returned Game ID matches the request\", () => {",
+              "    pm.expect(jsonData.data.platformId).to.equal(pm.environment.get(\"active_platform_id\"));",
+              "});",
+              "",
+              "pm.test(\"Platform has required fields and valid data types\", () => {",
+              "    const platform = jsonData.data;",
+              "    pm.expect(platform.name).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Resource contains HATEOAS links\", () => {",
+              "    pm.expect(jsonData.data.links).to.be.an('array');",
+              "    ",
+              "    const rels = jsonData.data.links.map(l => l.rel);",
+              "    pm.expect(rels).to.include(\"self\");",
+              "    pm.expect(rels).to.include(\"all-platforms\");",
+              "});",
+              "",
+              "pm.test(\"Self link is accurate\", () => {",
+              "    const selfLink = jsonData.data.links.find(l => l.rel === 'self');",
+              "    pm.expect(selfLink.href).to.include(pm.environment.get(\"active_platform_id\"));",
+              "    pm.expect(selfLink.method).to.equal(\"GET\");",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/platforms/{{active_platform_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "platforms",
+            "{{active_platform_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/platforms/:id - Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/platforms/{{non_existent_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "platforms",
+            "{{non_existent_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/platforms/:id - Invalid ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", () => {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid path\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/platforms/{{non_existent_id}}123",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "platforms",
+            "{{non_existent_id}}123"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/publisher",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Root contains pagination links\", () => {",
+              "    pm.expect(jsonData.links).to.be.an('array');",
+              "    ",
+              "    const relations = jsonData.links.map(l => l.rel);",
+              "    pm.expect(relations).to.include.members(['self', 'first', 'last', 'next']);",
+              "});",
+              "",
+              "pm.test(\"Next page link points to page 2\", () => {",
+              "    const nextLink = jsonData.links.find(l => l.rel === 'next');",
+              "    pm.expect(nextLink.href).to.include(\"page=2\");",
+              "});",
+              "",
+              "pm.test(\"Each publisher contains individual HATEOAS links\", () => {",
+              "    jsonData.data.forEach((publisher, index) => {",
+              "        pm.expect(publisher.links, `Publisher at index ${index} is missing links`).to.be.an('array');",
+              "        ",
+              "        const selfLink = publisher.links.find(l => l.rel === 'self');",
+              "        const allPublishersLink = publisher.links.find(l => l.rel === 'all-publishers');",
+              "        ",
+              "        pm.expect(selfLink.method).to.equal(\"GET\");",
+              "        pm.expect(selfLink.href).to.include(publisher.publisherId);",
+              "        pm.expect(allPublishersLink.rel).to.equal(\"all-publishers\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Publisher objects have correct data types\", () => {",
+              "    const publisher = jsonData.data[0];",
+              "    pm.expect(publisher.name).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Pagination metadata is correct\", () => {",
+              "    pm.expect(jsonData.count).to.equal(jsonData.data.length);",
+              "    pm.expect(jsonData.total).to.be.a('number');",
+              "    pm.expect(jsonData.totalPages).to.be.at.least(1);",
+              "    pm.expect(jsonData.currentPage).to.equal(1);",
+              "});",
+              "",
+              "if (jsonData.data && jsonData.data.length > 0) {",
+              "    const firstPublisher = jsonData.data[0];",
+              "    ",
+              "    pm.environment.set(\"active_publisher_id\", firstPublisher.publisherId);",
+              "    pm.environment.set(\"active_publisher_name\", firstPublisher.name);",
+              "}",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/publishers",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "publishers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/publishers/:id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 200\", () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON with success status\", () => {",
+              "    pm.expect(jsonData.status).to.equal(\"success\");",
+              "    pm.expect(jsonData.data).to.be.an('object');",
+              "});",
+              "",
+              "pm.test(\"Returned Publisher ID matches the request\", () => {",
+              "    pm.expect(jsonData.data.publisherId).to.equal(pm.environment.get(\"active_publisher_id\"));",
+              "});",
+              "",
+              "pm.test(\"Publisher has required fields and valid data types\", () => {",
+              "    const publisher = jsonData.data;",
+              "    pm.expect(publisher.name).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Resource contains HATEOAS links\", () => {",
+              "    pm.expect(jsonData.data.links).to.be.an('array');",
+              "    ",
+              "    const rels = jsonData.data.links.map(l => l.rel);",
+              "    pm.expect(rels).to.include(\"self\");",
+              "    pm.expect(rels).to.include(\"all-publishers\");",
+              "});",
+              "",
+              "pm.test(\"Self link is accurate\", () => {",
+              "    const selfLink = jsonData.data.links.find(l => l.rel === 'self');",
+              "    pm.expect(selfLink.href).to.include(pm.environment.get(\"active_publisher_id\"));",
+              "    pm.expect(selfLink.method).to.equal(\"GET\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/publishers/{{active_publisher_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "publishers",
+            "{{active_publisher_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/publishers/:id - Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/publishers/{{non_existent_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "publishers",
+            "{{non_existent_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/publishers/:id - Invalid ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", () => {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid path\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/publishers/{{non_existent_id}}123",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "publishers",
+            "{{non_existent_id}}123"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 201 Created\", () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Sales data was saved correctly\", () => {",
+              "    const sales = jsonData.data.sales;",
+              "    pm.expect(sales.na).to.equal(1.25);",
+              "    pm.expect(sales.global).to.equal(2.40);",
+              "});",
+              "",
+              "pm.test(\"Game ID was generated and transformed\", () => {",
+              "    pm.expect(jsonData.data.gameId).to.be.a('string');",
+              "    pm.expect(jsonData.data._id).to.be.undefined; ",
+              "});",
+              "",
+              "pm.environment.set(\"new_game_id\", jsonData.data.gameId);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"New Awesome Game\",\n    \"rank\": 16599,\n    \"year\": 2026,\n    \"genre\": \"Action\",\n    \"platform\": \"{{active_platform_id}}\",\n    \"publisher\":\"{{active_publisher_id}}\",\n    \"sales\": {\n        \"na\": 1.25,\n        \"eu\": 0.85,\n        \"jp\": 0.10,\n        \"other\": 0.20,\n        \"global\": 2.40\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/games",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Bad Request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", () => {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid input data\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "rank",
+              "value": "2",
+              "type": "text",
+              "uuid": "029b4f5f-d22d-4a1f-9d2e-23a34758c05f",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "Bruhs 2",
+              "type": "text",
+              "uuid": "aed7b800-963b-4828-83aa-6982a826ea91",
+              "disabled": true
+            },
+            {
+              "key": "platform",
+              "value": "{{platform_ps4}}",
+              "type": "text",
+              "uuid": "f372bef3-c533-4650-b605-823c25ebbd8c",
+              "disabled": true
+            },
+            {
+              "key": "publisher",
+              "value": "{{publisher_activision}}",
+              "type": "text",
+              "uuid": "8dc8867e-4852-48dd-86b1-4856e2fa7ff0",
+              "disabled": true
+            },
+            {
+              "key": "year",
+              "value": "1999",
+              "type": "text",
+              "uuid": "22476620-cb5f-4b3c-88cf-db37f9ca745f"
+            },
+            {
+              "key": "genre",
+              "value": "Genre",
+              "type": "text",
+              "uuid": "54da2485-ef38-4af6-8d55-1703b4db3252",
+              "disabled": true
+            },
+            {
+              "key": "sales",
+              "value": "Sales",
+              "type": "text",
+              "uuid": "debd24b3-3d60-4ec4-ac99-9805e28eaec2",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/games",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Unauthorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzEwNjEwMCwiZXhwIjoxNzczMTI3NzAwfQ.k8ADxX5GMCw_sp7oBdMhjfGPZb7z2_OfTtA6YwEhA7I",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "rank",
+              "value": "2",
+              "type": "text",
+              "uuid": "029b4f5f-d22d-4a1f-9d2e-23a34758c05f",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "Bruhs 2",
+              "type": "text",
+              "uuid": "aed7b800-963b-4828-83aa-6982a826ea91",
+              "disabled": true
+            },
+            {
+              "key": "platform",
+              "value": "{{platform_ps4}}",
+              "type": "text",
+              "uuid": "f372bef3-c533-4650-b605-823c25ebbd8c",
+              "disabled": true
+            },
+            {
+              "key": "publisher",
+              "value": "{{publisher_activision}}",
+              "type": "text",
+              "uuid": "8dc8867e-4852-48dd-86b1-4856e2fa7ff0",
+              "disabled": true
+            },
+            {
+              "key": "year",
+              "value": "1999",
+              "type": "text",
+              "uuid": "22476620-cb5f-4b3c-88cf-db37f9ca745f"
+            },
+            {
+              "key": "genre",
+              "value": "Genre",
+              "type": "text",
+              "uuid": "54da2485-ef38-4af6-8d55-1703b4db3252",
+              "disabled": true
+            },
+            {
+              "key": "sales",
+              "value": "Sales",
+              "type": "text",
+              "uuid": "debd24b3-3d60-4ec4-ac99-9805e28eaec2",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/games",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Update was successful\", () => {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(jsonData.data.name).to.equal(\"Wii Sports - Updated Edition\");",
+              "});",
+              "",
+              "pm.test(\"Response still contains populated data\", () => {",
+              "    pm.expect(jsonData.data.platform).to.be.an('object');",
+              "    pm.expect(jsonData.data.platform.name).to.not.be.undefined;",
+              "});",
+              "",
+              "pm.test(\"HATEOAS links are preserved after update\", () => {",
+              "    pm.expect(jsonData.data.links).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "_id",
+              "value": "2",
+              "type": "text",
+              "uuid": "029b4f5f-d22d-4a1f-9d2e-23a34758c05f",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "Wii Sports - Updated Edition",
+              "type": "text",
+              "uuid": "aed7b800-963b-4828-83aa-6982a826ea91"
+            },
+            {
+              "key": "platform",
+              "value": "{{platform_ps4}}",
+              "type": "text",
+              "uuid": "f372bef3-c533-4650-b605-823c25ebbd8c",
+              "disabled": true
+            },
+            {
+              "key": "publisher",
+              "value": "{{publisher_activision}}",
+              "type": "text",
+              "uuid": "8dc8867e-4852-48dd-86b1-4856e2fa7ff0",
+              "disabled": true
+            },
+            {
+              "key": "year",
+              "value": "1999",
+              "type": "text",
+              "uuid": "22476620-cb5f-4b3c-88cf-db37f9ca745f",
+              "disabled": true
+            },
+            {
+              "key": "genre",
+              "value": "Genre",
+              "type": "text",
+              "uuid": "54da2485-ef38-4af6-8d55-1703b4db3252",
+              "disabled": true
+            },
+            {
+              "key": "sales",
+              "value": "Sales",
+              "type": "text",
+              "uuid": "debd24b3-3d60-4ec4-ac99-9805e28eaec2",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{new_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Unauthorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}123",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "_id",
+              "value": "2",
+              "type": "text",
+              "uuid": "029b4f5f-d22d-4a1f-9d2e-23a34758c05f",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "Wii Sports - Updated Edition",
+              "type": "text",
+              "uuid": "aed7b800-963b-4828-83aa-6982a826ea91"
+            },
+            {
+              "key": "platform",
+              "value": "{{platform_ps4}}",
+              "type": "text",
+              "uuid": "f372bef3-c533-4650-b605-823c25ebbd8c",
+              "disabled": true
+            },
+            {
+              "key": "publisher",
+              "value": "{{publisher_activision}}",
+              "type": "text",
+              "uuid": "8dc8867e-4852-48dd-86b1-4856e2fa7ff0",
+              "disabled": true
+            },
+            {
+              "key": "year",
+              "value": "1999",
+              "type": "text",
+              "uuid": "22476620-cb5f-4b3c-88cf-db37f9ca745f",
+              "disabled": true
+            },
+            {
+              "key": "genre",
+              "value": "Genre",
+              "type": "text",
+              "uuid": "54da2485-ef38-4af6-8d55-1703b4db3252",
+              "disabled": true
+            },
+            {
+              "key": "sales",
+              "value": "Sales",
+              "type": "text",
+              "uuid": "debd24b3-3d60-4ec4-ac99-9805e28eaec2",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{new_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games/:id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status code is 204 or 200\", () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    pm.test(\"Response confirms deletion\", () => {",
+              "        pm.expect(jsonData.status).to.equal(\"success\");",
+              "        pm.expect(jsonData.message).to.include(\"deleted\");",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{new_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games/:id - Unauthorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", () => {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}123",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "games",
+            "{{new_game_id}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "game_id",
+      "value": ""
+    },
+    {
+      "key": "platform_ps4",
+      "value": ""
+    },
+    {
+      "key": "publisher_activision",
+      "value": ""
+    },
+    {
+      "key": "added_game_id",
+      "value": ""
+    },
+    {
+      "key": "game_deleted",
+      "value": ""
+    }
+  ]
+}
