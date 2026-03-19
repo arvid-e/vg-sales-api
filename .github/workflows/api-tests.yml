@@ -9,6 +9,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      MONGO_USER: ${{ secrets.MONGO_USER }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
       - name: Checkout Code
@@ -17,17 +21,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18' 
 
       - name: Start Services
         run: docker compose -f docker-compose.test.yml up -d --build
-        env:
-          MONGO_USER: ${{ secrets.MONGO_USER }}
-          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Wait for API
-        run: npx wait-on -v http://localhost:3000/health --timeout 60000
+      - name: Wait for API (Seeding + Boot)
+        run: npx wait-on -v http://127.0.0.1:3000/health --timeout 90000
 
       - name: Run Newman Tests
         run: |
@@ -39,4 +39,4 @@ jobs:
 
       - name: Stop Services
         if: always()
-        run: docker-compose -f docker-compose.test.yml down
+        run: docker compose -f docker-compose.test.yml down
