@@ -19,7 +19,7 @@ export class UserController {
 
     return res.status(201).json({
       status: 'success',
-      data: user?.toJSON(),
+      data: user,
       token,
     });
   });
