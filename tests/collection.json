@@ -39,6 +39,10 @@
               "    pm.expect(jsonData.status).to.eql(\"success\");",
               "});",
               "",
+              "pm.test(\"JWT token is returned\", () => {",
+              "    pm.expect(jsonData.token).to.be.a('string');",
+              "});",
+              "",
               "const userId = jsonData.data.userId;",
               "pm.environment.set(\"test_user_id\", userId);",
               ""
