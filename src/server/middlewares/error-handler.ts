@@ -32,6 +32,6 @@ export const globalErrorHandler = (
 
   return res.status(statusCode).json({
     status: 'error',
-    error: message, 
+    error: message,
   });
 };
