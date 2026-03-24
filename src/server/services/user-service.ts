@@ -3,12 +3,10 @@ import type { SignOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { AuthError } from '../errors/auth-error.js';
 import { BadRequestError } from '../errors/bad-request-error.js';
+import { NotFoundError } from '../errors/not-found-error.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
-import type {
-  IAuthResponse,
-  ICredentials,
-} from '../interfaces/user/user.js';
+import type { IAuthResponse, ICredentials } from '../interfaces/user/user.js';
 
 export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
@@ -33,7 +31,13 @@ export class UserService implements IUserService {
   };
 
   deleteUser = async (userId: string): Promise<boolean> => {
-    return await this.userRepo.deleteUserById(userId);
+    const userDeleted = await this.userRepo.deleteUserById(userId);
+
+    if (!userDeleted) {
+      throw new NotFoundError('User');
+    }
+
+    return userDeleted;
   };
 
   loginUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
