@@ -1,7 +1,7 @@
-import type { IAuthResponse, IUser, IUserDocument } from './user.js';
+import type { IAuthResponse, ICredentials } from './user.js';
 
 export interface IUserService {
-  createUser(user: IUser): Promise<IUserDocument | null>;
+  createUser(credentials: ICredentials): Promise<IAuthResponse>;
   deleteUser(id: string): Promise<boolean>;
-  loginUser(authPayload: IUser): Promise<IAuthResponse>;
+  loginUser(credentials: ICredentials): Promise<IAuthResponse>;
 }

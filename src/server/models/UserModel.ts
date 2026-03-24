@@ -29,6 +29,7 @@ const userSchema = new Schema<IUserDocument>(
         delete ret.__v;
         delete ret.createdAt;
         delete ret.updatedAt;
+        delete ret.password;
         return ret;
       },
     },

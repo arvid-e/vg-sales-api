@@ -6,18 +6,18 @@ interface UserParams {
   id: string;
 }
 
-
 export class UserController {
   constructor(private userService: IUserService) {}
 
   createUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const user = await this.userService.createUser({ username, password });
+    const { user, token } = await this.userService.createUser({ username, password });
 
     return res.status(201).json({
       status: 'success',
       data: user?.toJSON(),
+      token
     });
   });
 
@@ -35,11 +35,12 @@ export class UserController {
   loginUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const user = await this.userService.loginUser({ username, password });
+    const { user, token } = await this.userService.loginUser({ username, password });
 
     return res.status(200).json({
       status: 'success',
       data: user,
+      token
     });
   });
 }

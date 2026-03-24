@@ -7,30 +7,37 @@ import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import type {
   IAuthResponse,
-  IUser,
-  IUserDocument,
+  ICredentials,
 } from '../interfaces/user/user.js';
 
 export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
 
-  createUser = async (user: IUser): Promise<IUserDocument | null> => {
-    if (user.password == null || user.password.length < 10) {
+  createUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
+    if (credentials.password == null || credentials.password.length < 10) {
       throw new BadRequestError('Password must be at least 10 characters long');
     }
 
-    const hashedPassword = await bcrypt.hash(user.password, 12);
-    const newUser = { ...user, password: hashedPassword };
+    const hashedPassword = await bcrypt.hash(credentials.password, 12);
+    const userPayload = { ...credentials, password: hashedPassword };
 
-    return await this.userRepo.createUser(newUser);
+    const user = await this.userRepo.createUser(userPayload);
+
+    if (user == null) {
+      throw new Error('User could not be created');
+    }
+
+    const token = await this.generateToken(user._id.toString());
+
+    return { user, token };
   };
 
   deleteUser = async (userId: string): Promise<boolean> => {
     return await this.userRepo.deleteUserById(userId);
   };
 
-  loginUser = async (authPayload: IUser): Promise<IAuthResponse> => {
-    const { username, password } = authPayload;
+  loginUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
+    const { username, password } = credentials;
 
     const user = await this.userRepo.findUserByUsername(username);
 
@@ -45,6 +52,12 @@ export class UserService implements IUserService {
       throw new AuthError('Invalid username or password');
     }
 
+    const token = await this.generateToken(user._id.toString());
+
+    return { user, token };
+  };
+
+  private generateToken = async (userId: string): Promise<string> => {
     const secret = process.env.JWT_SECRET;
     const expires = process.env.JWT_EXPIRES_IN;
 
@@ -55,11 +68,7 @@ export class UserService implements IUserService {
     const jwtOptions: SignOptions = {
       expiresIn: expires as any,
     };
-    const token = jwt.sign({ id: user._id }, secret, jwtOptions);
 
-    return {
-      user,
-      token,
-    };
+    return jwt.sign({ id: userId }, secret, jwtOptions);
   };
 }
