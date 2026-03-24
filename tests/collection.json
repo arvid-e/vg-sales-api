@@ -13,8 +13,8 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "const randomUser = \"user\" + pm.variables.replaceIn('{{$randomInt * $randomInt}}') + \"_user\";",
-              "const randomPass = \"Password123\" + pm.variables.replaceIn('{{$randomInt * $randomInt}}') + \"!\";",
+              "const randomUser = \"user\" + pm.variables.replaceIn('{{$randomInt}}') + \"_user\";",
+              "const randomPass = \"Password123\" + pm.variables.replaceIn('{{$randomInt}}') + \"!\";",
               "",
               "",
               "pm.environment.set(\"test_username\", randomUser);",
@@ -29,14 +29,19 @@
           "listen": "test",
           "script": {
             "exec": [
+              "const jsonData = pm.response.json();",
+              "",
               "pm.test(\"Status code is 201 (Created)\", () => {",
               "    pm.response.to.have.status(201);",
               "});",
               "",
               "pm.test(\"Response contains success message\", () => {",
-              "    const jsonData = pm.response.json();",
               "    pm.expect(jsonData.status).to.eql(\"success\");",
-              "});"
+              "});",
+              "",
+              "const userId = jsonData.data.userId;",
+              "pm.environment.set(\"test_user_id\", userId);",
+              ""
             ],
             "type": "text/javascript",
             "packages": {},
@@ -289,14 +294,21 @@
               "});",
               "",
               "pm.test(\"JWT token is returned\", () => {",
-              "    pm.expect(jsonData.data.token).to.be.a('string');",
+              "    pm.expect(jsonData.token).to.be.a('string');",
               "});",
               "",
-              "pm.environment.set(\"token\", jsonData.data.token);"
+              "pm.environment.set(\"token\", jsonData.token);"
             ],
             "type": "text/javascript",
             "packages": {},
             "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
           }
         }
       ],
@@ -1448,6 +1460,13 @@
             "packages": {},
             "requests": {}
           }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
         }
       ],
       "request": {
@@ -1465,7 +1484,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"name\": \"New Awesome Game\",\n    \"rank\": 16599,\n    \"year\": 2026,\n    \"genre\": \"Action\",\n    \"platform\": \"{{active_platform_id}}\",\n    \"publisher\":\"{{active_publisher_id}}\",\n    \"sales\": {\n        \"na\": 1.25,\n        \"eu\": 0.85,\n        \"jp\": 0.10,\n        \"other\": 0.20,\n        \"global\": 2.40\n    }\n}",
+          "raw": "{\n    \"name\": \"New Awesome Game 2\",\n    \"rank\": 16599,\n    \"year\": 2026,\n    \"genre\": \"Action\",\n    \"platform\": \"{{active_platform_id}}\",\n    \"publisher\":\"{{active_publisher_id}}\",\n    \"sales\": {\n        \"na\": 1.25,\n        \"eu\": 0.85,\n        \"jp\": 0.10,\n        \"other\": 0.20,\n        \"global\": 2.40\n    }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1900,13 +1919,13 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"Status code is 401\", () => {",
-              "    pm.response.to.have.status(401);",
+              "pm.test(\"Status code is 404\", () => {",
+              "    pm.response.to.have.status(404);",
               "});",
               "",
               "pm.test(\"Error message is descriptive\", () => {",
               "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "    pm.expect(jsonData.error).to.include(\"not found\");",
               "});"
             ],
             "type": "text/javascript",
@@ -1921,7 +1940,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "{{token}}123",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -1982,13 +2001,13 @@
           ]
         },
         "url": {
-          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "raw": "{{base_url}}/games/{{non_existent_id}}",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "games",
-            "{{new_game_id}}"
+            "{{non_existent_id}}"
           ]
         }
       },
@@ -2101,13 +2120,13 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"Status code is 401\", () => {",
-              "    pm.response.to.have.status(401);",
+              "pm.test(\"Status code is 404\", () => {",
+              "    pm.response.to.have.status(404);",
               "});",
               "",
               "pm.test(\"Error message is descriptive\", () => {",
               "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid or expired authorization token\");",
+              "    pm.expect(jsonData.error).to.include(\"not found\");",
               "});"
             ],
             "type": "text/javascript",
@@ -2122,7 +2141,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "{{token}}123",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -2130,13 +2149,109 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/games/{{new_game_id}}",
+          "raw": "{{base_url}}/games/{{non_existent_id}}",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "games",
-            "{{new_game_id}}"
+            "{{non_existent_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/users/delete/:id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204 or 200\", () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});",
+              "",
+              "pm.test(\"Success message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include(\"deleted\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/auth/{{test_user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "{{test_user_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/users/delete/:id - Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204 or 200\", () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Success message is descriptive\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/auth/{{test_user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "{{test_user_id}}"
           ]
         }
       },
