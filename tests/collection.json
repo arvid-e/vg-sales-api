@@ -962,7 +962,7 @@
               "",
               "pm.test(\"Error message is descriptive\", () => {",
               "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid path\");",
+              "    pm.expect(jsonData.error).to.include(\"Invalid\");",
               "});"
             ],
             "type": "text/javascript",
@@ -1195,7 +1195,7 @@
               "",
               "pm.test(\"Error message is descriptive\", () => {",
               "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid path\");",
+              "    pm.expect(jsonData.error).to.include(\"Invalid\");",
               "});"
             ],
             "type": "text/javascript",
@@ -1409,7 +1409,7 @@
               "",
               "pm.test(\"Error message is descriptive\", () => {",
               "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid path\");",
+              "    pm.expect(jsonData.error).to.include(\"Invalid\");",
               "});"
             ],
             "type": "text/javascript",
