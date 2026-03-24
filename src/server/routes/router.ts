@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import authRoutes from './auth-routes.js';
 import gameRoutes from './game-routes.js';
 import platformRoutes from './platform-routes.js';
 import publisherRoutes from './publisher-routes.js';
@@ -9,6 +10,7 @@ const router = Router();
 router.use('/games', gameRoutes);
 router.use('/platforms', platformRoutes);
 router.use('/publishers', publisherRoutes);
-router.use('/auth', userRoutes);
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
 
 export default router;
