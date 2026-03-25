@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: VG Sales API
-  description: API for managing video game data and user accounts. Developed for Linnaeus University.
+  description: API for managing video game data. Developed for Linnaeus University.
   version: 1.0.0
 
 servers:
@@ -19,7 +19,7 @@ components:
     User:
       type: object
       properties:
-        _id:
+        userId:
           type: string
           example: 65e1f1...
         username:
@@ -34,6 +34,8 @@ components:
         title:
           type: string
         platform:
+          type: string
+        publisher:
           type: string
         genre:
           type: string
@@ -53,7 +55,7 @@ paths:
               type: object
               required: [username, password]
               properties:
-                username: { type: string }
+                username: { type: string, minLength: 3 }
                 password: { type: string, minLength: 10 }
       responses:
         201:
@@ -67,7 +69,7 @@ paths:
                   token: { type: string }
                   data: { $ref: '#/components/schemas/User' }
         400:
-          description: Invalid input (e.g., password too short)
+          description: Invalid input (e.g., invalid password)
 
   /auth/login:
     post:
@@ -107,6 +109,131 @@ paths:
       responses:
         200:
           description: List of games
+    post:
+      summary: Create game
+      tags: [Games]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game' 
+      responses:
+        201:
+          description: Game created successfully
+  /games/{id}:
+    get:
+      summary: Get one game
+      tags: [Games]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Game found successfully
+        400:
+          description: Bad request
+        404:
+          description: Game not found
+    patch:
+      summary: Update one game
+      tags: [Games]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Game updated successfully
+        400:
+          description: Bad request
+        404:
+          description: Game not found
+    delete:
+      summary: Delete one game
+      tags: [Games]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        204:
+          description: Game deleted successfully
+        400:
+          description: Bad request
+        404:
+          description: Game not found
+
+  /platforms:
+    get:
+      summary: Get all platforms (Paginated)
+      tags: [Platforms]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        200:
+          description: List of platforms
+  /platforms/{id}:
+    get:
+      summary: Get one platform
+      tags: [Platforms]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Platform found successfully
+        400:
+          description: Bad request
+        404:
+          description: Platform not found
+
+  /publishers:
+    get:
+      summary: Get all publishers (Paginated)
+      tags: [Publishers]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        200:
+          description: List of publishers
+  /publishers/{id}:
+    get:
+      summary: Get one publisher
+      tags: [Publishers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Publisher found successfully
+        400:
+          description: Bad request
+        404:
+          description: Publisher not found
     
   /users/{id}:
     delete:
