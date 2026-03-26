@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
@@ -75,6 +75,23 @@ export class GameService implements IGameService {
   };
 
   public createGame = async (game: IGame): Promise<IGameDocument | null> => {
+    const [platform, publisher] = await Promise.all([
+      game.platform
+        ? this.platformRepo.getById(game.platform.toString())
+        : Promise.resolve(true),
+      game.publisher
+        ? this.publisherRepo.getById(game.publisher.toString())
+        : Promise.resolve(true),
+    ]);
+
+    if (!platform) {
+      throw new NotFoundError('Platform');
+    }
+
+    if (!publisher) {
+      throw new NotFoundError('Publisher');
+    } 
+
     return await this.gameRepo.createGame(game);
   };
 }
