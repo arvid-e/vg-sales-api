@@ -82,7 +82,8 @@
             "auth",
             "register"
           ]
-        }
+        },
+        "description": "Registers a new user account and returns a JWT token that can be used to authenticate subsequent requests.\n\n### Purpose\n\nUse this endpoint to create (register) a new user with a `username` + `password`.\n\n### Request\n\n**Method:** `POST`  \n**URL:** `{{base_url}}/auth/register`\n\n#### Body (x-www-form-urlencoded)\n\nRequired fields:\n\n| Field | Type | Required | Example |\n| --- | --- | --- | --- |\n| `username` | string | Yes | `{{test_username}}` |\n| `password` | string | Yes | `{{test_password}}` |\n\n#### Variable usage\n\n- `{{base_url}}` — Base API URL (set in the active environment, e.g. **Local**)\n    \n- `{{test_username}}`, `{{test_password}}` — Credentials used for registration\n    \n    - In this collection, these are typically generated dynamically by the **pre-request script**.\n        \n\n#### Example request (x-www-form-urlencoded)\n\n``` http\nPOST {{base_url}}/auth/register\nContent-Type: application/x-www-form-urlencoded\nusername={{test_username}}&password={{test_password}}\n\n ```\n\n### Expected response\n\n**Status:** `201 Created`\n\n#### Response body shape\n\n``` json\n{\n  \"status\": \"success\",\n  \"data\": {\n    \"username\": \"<string>\",\n    \"userId\": \"<string>\"\n  },\n  \"token\": \"<jwt>\"\n}\n\n ```\n\n#### Example response\n\n``` json\n{\n  \"status\": \"success\",\n  \"data\": {\n    \"username\": \"user2_user\",\n    \"userId\": \"69c1daf9c5cad527f93f38a1\"\n  },\n  \"token\": \"<jwt>\"\n}\n\n ```\n\n### Side effects / tests\n\n- The post-response tests extract `data.userId` and set it as an environment variable:\n    - `test_user_id =`\n        \n\n> Note: This request is designed for test automation—user credentials may be generated per-run via scripting."
       },
       "response": []
     },
@@ -1081,6 +1082,93 @@
       "response": []
     },
     {
+      "name": "/platforms - By name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Platform contains individual HATEOAS links\", () => {",
+              "    jsonData.data.forEach((platform, index) => {",
+              "        pm.expect(platform.links, `Platform at index ${index} is missing links`).to.be.an('array');",
+              "        ",
+              "        const selfLink = platform.links.find(l => l.rel === 'self');",
+              "        const allPlatformsLink = platform.links.find(l => l.rel === 'all-platforms');",
+              "        ",
+              "        pm.expect(selfLink.method).to.equal(\"GET\");",
+              "        pm.expect(selfLink.href).to.include(platform.platformId);",
+              "        pm.expect(allPlatformsLink.rel).to.equal(\"all-platforms\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Platform objects have correct data types\", () => {",
+              "    const platform = jsonData.data[0];",
+              "    pm.expect(platform.name).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Pagination metadata is correct\", () => {",
+              "    pm.expect(jsonData.count).to.equal(jsonData.data.length);",
+              "    pm.expect(jsonData.total).to.be.a('number');",
+              "    pm.expect(jsonData.totalPages).to.be.at.least(1);",
+              "    pm.expect(jsonData.currentPage).to.equal(1);",
+              "});",
+              "",
+              "if (jsonData.data && jsonData.data.length > 0) {",
+              "    const firstPlatform = jsonData.data[0];",
+              "    ",
+              "    pm.environment.set(\"active_platform_id\", firstPlatform.platformId);",
+              "    pm.environment.set(\"active_platform_name\", firstPlatform.name);",
+              "}",
+              "",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzA1MTg0MywiZXhwIjoxNzczMDczNDQzfQ.Aq7hCtQ7QU2gqj-EvDw70UZ-dFqJRibCLXNku1P0Bu4",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": []
+        },
+        "url": {
+          "raw": "{{base_url}}/platforms?name=wii",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "platforms"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "wii"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "/platforms/:id",
       "event": [
         {
@@ -1290,6 +1378,75 @@
           ],
           "path": [
             "publishers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/publisher - By name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Publisher contains individual HATEOAS links\", () => {",
+              "    jsonData.data.forEach((publisher, index) => {",
+              "        pm.expect(publisher.links, `Publisher at index ${index} is missing links`).to.be.an('array');",
+              "        ",
+              "        const selfLink = publisher.links.find(l => l.rel === 'self');",
+              "        const allPublishersLink = publisher.links.find(l => l.rel === 'all-publishers');",
+              "        ",
+              "        pm.expect(selfLink.method).to.equal(\"GET\");",
+              "        pm.expect(selfLink.href).to.include(publisher.publisherId);",
+              "        pm.expect(allPublishersLink.rel).to.equal(\"all-publishers\");",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Publisher objects have correct data types\", () => {",
+              "    const publisher = jsonData.data[0];",
+              "    pm.expect(publisher.name).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Pagination metadata is correct\", () => {",
+              "    pm.expect(jsonData.count).to.equal(jsonData.data.length);",
+              "    pm.expect(jsonData.total).to.be.a('number');",
+              "    pm.expect(jsonData.totalPages).to.be.at.least(1);",
+              "    pm.expect(jsonData.currentPage).to.equal(1);",
+              "});",
+              "",
+              "if (jsonData.data && jsonData.data.length > 0) {",
+              "    const firstPublisher = jsonData.data[0];",
+              "    ",
+              "    pm.environment.set(\"active_publisher_id\", firstPublisher.publisherId);",
+              "    pm.environment.set(\"active_publisher_name\", firstPublisher.name);",
+              "}",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/publishers?name=nintendo",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "publishers"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "nintendo"
+            }
           ]
         }
       },
@@ -2201,12 +2358,12 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/auth/{{test_user_id}}",
+          "raw": "{{base_url}}/users/{{test_user_id}}",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "auth",
+            "users",
             "{{test_user_id}}"
           ]
         }
@@ -2249,12 +2406,12 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/auth/{{test_user_id}}",
+          "raw": "{{base_url}}/users/{{test_user_id}}",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "auth",
+            "users",
             "{{test_user_id}}"
           ]
         }
