@@ -33,13 +33,13 @@ export class UserController {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const links = [
       { rel: 'register', method: 'POST', href: `${baseUrl}/users` },
-      { rel: 'all-games', method: 'GET', href: `${baseUrl}/games` }
+      { rel: 'all-games', method: 'GET', href: `${baseUrl}/games` },
     ];
 
     return res.status(200).json({
       status: 'success',
       message: 'User deleted successfully',
-      links
+      links,
     });
   });
 

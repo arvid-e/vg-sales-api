@@ -2,7 +2,7 @@ name: API CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, fix/api-tests-connection-failure ]
 
 jobs:
   lint:
@@ -83,9 +83,17 @@ jobs:
           --reporters cli,htmlextra \
           --reporter-htmlextra-export ./newman/report.html
 
+      - name: Debug API Logs
+        if: failure()
+        run: docker compose -f docker-compose.test.yml logs api
+
+      - name: Debug DB Logs
+        if: failure()
+        run: docker compose -f docker-compose.test.yml logs mongodb
+
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: API-Test-Report
-          path: ./newman/report.html
+          path: ./newman/report.html    
