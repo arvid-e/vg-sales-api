@@ -1,4 +1,4 @@
-# Build
+# Build Stage
 FROM node:18-alpine AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 RUN npx tsc
 
-# Run
+# Run Stage
 FROM node:18-alpine
 WORKDIR /usr/src/app
 
@@ -17,6 +17,7 @@ RUN npm ci --only=production
 
 COPY --from=builder /usr/src/app/dist ./dist
 COPY data ./data
+COPY --from=builder /usr/src/app/swagger.yml ./swagger.yml
 
 EXPOSE 3000
 
