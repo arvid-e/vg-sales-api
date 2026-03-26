@@ -24,10 +24,10 @@ export class UserService implements IUserService {
     if (user == null) {
       throw new Error('User could not be created');
     }
-
+    const userId = user._id.toString();
     const token = await this.generateToken(user._id.toString());
 
-    return { user, token };
+    return { user, token, userId };
   };
 
   deleteUser = async (userId: string): Promise<boolean> => {
@@ -55,10 +55,10 @@ export class UserService implements IUserService {
     if (!match) {
       throw new AuthError('Invalid username or password');
     }
-
+    const userId = user._id.toString();
     const token = await this.generateToken(user._id.toString());
 
-    return { user, token };
+    return { user, token, userId };
   };
 
   private generateToken = async (userId: string): Promise<string> => {

@@ -16,6 +16,7 @@ export interface IUserDocument extends IUser, Document {}
 export interface IAuthResponse {
   user: IUserDocument;
   token: string;
+  userId: string;
 }
 
 export interface UserRequest extends Request {
