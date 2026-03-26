@@ -13,13 +13,14 @@ export class PlatformService implements IPlatformService {
     platformQuery: IPlatformQuery
   ): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
     const { page = 1, limit = 20, query = {} } = platformQuery;
+    const mongoQuery: any = {};
 
     if (query.name != null) {
       const escapedName = query.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      query.name = { $regex: new RegExp(escapedName, 'i') };
+      mongoQuery.name = { $regex: new RegExp(escapedName, 'i') };
     }
 
-    return await this.platformRepo.getAllPlatforms({ page, limit, query });
+    return await this.platformRepo.getAllPlatforms({ page, limit, query: mongoQuery });
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {

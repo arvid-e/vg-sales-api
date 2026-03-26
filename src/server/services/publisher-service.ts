@@ -13,13 +13,14 @@ export class PublisherService implements IPublisherService {
     publisherQuery: IPublisherQuery
   ): Promise<{ publishers: IPublisherDocument[]; total: number }> => {
     const { page = 1, limit = 20, query = {} } = publisherQuery;
+    const mongoQuery: any = {};
 
     if (query.name != null) {
       const escapedName = query.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      query.name = { $regex: new RegExp(escapedName, 'i') };
+      mongoQuery.name = { $regex: new RegExp(escapedName, 'i') };
     }
 
-    return await this.publisherRepo.getAllPublishers({ page, limit, query });
+    return await this.publisherRepo.getAllPublishers({ page, limit, query: mongoQuery });
   };
 
   getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {
