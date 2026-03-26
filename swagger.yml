@@ -28,15 +28,54 @@ components:
     
     Game:
       type: object
+      description: >
+        **NOTE:** To create a game, you must replace the platform and publisher 
+        IDs in the example below with real IDs from the /platforms and /publishers endpoints.
       properties:
+        rank:
+          type: number
+          example: 1
         name:
           type: string
+          example: "Wii Sports"
+        year:
+          type: number
+          example: 2006 
         platform:
           type: string
+          description: >
+            The unique ID of the platform. 
+            Step 1: Call GET /platforms to find a valid ID.
+            Step 2: Paste that ID here.
+          example: "000000000000000000000000"
         publisher:
           type: string
+          description: >
+            The unique ID of the publisher. 
+            Step 1: Call GET /publishers to find a valid ID.
+            Step 2: Paste that ID here.
+          example: "000000000000000000000000"
         genre:
           type: string
+          example: "Sports"
+        sales:
+          type: object
+          properties:
+            na:
+              type: number
+              example: 10.5
+            eu:
+              type: number
+              example: 5.2
+            jp: 
+              type: number
+              example: 4.1
+            other: 
+              type: number
+              example: 2.3
+            global: 
+              type: number
+              example: 19.7
 
 paths:
   /auth/register:
@@ -163,6 +202,8 @@ paths:
           description: Game updated successfully
         400:
           description: Bad request
+        401:
+          description: Unauthorized
         404:
           description: Game not found
     delete:
@@ -180,6 +221,8 @@ paths:
           description: Game deleted successfully
         400:
           description: Bad request
+        401:
+          description: Unauthorized
         404:
           description: Game not found
 
@@ -265,5 +308,9 @@ paths:
       responses:
         204:
           description: User deleted successfully
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
         404:
           description: User not found

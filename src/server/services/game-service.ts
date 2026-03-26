@@ -90,7 +90,7 @@ export class GameService implements IGameService {
 
     if (!publisher) {
       throw new NotFoundError('Publisher');
-    } 
+    }
 
     return await this.gameRepo.createGame(game);
   };

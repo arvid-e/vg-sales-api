@@ -20,7 +20,11 @@ export class PublisherService implements IPublisherService {
       mongoQuery.name = { $regex: new RegExp(escapedName, 'i') };
     }
 
-    return await this.publisherRepo.getAllPublishers({ page, limit, query: mongoQuery });
+    return await this.publisherRepo.getAllPublishers({
+      page,
+      limit,
+      query: mongoQuery,
+    });
   };
 
   getPublisherById = async (id: string): Promise<IPublisherDocument | null> => {

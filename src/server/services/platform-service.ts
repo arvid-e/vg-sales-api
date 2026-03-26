@@ -20,7 +20,11 @@ export class PlatformService implements IPlatformService {
       mongoQuery.name = { $regex: new RegExp(escapedName, 'i') };
     }
 
-    return await this.platformRepo.getAllPlatforms({ page, limit, query: mongoQuery });
+    return await this.platformRepo.getAllPlatforms({
+      page,
+      limit,
+      query: mongoQuery,
+    });
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {

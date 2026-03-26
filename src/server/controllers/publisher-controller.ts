@@ -20,11 +20,12 @@ export class PublisherController {
       const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
       const publisherName = typeof name === 'string' ? name : undefined;
 
-      const { publishers, total } = await this.publisherService.getAllPublishers({
-        page: parsedPage,
-        limit: parsedLimit,
-        query: { name: publisherName },
-      });
+      const { publishers, total } =
+        await this.publisherService.getAllPublishers({
+          page: parsedPage,
+          limit: parsedLimit,
+          query: { name: publisherName },
+        });
 
       const totalPages = Math.ceil(total / parsedLimit);
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
