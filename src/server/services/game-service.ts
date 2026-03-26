@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
 import type {
   IGame,
   IGameDocument,
-  IGameFilter,
+  IGameQuery,
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
 import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
@@ -19,29 +19,27 @@ export class GameService implements IGameService {
   ) {}
 
   public getAllGames = async (
-    page: number,
-    limit: number,
-    filter: IGameFilter
+    gameQuery: IGameQuery
   ): Promise<{ games: IGameDocument[]; total: number }> => {
-    const query: any = {};
+    const { page = 1, limit = 20, query = {} } = gameQuery;
+    const mongoQuery: any = {};
 
-    if (filter.genre) {
-      query.genre = { $regex: new RegExp(filter.genre, 'i') };
+    if (query.genre) {
+      const escapedGenre = query.genre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      mongoQuery.genre = { $regex: new RegExp(escapedGenre, 'i') };
     }
 
-    if (filter.platform) {
-      const platformId = await this.platformRepo.getIdByName(filter.platform);
-      query.platform = platformId || new mongoose.Types.ObjectId();
+    if (query.platform) {
+      const platformId = await this.platformRepo.getIdByName(query.platform);
+      mongoQuery.platform = platformId || new mongoose.Types.ObjectId();
     }
 
-    if (filter.publisher) {
-      const publisherId = await this.publisherRepo.getIdByName(
-        filter.publisher
-      );
-      query.publisher = publisherId || new mongoose.Types.ObjectId();
+    if (query.publisher) {
+      const publisherId = await this.publisherRepo.getIdByName(query.publisher);
+      mongoQuery.publisher = publisherId || new mongoose.Types.ObjectId();
     }
 
-    return await this.gameRepo.getAllGames(page, limit, query);
+    return await this.gameRepo.getAllGames({ page, limit, query: mongoQuery });
   };
 
   public getGameById = async (id: string): Promise<IGameDocument | null> => {

@@ -1,10 +1,13 @@
-import type { IGame, IGameDocument, IUpdateGamePayload } from './game.js';
+import type {
+  IGame,
+  IGameDocument,
+  IGameQuery,
+  IUpdateGamePayload,
+} from './game.js';
 
 export interface IGameRepo {
   getAllGames(
-    page: number,
-    limit: number,
-    query: any
+    gameQuery: IGameQuery
   ): Promise<{ games: IGameDocument[]; total: number }>;
   getGameById(id: string): Promise<IGameDocument | null>;
   deleteGameById(id: string): Promise<boolean>;

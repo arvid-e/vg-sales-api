@@ -1,10 +1,7 @@
 import type { Request, Response } from 'express';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
-import type {
-  IGameFilter,
-  IUpdateGamePayload,
-} from '../interfaces/game/game.js';
+import type { IUpdateGamePayload } from '../interfaces/game/game.js';
 import type { UserRequest } from '../interfaces/user/user.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
@@ -17,27 +14,25 @@ export class GameController {
   constructor(private gameService: IGameService) {}
 
   public getAllGames = catchAsync(async (req: UserRequest, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
-    const filter: IGameFilter = {};
+    const { page, limit, platform, publisher, genre } = req.query;
 
-    if (typeof req.query.platform === 'string') {
-      filter.platform = req.query.platform;
-    }
-    if (typeof req.query.publisher === 'string') {
-      filter.publisher = req.query.publisher;
-    }
-    if (typeof req.query.genre === 'string') {
-      filter.genre = req.query.genre;
-    }
+    const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
+    const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
+    const platformName = typeof platform === 'string' ? platform : undefined;
+    const publisherName = typeof publisher === 'string' ? publisher : undefined;
+    const genreName = typeof genre === 'string' ? genre : undefined;
 
-    const { games, total } = await this.gameService.getAllGames(
-      page,
-      limit,
-      filter
-    );
+    const { games, total } = await this.gameService.getAllGames({
+      page: parsedPage,
+      limit: parsedLimit,
+      query: {
+        platform: platformName,
+        publisher: publisherName,
+        genre: genreName,
+      },
+    });
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / parsedLimit);
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
     const hasUser = !!req.user;
 
@@ -52,8 +47,8 @@ export class GameController {
 
     const paginationLinks = createPaginationLinks({
       baseUrl,
-      page,
-      limit,
+      page: parsedPage,
+      limit: parsedLimit,
       totalPages,
       hasUser,
     });
@@ -63,7 +58,7 @@ export class GameController {
       count: gamesWithLinks.length,
       total,
       totalPages,
-      currentPage: page,
+      currentPage: parsedPage,
       data: gamesWithLinks,
       links: paginationLinks,
     });

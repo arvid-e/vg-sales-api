@@ -1,15 +1,13 @@
 import type {
   IGame,
   IGameDocument,
-  IGameFilter,
+  IGameQuery,
   IUpdateGamePayload,
 } from './game.js';
 
 export interface IGameService {
   getAllGames(
-    page: number,
-    limit: number,
-    filter: IGameFilter
+    gameQuery: IGameQuery
   ): Promise<{ games: IGameDocument[]; total: number }>;
   getGameById(id: string): Promise<IGameDocument | null>;
   deleteGameById(id: string): Promise<boolean>;

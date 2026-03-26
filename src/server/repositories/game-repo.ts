@@ -9,11 +9,11 @@ import GamesModel from '../models/GamesModel.js';
 export class GameRepo implements IGameRepo {
   constructor(private gameModel: typeof GamesModel) {}
 
-  public getAllGames = async (
-    page: number = 1,
-    limit: number = 20,
-    query: any
-  ): Promise<{ games: IGameDocument[]; total: number }> => {
+  public getAllGames = async ({
+    page = 1,
+    limit = 20,
+    query = {},
+  }): Promise<{ games: IGameDocument[]; total: number }> => {
     const skip = (page - 1) * limit;
 
     const [games, total] = await Promise.all([

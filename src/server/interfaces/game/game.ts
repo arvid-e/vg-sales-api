@@ -35,8 +35,8 @@ export interface IUpdateGamePayload {
   };
 }
 
-export interface IGameFilter {
-  platform?: string;
-  publisher?: string;
-  genre?: string;
+export interface IGameQuery {
+  limit?: number;
+  page?: number;
+  query: any;
 }
