@@ -29,9 +29,7 @@ components:
     Game:
       type: object
       properties:
-        gameId:
-          type: string
-        title:
+        name:
           type: string
         platform:
           type: string
@@ -39,8 +37,6 @@ components:
           type: string
         genre:
           type: string
-        links:
-          type: object
 
 paths:
   /auth/register:
@@ -106,6 +102,15 @@ paths:
         - name: limit
           in: query
           schema: { type: integer, default: 20 }
+        - name: platform
+          in: query
+          schema: { type: string }
+        - name: publisher
+          in: query
+          schema: { type: string }
+        - name: genre
+          in: query
+          schema: { type: string }
       responses:
         200:
           description: List of games
@@ -148,6 +153,11 @@ paths:
           in: path
           required: true
           schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game' 
       responses:
         200:
           description: Game updated successfully

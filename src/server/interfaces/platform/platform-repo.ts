@@ -1,9 +1,8 @@
-import type { IPlatformDocument } from './platform.js';
+import type { IPlatformDocument, IPlatformQuery } from './platform.js';
 
 export interface IPlatFormRepo {
   getAllPlatforms(
-    page: number,
-    limit: number
+    query: IPlatformQuery
   ): Promise<{ platforms: IPlatformDocument[]; total: number }>;
   getById(id: string): Promise<IPlatformDocument | null>;
   getIdByName(name: string): Promise<string | null>;

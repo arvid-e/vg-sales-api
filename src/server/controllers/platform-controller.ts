@@ -14,15 +14,19 @@ export class PlatformController {
 
   public getAllPlatforms = catchAsync(
     async (req: UserRequest, res: Response) => {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
+      const { page, limit, name } = req.query;
 
-      const { platforms, total } = await this.platformService.getAllPlatforms(
-        page,
-        limit
-      );
+      const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
+      const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
+      const platformName = typeof name === 'string' ? name : undefined;
 
-      const totalPages = Math.ceil(total / limit);
+      const { platforms, total } = await this.platformService.getAllPlatforms({
+        page: parsedPage,
+        limit: parsedLimit,
+        query: { name: platformName },
+      });
+
+      const totalPages = Math.ceil(total / parsedLimit);
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
       const hasUser = !!req.user;
 
@@ -37,8 +41,8 @@ export class PlatformController {
 
       const paginationLinks = createPaginationLinks({
         baseUrl,
-        page,
-        limit,
+        page: parsedPage,
+        limit: parsedLimit,
         totalPages,
         hasUser,
       });
@@ -48,7 +52,7 @@ export class PlatformController {
         count: platformsWithLinks.length,
         total,
         totalPages,
-        currentPage: page,
+        currentPage: parsedPage,
         data: platformsWithLinks,
         links: paginationLinks,
       });

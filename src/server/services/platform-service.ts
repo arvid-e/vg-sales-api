@@ -1,16 +1,26 @@
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
 import type { IPlatformService } from '../interfaces/platform/platform-service.js';
-import type { IPlatformDocument } from '../interfaces/platform/platform.js';
+import type {
+  IPlatformDocument,
+  IPlatformQuery,
+} from '../interfaces/platform/platform.js';
 
 export class PlatformService implements IPlatformService {
   constructor(private platformRepo: IPlatFormRepo) {}
 
   getAllPlatforms = async (
-    page: number,
-    limit: number
+    platformQuery: IPlatformQuery
   ): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
-    return await this.platformRepo.getAllPlatforms(page, limit);
+    const { page = 1, limit = 20, query = {} } = platformQuery;
+
+    if (query.name != null) {
+      const escapedName = query.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.name = { $regex: new RegExp(escapedName, 'i') };
+      console.log(escapedName);
+    }
+
+    return await this.platformRepo.getAllPlatforms({ page, limit, query });
   };
 
   getPlatformById = async (id: string): Promise<IPlatformDocument | null> => {

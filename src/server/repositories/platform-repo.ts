@@ -5,15 +5,16 @@ import PlatformModel from '../models/PlatformModel.js';
 export class PlatformRepo implements IPlatFormRepo {
   constructor(private platformModel: typeof PlatformModel) {}
 
-  getAllPlatforms = async (
-    page: number = 1,
-    limit: number = 20
-  ): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
+  getAllPlatforms = async ({
+    page = 1,
+    limit = 20,
+    query = {},
+  }): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
     const skip = (page - 1) * limit;
 
     const [platforms, total] = await Promise.all([
-      this.platformModel.find().sort({ rank: 1 }).skip(skip).limit(limit),
-      this.platformModel.countDocuments(),
+      this.platformModel.find(query).sort({ rank: 1 }).skip(skip).limit(limit),
+      this.platformModel.countDocuments(query),
     ]);
 
     return { platforms, total };
