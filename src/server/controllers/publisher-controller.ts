@@ -2,8 +2,8 @@ import type { Request, Response } from 'express';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IPublisherService } from '../interfaces/publisher/publisher-service.js';
 import type { UserRequest } from '../interfaces/user/user.js';
-import { catchAsync } from '../utils/catch-async.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
+import { catchAsync } from '../utils/catch-async.js';
 
 interface PublisherParams {
   id: string;
@@ -14,13 +14,19 @@ export class PublisherController {
 
   public getAllPublishers = catchAsync(
     async (req: UserRequest, res: Response) => {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
+      const { page, limit, name } = req.query;
 
-      const { publishers, total } =
-        await this.publisherService.getAllPublishers(page, limit);
+      const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
+      const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
+      const publisherName = typeof name === 'string' ? name : undefined;
 
-      const totalPages = Math.ceil(total / limit);
+      const { publishers, total } = await this.publisherService.getAllPublishers({
+        page: parsedPage,
+        limit: parsedLimit,
+        query: { name: publisherName },
+      });
+
+      const totalPages = Math.ceil(total / parsedLimit);
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
       const hasUser = !!req.user;
 
@@ -35,8 +41,8 @@ export class PublisherController {
 
       const paginationLinks = createPaginationLinks({
         baseUrl,
-        page,
-        limit,
+        page: parsedPage,
+        limit: parsedLimit,
         totalPages,
         hasUser,
       });
@@ -46,7 +52,7 @@ export class PublisherController {
         count: publishersWithLinks.length,
         total,
         totalPages,
-        currentPage: page,
+        currentPage: parsedPage,
         data: publishersWithLinks,
         links: paginationLinks,
       });

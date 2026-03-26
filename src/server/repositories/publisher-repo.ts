@@ -5,15 +5,16 @@ import PublisherModel from '../models/PublisherModel.js';
 export class PublisherRepo implements IPublisherRepo {
   constructor(private publisherModel: typeof PublisherModel) {}
 
-  getAllPublishers = async (
-    page: number = 1,
-    limit: number = 20
-  ): Promise<{ publishers: IPublisherDocument[]; total: number }> => {
+  getAllPublishers = async ({
+    page = 1,
+    limit = 20,
+    query = {},
+  }): Promise<{ publishers: IPublisherDocument[]; total: number }> => {
     const skip = (page - 1) * limit;
 
     const [publishers, total] = await Promise.all([
-      this.publisherModel.find().sort({ rank: 1 }).skip(skip).limit(limit),
-      this.publisherModel.countDocuments(),
+      this.publisherModel.find(query).sort({ rank: 1 }).skip(skip).limit(limit),
+      this.publisherModel.countDocuments(query),
     ]);
 
     return { publishers, total };

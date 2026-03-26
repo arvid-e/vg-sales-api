@@ -17,7 +17,6 @@ export class PlatformService implements IPlatformService {
     if (query.name != null) {
       const escapedName = query.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.name = { $regex: new RegExp(escapedName, 'i') };
-      console.log(escapedName);
     }
 
     return await this.platformRepo.getAllPlatforms({ page, limit, query });
