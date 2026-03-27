@@ -1,12 +1,11 @@
 import bcrypt from 'bcryptjs';
-import type { SignOptions } from 'jsonwebtoken';
-import jwt from 'jsonwebtoken';
 import { AuthError } from '../errors/auth-error.js';
 import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import type { IAuthResponse, ICredentials } from '../interfaces/user/user.js';
+import { generateToken } from '../middlewares/auth-middleware.js';
 
 export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
@@ -25,7 +24,7 @@ export class UserService implements IUserService {
       throw new Error('User could not be created');
     }
     const userId = user._id.toString();
-    const token = await this.generateToken(user._id.toString());
+    const token = await generateToken(user._id.toString());
 
     return { user, token, userId };
   };
@@ -56,23 +55,8 @@ export class UserService implements IUserService {
       throw new AuthError('Invalid username or password');
     }
     const userId = user._id.toString();
-    const token = await this.generateToken(user._id.toString());
+    const token = await generateToken(user._id.toString());
 
     return { user, token, userId };
-  };
-
-  private generateToken = async (userId: string): Promise<string> => {
-    const secret = process.env.JWT_SECRET;
-    const expires = process.env.JWT_EXPIRES_IN;
-
-    if (secret == null || expires == null) {
-      throw new Error('JWT configuration is missing in environment variables');
-    }
-
-    const jwtOptions: SignOptions = {
-      expiresIn: expires as any,
-    };
-
-    return jwt.sign({ id: userId }, secret, jwtOptions);
   };
 }

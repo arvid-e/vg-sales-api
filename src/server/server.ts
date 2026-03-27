@@ -5,8 +5,6 @@ import { app } from './app.js';
 import { connectDB } from './config/mongoose.js';
 import { isErrorWithMessage } from './utils/type-guards.js';
 
-const port = process.env.API_PORT;
-
 let server: Server | undefined;
 
 export const startServer = async () => {

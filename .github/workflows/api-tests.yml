@@ -2,7 +2,7 @@ name: API CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, fix/api-tests-connection-failure ]
+    branches: [ main ]
 
 jobs:
   lint:
