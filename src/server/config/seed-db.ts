@@ -23,7 +23,7 @@ const runSeed = async () => {
     if (count > 0) {
       console.log(`Database already contains ${count} games. Skipping seed.`);
       await mongoose.disconnect();
-      process.exit(0); 
+      process.exit(0);
     }
 
     console.log('Database is empty. Starting initial seed...');
