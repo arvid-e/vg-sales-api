@@ -22,6 +22,6 @@ app.get('/health', (req, res) => {
     : res.status(503).send('Database Disconnected');
 });
 
-app.use(router);
+app.use('/api/v1', router);
 app.all('{*path}', handleUndefinedRoutes);
 app.use(globalErrorHandler);

@@ -39,8 +39,8 @@ REST
 
 |                                       | URL / File                            |
 | ------------------------------------- | ------------------------------------- |
-| **Production API**                    | cu3040.camp.lnu.se/                               |
-| **API Documentation**                 | cu3040.camp.lnu.se/api-docs                               |
+| **Production API**                    | cu3040.camp.lnu.se/api/v1/                               |
+| **API Documentation**                 | cu3040.camp.lnu.se/api/v1/api-docs/                               |
 | **Postman Collection**                | `*.postman_collection.json`           |
 | **Production Environment**            | `production.postman_environment.json` |
 
