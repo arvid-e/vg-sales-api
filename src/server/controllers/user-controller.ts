@@ -20,10 +20,11 @@ export class UserController {
   createUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const { user, token, userId } = await this.userService.createUser({
+    const { user, token } = await this.userService.createUser({
       username,
       password,
     });
+    const userId = user._id.toString();
 
     return res.status(201).json({
       status: 'success',
@@ -70,10 +71,11 @@ export class UserController {
   loginUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const { user, token, userId } = await this.userService.loginUser({
+    const { user, token } = await this.userService.loginUser({
       username,
       password,
     });
+    const userId = user._id.toString();
 
     return res.status(200).json({
       status: 'success',
