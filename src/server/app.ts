@@ -1,7 +1,11 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-import { getHealth, getRoot } from './controllers/health-controller.js';
+import {
+  getApiV1Root,
+  getHealth,
+  getRoot,
+} from './controllers/health-controller.js';
 import { globalErrorHandler } from './middlewares/error-handler.js';
 import { handleUndefinedRoutes } from './middlewares/handle-undefined-routes.js';
 import router from './routes/router.js';
@@ -14,8 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', getRoot);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/api/v1', getApiV1Root);
 app.get('/health', getHealth);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use('/api/v1', router);
+
 app.all('{*path}', handleUndefinedRoutes);
 app.use(globalErrorHandler);

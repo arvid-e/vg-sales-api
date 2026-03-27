@@ -25,3 +25,18 @@ export const getRoot = (req: Request, res: Response) => {
     status: 'Running',
   });
 };
+
+/**
+ * Show active message at API root.
+ */
+export const getApiV1Root = (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Video Game Sales API - Version 1.0',
+    description: 'Entry point for v1 resources',
+    resources: {
+      games: '/api/v1/games',
+      platforms: '/api/v1/platforms',
+      publishers: '/api/v1/publishers',
+    },
+  });
+};
