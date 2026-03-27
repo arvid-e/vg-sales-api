@@ -1,6 +1,9 @@
 import type { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
+/**
+ * Checks if the server is running with a DB connection.
+ */
 export const getHealth = (req: Request, res: Response) => {
   const isConnected = mongoose.connection.readyState === 1;
 

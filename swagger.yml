@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://cu3040.camp.lnu.se/
+  - url: https://cu3040.camp.lnu.se/api/v1/
     description: Production server
   - url: http://localhost:3000/
     description: Local development

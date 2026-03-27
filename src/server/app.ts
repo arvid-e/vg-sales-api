@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.get('/health', getHealth)
+app.get('/health', getHealth);
 app.use('/api/v1', router);
 app.all('{*path}', handleUndefinedRoutes);
 app.use(globalErrorHandler);
