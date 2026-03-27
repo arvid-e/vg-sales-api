@@ -4,7 +4,6 @@ import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IPublisherService } from '../interfaces/publisher/publisher-service.js';
 import type {
-  IdParam,
   UserRequest,
   UserRequestWithId,
 } from '../interfaces/requests/request-types.js';

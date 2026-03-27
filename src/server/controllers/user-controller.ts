@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express';
 import { isValidObjectId } from 'mongoose';
-import { AuthError } from '../errors/auth-error.js';
 import { BadRequestError } from '../errors/bad-request-error.js';
 import type { UserRequestWithId } from '../interfaces/requests/request-types.js';
 import type { IUserService } from '../interfaces/user/user-service.js';

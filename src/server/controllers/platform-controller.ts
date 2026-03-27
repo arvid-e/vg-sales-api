@@ -7,10 +7,6 @@ import type { UserRequest } from '../interfaces/requests/request-types.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
 
-interface PlatformParams {
-  id: string;
-}
-
 /**
  * Controller handling all Platform related HTTP requests.
  * Orchestrates communication between the client and PlatformService.

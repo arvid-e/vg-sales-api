@@ -34,7 +34,6 @@ export const globalErrorHandler = (
   if (statusCode === 500) console.error('ERROR:', err);
 
   return res.status(statusCode).json({
-    status: 'error',
     error: message,
   });
 };

@@ -75,7 +75,7 @@ export class UserService implements IUserService {
     if (!match) {
       throw new AuthError('Invalid username or password');
     }
-    
+
     const token = await generateToken(user._id.toString());
 
     return { user, token };
