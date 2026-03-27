@@ -40,13 +40,13 @@ REST
 |                                       | URL / File                            |
 | ------------------------------------- | ------------------------------------- |
 | **Production API**                    | cu3040.camp.lnu.se/api/v1/                               |
-| **API Documentation**                 | cu3040.camp.lnu.se/api/v1/api-docs/                               |
+| **API Documentation**                 | cu3040.camp.lnu.se/api-docs/                               |
 | **Postman Collection**                | `*.postman_collection.json`           |
 | **Production Environment**            | `production.postman_environment.json` |
 
 **Examiner can verify tests in one of the following ways:**
 
-1. **CI/CD pipeline** — check the pipeline output in GitHub for test results.
+1. **CI/CD pipeline** — check the pipeline output in GitHub for test results. (https://github.com/arvid-e/vg-sales-api)
 2. **Run manually** — no setup needed:
    ```
    npx newman run ./tests/collection.json -e ./tests/production.postman_environment.json --insecure

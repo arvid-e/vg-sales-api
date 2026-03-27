@@ -13,3 +13,15 @@ export const getHealth = (req: Request, res: Response) => {
 
   return res.status(503).send('Database Disconnected');
 };
+
+/**
+ * Message for API root.
+ */
+export const getRoot = (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Welcome to the Video Game Sales API',
+    version: 'v1.0.0',
+    documentation: 'https://cu3040.camp.lnu.se/api-docs',
+    status: 'Running',
+  });
+};
