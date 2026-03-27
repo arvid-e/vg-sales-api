@@ -15,19 +15,22 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const runSeed = async () => {
   try {
-    console.log('Connecting to MongoDB for seeding...');
-
     await mongoose.connect(process.env.MONGO_URI as string);
-    console.log('Connected! Starting seed...');
 
-    if (mongoose.connection.db) await mongoose.connection.db.dropDatabase();
-    console.log('Database dropped successfully.');
+    // Check count before seeding
+    const count = await Game.countDocuments();
+
+    if (count > 0) {
+      console.log(`Database already contains ${count} games. Skipping seed.`);
+      await mongoose.disconnect();
+      process.exit(0);
+    }
+
+    console.log('Database is empty. Starting initial seed...');
 
     await seedDatabase();
 
     await mongoose.disconnect();
-    console.log('Seeding complete and disconnected.');
-
     process.exit(0);
   } catch (error) {
     console.error('Critical Seed Error:', error);
@@ -35,6 +38,9 @@ const runSeed = async () => {
   }
 };
 
+/**
+ * Resets and seeds database  with data from the CSV
+ */
 const seedDatabase = async () => {
   try {
     await Promise.all([

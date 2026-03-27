@@ -5,8 +5,10 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000
-    description: Local development server
+  - url: https://cu3040.camp.lnu.se/api/v1/
+    description: Production server
+  - url: http://localhost:3000/
+    description: Local development
 
 components:
   securitySchemes:
@@ -296,7 +298,7 @@ paths:
     
   /users/{id}:
     delete:
-      summary: Delete a user
+      summary: Delete a user (can only delete your own user)
       tags: [Users]
       security:
         - bearerAuth: []

@@ -39,14 +39,14 @@ REST
 
 |                                       | URL / File                            |
 | ------------------------------------- | ------------------------------------- |
-| **Production API**                    | _..._                                 |
-| **API Documentation**                 | _..._                                 |
+| **Production API**                    | cu3040.camp.lnu.se/api/v1/                               |
+| **API Documentation**                 | cu3040.camp.lnu.se/api-docs/                               |
 | **Postman Collection**                | `*.postman_collection.json`           |
 | **Production Environment**            | `production.postman_environment.json` |
 
 **Examiner can verify tests in one of the following ways:**
 
-1. **CI/CD pipeline** — check the pipeline output in GitHub for test results.
+1. **CI/CD pipeline** — check the pipeline output in GitHub for test results. (https://github.com/arvid-e/vg-sales-api)
 2. **Run manually** — no setup needed:
    ```
    npx newman run ./tests/collection.json -e ./tests/production.postman_environment.json --insecure
@@ -72,7 +72,6 @@ Usage:
 
 ### Authentication
 
-_Describe your JWT authentication solution. Why did you choose this approach? What alternatives exist, and what are their trade-offs?_
 
 **My chosen solution: Stateless JWT**
 
@@ -192,7 +191,7 @@ Errors are handled by throwing custom errors depending on what type of error it 
 
 ## Reflection
 
-The hardest part in this assignment was making the API tests in Postman and setting up the CI/CD pipeline for them. I had never made API tests in Postman before so there was much to learn. I struggled a bit with setting up the CI/CD pipeline and has problems where the tests would pass locally but fail in the pipeline. I learned that including logging in the pipeline steps made it easier to see what went wrong and what the cause of the problem was. I run all my production code inside Docker which makes putting into production easier, but getting the setup to work correctly is sometimes a burden. I still think running everything inside Docker is the best move since it requires less coupling to the server it runs on and keeps everything isolated in the same place. I also learned how to do search queries using Mongoose efficiently. I learned that API tests can be very useful since they founds lots of problem I did not notice. Even though I have no White Box tests I feel like the application is quite well tested from the API Black Box tests. Something I would do differently if I had more time would be to create a single utility for adding the HATEOAS links. I would also make White Box tests.
+The hardest part in this assignment was making the API tests in Postman and setting up the CI/CD pipeline for them. I had never made API tests in Postman before so there was much to learn. I struggled a bit with setting up the CI/CD pipeline and has problems where the tests would pass locally but fail in the pipeline. I learned that including logging in the pipeline steps made it easier to see what went wrong and what the cause of the problem was. I run all my production code inside Docker which makes putting into production easier, but getting the setup to work correctly is sometimes a burden. I still think running everything inside Docker is the best move since it requires less coupling to the server it runs on, keeps everything isolated in the same place and makes it easy to start and stop it. I also learned how to do search queries using Mongoose efficiently. I learned that API tests can be very useful since they founds lots of problem I did not notice. Even though I have no White Box tests I feel like the application is quite well tested from the API Black Box tests. Something I would do differently if I had more time would be to create a single utility for adding the HATEOAS links. I would also make White Box tests.
 
 ## Acknowledgements
 
