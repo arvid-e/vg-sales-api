@@ -6,9 +6,16 @@ interface UserParams {
   id: string;
 }
 
+/**
+ * Controller handling all User related HTTP requests.
+ * Orchestrates communication between the client and UserService.
+ */
 export class UserController {
   constructor(private userService: IUserService) {}
 
+  /**
+   * Registers a new user, saves it to the database and respons with a authentication token.
+   */
   createUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
@@ -25,6 +32,9 @@ export class UserController {
     });
   });
 
+  /**
+   * Deletes the users account. A user can only delete their own account.
+   */
   deleteUser = catchAsync(async (req: Request<UserParams>, res: Response) => {
     const { id } = req.params;
 
@@ -43,6 +53,9 @@ export class UserController {
     });
   });
 
+  /**
+   * Logs in the user and responds with an authentication token.
+   */
   loginUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
@@ -59,6 +72,9 @@ export class UserController {
     });
   });
 
+  /**
+   * Generates HATEOAS links based on user ID.
+   */
   private createLinks(req: Request, userId: string) {
     const host = `${req.protocol}://${req.get('host')}`;
 

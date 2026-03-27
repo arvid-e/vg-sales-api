@@ -9,17 +9,27 @@ interface PublisherParams {
   id: string;
 }
 
+/**
+ * Controller handling all Publisher related HTTP requests.
+ * Orchestrates communication between the client and PublisherService.
+ */
 export class PublisherController {
   constructor(private publisherService: IPublisherService) {}
 
+  /**
+   * Retrieves a paginated list of publishers with optional filtering.
+   * Supports filtering by publisher name.
+   */
   public getAllPublishers = catchAsync(
     async (req: UserRequest, res: Response) => {
+      // 1. Extract and normalize query parameters
       const { page, limit, name } = req.query;
 
       const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
       const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
       const publisherName = typeof name === 'string' ? name : undefined;
 
+      // 2. Fetch data from service
       const { publishers, total } =
         await this.publisherService.getAllPublishers({
           page: parsedPage,
@@ -27,6 +37,7 @@ export class PublisherController {
           query: { name: publisherName },
         });
 
+      // 3. Prepare response metadata
       const totalPages = Math.ceil(total / parsedLimit);
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
       const hasUser = !!req.user;
@@ -60,13 +71,17 @@ export class PublisherController {
     }
   );
 
+  /**
+   * Fetches a single publisher by its ID.
+   * @throws {NotFoundError} If no publisher matches the provided ID.
+   */
   public getpublisherById = catchAsync(
     async (req: Request<any>, res: Response) => {
       const { id } = req.params as PublisherParams;
 
       const publisher = await this.publisherService.getPublisherById(id);
 
-      if (!publisher) {
+      if (publisher == null) {
         return new NotFoundError('Publisher');
       }
 
@@ -80,11 +95,14 @@ export class PublisherController {
     }
   );
 
-  private createLinks(req: UserRequest, gameId: string) {
+  /**
+   * Generates HATEOAS links based on resource ID.
+   */
+  private createLinks(req: UserRequest, publisherId: string) {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
 
     const links = [
-      { rel: 'self', method: 'GET', href: `${baseUrl}/${gameId}` },
+      { rel: 'self', method: 'GET', href: `${baseUrl}/${publisherId}` },
       { rel: 'all-publishers', method: 'GET', href: `${baseUrl}` },
     ];
 

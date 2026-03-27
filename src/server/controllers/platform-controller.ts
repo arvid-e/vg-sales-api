@@ -9,23 +9,34 @@ interface PlatformParams {
   id: string;
 }
 
+/**
+ * Controller handling all Platform related HTTP requests.
+ * Orchestrates communication between the client and PlatformService.
+ */
 export class PlatformController {
   constructor(private platformService: IPlatformService) {}
 
+  /**
+   * Retrieves a paginated list of platforms with optional filtering.
+   * Supports filtering by platform name.
+   */
   public getAllPlatforms = catchAsync(
     async (req: UserRequest, res: Response) => {
+    // 1. Extract and normalize query parameters
       const { page, limit, name } = req.query;
 
       const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
       const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
       const platformName = typeof name === 'string' ? name : undefined;
 
+      // 2. Fetch data from service
       const { platforms, total } = await this.platformService.getAllPlatforms({
         page: parsedPage,
         limit: parsedLimit,
         query: { name: platformName },
       });
 
+      // 3. Prepare response metadata
       const totalPages = Math.ceil(total / parsedLimit);
       const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
       const hasUser = !!req.user;
@@ -59,13 +70,17 @@ export class PlatformController {
     }
   );
 
+  /**
+   * Fetches a single platform by its ID.
+   * @throws {NotFoundError} If no platform matches the provided ID.
+   */
   public getPlatformById = catchAsync(
     async (req: Request<any>, res: Response) => {
       const { id } = req.params as PlatformParams;
 
       const platform = await this.platformService.getPlatformById(id);
 
-      if (!platform) {
+      if (platform == null) {
         throw new NotFoundError('Platform');
       }
 
@@ -79,11 +94,14 @@ export class PlatformController {
     }
   );
 
-  private createLinks(req: UserRequest, gameId: string) {
+  /**
+   * Generates HATEOAS links based on resource ID.
+   */
+  private createLinks(req: UserRequest, platformId: string) {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
 
     const links = [
-      { rel: 'self', method: 'GET', href: `${baseUrl}/${gameId}` },
+      { rel: 'self', method: 'GET', href: `${baseUrl}/${platformId}` },
       { rel: 'all-platforms', method: 'GET', href: `${baseUrl}` },
     ];
 
