@@ -1,9 +1,11 @@
 import type { Request, Response } from 'express';
 import { isValidObjectId } from 'mongoose';
+import { AuthError } from '../errors/auth-error.js';
 import { BadRequestError } from '../errors/bad-request-error.js';
-import type { IdParam } from '../interfaces/requests/request-types.js';
+import type { UserRequestWithId } from '../interfaces/requests/request-types.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import { catchAsync } from '../utils/catch-async.js';
+import { NotFoundError } from '../errors/not-found-error.js';
 
 /**
  * Controller handling all User related HTTP requests.
@@ -33,12 +35,18 @@ export class UserController {
 
   /**
    * Deletes the users account. A user can only delete their own account.
+   * @throws {BadRequestError} If provided ID is invalid.
+   * @throws {NotFoundError} If provided user ID is not their own, 404 in order to hide the existance of other users.
    */
-  deleteUser = catchAsync(async (req: Request<IdParam>, res: Response) => {
+  deleteUser = catchAsync(async (req: UserRequestWithId, res: Response) => {
     const { id } = req.params;
 
     if (id == null || !isValidObjectId(id)) {
       throw new BadRequestError('Invalid ID');
+    }
+
+    if (req.user?.id !== id) {
+      throw new NotFoundError('User');
     }
 
     await this.userService.deleteUser(id);

@@ -10,6 +10,7 @@ import type {
 } from '../interfaces/requests/request-types.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
+import { AuthError } from '../errors/auth-error.js';
 
 /**
  * Controller handling all Game-related HTTP requests.
