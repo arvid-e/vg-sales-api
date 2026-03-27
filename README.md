@@ -10,10 +10,27 @@ Design and develop a robust, well-documented API (REST or GraphQL) that allows u
 
 Choose a dataset (10000+ data points) that interests you — it should include at least one primary CRUD resource and two additional read-only resources. Sources like [Kaggle](https://www.kaggle.com/datasets), public APIs, or CSV files work well. Pick something you find interesting, as you will reuse this API in the next assignment (WT dashboard).
 
-_Describe your API in a few sentences: what dataset does it serve, what are its main resources, and what can users do with it?_
+## Summary
 
-The vg-sales-api is a HATEOAS REST API which serves a video game sales dataset. Its main resource is video games, which has attributes like its name, release year, sales data etc. Users can use this API to view a all games ranked in order of sales, sort by platform, publisher or genre, and add or remove games.
+This API serves a comprehensive directory of video games sales, providing structured data regarding titles, genres, and sales rankings. It acts as a centralized repository for game enthusiasts and developers to query historical and modern game sales information. The sales numbers are in millions.
 
+**Main Resources**  
+The API is built around three core, interconnected resources:
+
+- **Games**: The primary entity containing titles, descriptions, and metadata.
+- **Platforms**: Hardware entities (e.g., PC, PlayStation, Nintendo) that host specific games.
+- **Publishers**: The industry organizations responsible for bringing the games to market.
+
+**User Capabilities**  
+The API provides a secure and scalable interface for several key actions:
+
+- **Discovery**: Users can browse and filter the entire dataset by genre, platform, or publisher using query parameters and pagination.
+
+- **Resource Management**: Authenticated users have the power to Create, Update, and Delete game records, ensuring the database remains current.
+
+- **HATEOAS Navigation**: The API follows RESTful best practices by providing dynamic links in every response, allowing clients to navigate related resources without hardcoding URLs.
+
+- **Secure Access**: All data-modifying actions are protected by JWT-based authentication, ensuring that only authorized contributors can alter the directory.
 ## Implementation Type
 
 REST
@@ -24,7 +41,6 @@ REST
 | ------------------------------------- | ------------------------------------- |
 | **Production API**                    | _..._                                 |
 | **API Documentation**                 | _..._                                 |
-| **GraphQL Playground** (GraphQL only) | _..._                                 |
 | **Postman Collection**                | `*.postman_collection.json`           |
 | **Production Environment**            | `production.postman_environment.json` |
 
@@ -33,7 +49,7 @@ REST
 1. **CI/CD pipeline** — check the pipeline output in GitHub for test results.
 2. **Run manually** — no setup needed:
    ```
-   npx newman run <collection.json> -e production.postman_environment.json --insecure
+   npx newman run ./tests/collection.json -e ./tests/production.postman_environment.json --insecure
    ```
 
 ## Dataset
@@ -41,9 +57,16 @@ REST
 | Field                                | Description                                                                          |
 | ------------------------------------ | ------------------------------------------------------------------------------------ |
 | **Dataset source**                   | CSV file downloaded from Kaggle                                                      |
-| **Primary resource (CRUD)**          | Games (`rank`, `name`, `platform`, `publisher`, `year`, `genre`, `naSales`, `sales`) |
+| **Primary resource (CRUD)**          | Games (`rank`, `name`, `platform`, `publisher`, `year`, `genre`, `sales`) |
 | **Secondary resource 1 (read-only)** | Platform (`name`, `platformId`)                                                      |
 | **Secondary resource 2 (read-only)** | Publisher (`name`,`publisherId`)                                                     |
+
+
+### Seed script
+A seed script exists that fills the database with the sales data from the CSV file.  
+
+Usage:  
+- `npm run seed`
 
 ## Design Decisions
 
@@ -169,11 +192,12 @@ Errors are handled by throwing custom errors depending on what type of error it 
 
 ## Reflection
 
-_What was hard? What did you learn? What would you do differently?_
+The hardest part in this assignment was making the API tests in Postman and setting up the CI/CD pipeline for them. I had never made API tests in Postman before so there was much to learn. I struggled a bit with setting up the CI/CD pipeline and has problems where the tests would pass locally but fail in the pipeline. I learned that including logging in the pipeline steps made it easier to see what went wrong and what the cause of the problem was. I run all my production code inside Docker which makes putting into production easier, but getting the setup to work correctly is sometimes a burden. I still think running everything inside Docker is the best move since it requires less coupling to the server it runs on and keeps everything isolated in the same place. I also learned how to do search queries using Mongoose efficiently. I learned that API tests can be very useful since they founds lots of problem I did not notice. Even though I have no White Box tests I feel like the application is quite well tested from the API Black Box tests. Something I would do differently if I had more time would be to create a single utility for adding the HATEOAS links. I would also make White Box tests.
 
 ## Acknowledgements
 
-_Resources, attributions, or shoutouts._
+Kaggle resource:  
+- https://www.kaggle.com/datasets/anandshaw2001/video-game-sales
 
 ## Requirements
 
@@ -206,7 +230,6 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 | CI/CD pipeline running tests on every commit/MR             | [#8](../../issues/8)   | :white_check_mark:  |
 | Seed script for sample data                                 | [#5](../../issues/5)   | :white_check_mark:  |
 | Code quality (consistent standard, modular, documented)     | [#10](../../issues/10) | :white_check_mark: |
-| Deployed and publicly accessible                            | [#9](../../issues/9)   | :white_large_square: |
+| Deployed and publicly accessible                            | [#9](../../issues/9)   | :white_check_mark: |
 | Peer review reflection submitted on merge request           | [#11](../../issues/11) | :white_large_square: |
 
-## Test push
