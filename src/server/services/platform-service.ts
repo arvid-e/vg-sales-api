@@ -6,9 +6,15 @@ import type {
   IPlatformQuery,
 } from '../interfaces/platform/platform.js';
 
+/**
+ * Service for managing Platform resources.
+ */
 export class PlatformService implements IPlatformService {
   constructor(private platformRepo: IPlatFormRepo) {}
 
+  /**
+   * Fetches platforms with pagination and optional name filtering.
+   */
   getAllPlatforms = async (
     platformQuery: IPlatformQuery
   ): Promise<{ platforms: IPlatformDocument[]; total: number }> => {
@@ -16,6 +22,7 @@ export class PlatformService implements IPlatformService {
     const mongoQuery: any = {};
 
     if (query.name != null) {
+      // Escape special regex characters to prevent syntax errors from user input
       const escapedName = query.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       mongoQuery.name = { $regex: new RegExp(escapedName, 'i') };
     }
