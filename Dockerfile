@@ -8,6 +8,8 @@ RUN npx tsc
 
 # Run Stage
 FROM node:18-alpine
+RUN apk add --no-cache curl
+
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
