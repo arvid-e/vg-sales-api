@@ -1,8 +1,8 @@
 import type { NextFunction, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import type { SignOptions } from 'jsonwebtoken';
-import type { UserRequest } from '../interfaces/user/user.js';
+import jwt from 'jsonwebtoken';
 import { AuthError } from '../errors/auth-error.js';
+import type { UserRequest } from '../interfaces/requests/request-types.js';
 
 export const authorize = async (
   req: UserRequest,
@@ -69,16 +69,16 @@ export const identify = async (
 };
 
 export const generateToken = async (userId: string): Promise<string> => {
-    const secret = process.env.JWT_SECRET;
-    const expires = process.env.JWT_EXPIRES_IN;
+  const secret = process.env.JWT_SECRET;
+  const expires = process.env.JWT_EXPIRES_IN;
 
-    if (secret == null || expires == null) {
-      throw new Error('JWT configuration is missing in environment variables');
-    }
+  if (secret == null || expires == null) {
+    throw new Error('JWT configuration is missing in environment variables');
+  }
 
-    const jwtOptions: SignOptions = {
-      expiresIn: expires as any,
-    };
-
-    return jwt.sign({ id: userId }, secret, jwtOptions);
+  const jwtOptions: SignOptions = {
+    expiresIn: expires as any,
   };
+
+  return jwt.sign({ id: userId }, secret, jwtOptions);
+};

@@ -1,10 +1,9 @@
 import type { Request, Response } from 'express';
+import { isValidObjectId } from 'mongoose';
+import { BadRequestError } from '../errors/bad-request-error.js';
+import type { IdParam } from '../interfaces/requests/request-types.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import { catchAsync } from '../utils/catch-async.js';
-
-interface UserParams {
-  id: string;
-}
 
 /**
  * Controller handling all User related HTTP requests.
@@ -35,8 +34,12 @@ export class UserController {
   /**
    * Deletes the users account. A user can only delete their own account.
    */
-  deleteUser = catchAsync(async (req: Request<UserParams>, res: Response) => {
+  deleteUser = catchAsync(async (req: Request<IdParam>, res: Response) => {
     const { id } = req.params;
+
+    if (id == null || !isValidObjectId(id)) {
+      throw new BadRequestError('Invalid ID');
+    }
 
     await this.userService.deleteUser(id);
 

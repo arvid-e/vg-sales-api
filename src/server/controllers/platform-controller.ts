@@ -1,7 +1,9 @@
 import type { Request, Response } from 'express';
+import { isValidObjectId } from 'mongoose';
+import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IPlatformService } from '../interfaces/platform/platform-service.js';
-import type { UserRequest } from '../interfaces/user/user.js';
+import type { UserRequest } from '../interfaces/requests/request-types.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
 
@@ -22,7 +24,7 @@ export class PlatformController {
    */
   public getAllPlatforms = catchAsync(
     async (req: UserRequest, res: Response) => {
-    // 1. Extract and normalize query parameters
+      // 1. Extract and normalize query parameters
       const { page, limit, name } = req.query;
 
       const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
@@ -76,7 +78,11 @@ export class PlatformController {
    */
   public getPlatformById = catchAsync(
     async (req: Request<any>, res: Response) => {
-      const { id } = req.params as PlatformParams;
+      const { id } = req.params;
+
+      if (id == null || !isValidObjectId(id)) {
+        throw new BadRequestError('Invalid ID');
+      }
 
       const platform = await this.platformService.getPlatformById(id);
 

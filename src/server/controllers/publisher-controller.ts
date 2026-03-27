@@ -1,14 +1,15 @@
 import type { Request, Response } from 'express';
+import { isValidObjectId } from 'mongoose';
+import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IPublisherService } from '../interfaces/publisher/publisher-service.js';
-import type { UserRequest } from '../interfaces/user/user.js';
+import type {
+  IdParam,
+  UserRequest,
+  UserRequestWithId,
+} from '../interfaces/requests/request-types.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
-
-interface PublisherParams {
-  id: string;
-}
-
 /**
  * Controller handling all Publisher related HTTP requests.
  * Orchestrates communication between the client and PublisherService.
@@ -76,8 +77,12 @@ export class PublisherController {
    * @throws {NotFoundError} If no publisher matches the provided ID.
    */
   public getpublisherById = catchAsync(
-    async (req: Request<any>, res: Response) => {
-      const { id } = req.params as PublisherParams;
+    async (req: UserRequestWithId, res: Response) => {
+      const { id } = req.params;
+
+      if (id == null || !isValidObjectId(id)) {
+        throw new BadRequestError('Invalid ID');
+      }
 
       const publisher = await this.publisherService.getPublisherById(id);
 
@@ -98,7 +103,7 @@ export class PublisherController {
   /**
    * Generates HATEOAS links based on resource ID.
    */
-  private createLinks(req: UserRequest, publisherId: string) {
+  private createLinks(req: Request, publisherId: string) {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
 
     const links = [

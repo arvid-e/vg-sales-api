@@ -18,9 +18,3 @@ export interface IAuthResponse {
   token: string;
   userId: string;
 }
-
-export interface UserRequest extends Request {
-  user?: {
-    id: string;
-  };
-}

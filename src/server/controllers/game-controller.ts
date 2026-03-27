@@ -1,14 +1,15 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
+import { isValidObjectId } from 'mongoose';
+import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
 import type { IUpdateGamePayload } from '../interfaces/game/game.js';
-import type { UserRequest } from '../interfaces/user/user.js';
+import type {
+  UserRequest,
+  UserRequestWithId,
+} from '../interfaces/requests/request-types.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
-
-interface GameParams {
-  id: string;
-}
 
 /**
  * Controller handling all Game-related HTTP requests.
@@ -79,8 +80,13 @@ export class GameController {
    * Fetches a single game by its ID.
    * @throws {NotFoundError} If no game matches the provided ID.
    */
-  public getGame = catchAsync(async (req: Request<any>, res: Response) => {
-    const { id } = req.params as GameParams;
+  public getGame = catchAsync(async (req: UserRequestWithId, res: Response) => {
+    const { id } = req.params;
+
+    if (id == null || !isValidObjectId(id)) {
+      throw new BadRequestError('Invalid ID');
+    }
+
     const game = await this.gameService.getGameById(id);
 
     if (game == null) {
@@ -100,44 +106,58 @@ export class GameController {
    * Updates an existing game record.
    * @throws {NotFoundError} If the game to update does not exist.
    */
-  public updateGame = catchAsync(async (req: Request<any>, res: Response) => {
-    const { id } = req.params as GameParams;
-    const updateFields: IUpdateGamePayload = req.body;
+  public updateGame = catchAsync(
+    async (req: UserRequestWithId, res: Response) => {
+      const { id } = req.params;
 
-    const game = await this.gameService.updateGame({
-      ...updateFields,
-      _id: id,
-    });
+      if (id == null || !isValidObjectId(id)) {
+        throw new BadRequestError('Invalid ID');
+      }
 
-    if (game == null) {
-      throw new NotFoundError('Game');
+      const updateFields: IUpdateGamePayload = req.body;
+
+      const game = await this.gameService.updateGame({
+        ...updateFields,
+        _id: id,
+      });
+
+      if (game == null) {
+        throw new NotFoundError('Game');
+      }
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Game updated successfully',
+        data: {
+          ...game.toJSON(),
+          links: this.createLinks(req, id),
+        },
+      });
     }
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Game updated successfully',
-      data: {
-        ...game.toJSON(),
-        links: this.createLinks(req, id),
-      },
-    });
-  });
+  );
 
   /**
    * Deletes a game record from the database.
    */
-  public deleteGame = catchAsync(async (req: Request<any>, res: Response) => {
-    const { id } = req.params as GameParams;
-    await this.gameService.deleteGameById(id);
+  public deleteGame = catchAsync(
+    async (req: UserRequestWithId, res: Response) => {
+      const { id } = req.params;
 
-    return res.status(200).json({
-      status: 'success',
-      message: 'Game deleted successfully',
-      data: {
-        links: this.createLinks(req, id),
-      },
-    });
-  });
+      if (id == null || !isValidObjectId(id)) {
+        throw new BadRequestError('Invalid ID');
+      }
+
+      await this.gameService.deleteGameById(id);
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Game deleted successfully',
+        data: {
+          links: this.createLinks(req, id),
+        },
+      });
+    }
+  );
 
   /**
    * Creates a new game resource.
@@ -146,7 +166,7 @@ export class GameController {
     const game = await this.gameService.createGame(req.body);
 
     if (game == null || game._id == null) {
-      throw new Error('Internal error');
+      throw new Error('Could not create game');
     }
 
     return res.status(201).json({
