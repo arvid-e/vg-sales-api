@@ -6,6 +6,9 @@ interface PaginationOptions {
   hasUser: boolean;
 }
 
+/**
+ * Creates pagination links for get-all endpoints.
+ */
 export const createPaginationLinks = (options: PaginationOptions) => {
   const { baseUrl, page, limit, totalPages, hasUser } = options;
 

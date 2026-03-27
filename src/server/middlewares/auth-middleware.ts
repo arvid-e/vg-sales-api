@@ -4,6 +4,11 @@ import jwt from 'jsonwebtoken';
 import { AuthError } from '../errors/auth-error.js';
 import type { UserRequest } from '../interfaces/requests/request-types.js';
 
+/**
+ * Mandatory Authentication.
+ * Blocks requests that do not provide a valid JWT.
+ * @throws {AuthError} If token is missing, invalid, or expired.
+ */
 export const authorize = async (
   req: UserRequest,
   res: Response,
@@ -41,6 +46,11 @@ export const authorize = async (
   }
 };
 
+/**
+ * Optional Identification.
+ * Attempts to identify a user if a token is present, but allows the request
+ * to proceed even if the user is unauthenticated (Anonymous Access).
+ */
 export const identify = async (
   req: UserRequest,
   res: Response,
@@ -68,6 +78,10 @@ export const identify = async (
   }
 };
 
+/**
+ * Generates a signed JWT for a specific user ID.
+ * Uses environment configurations for secret key and expiration duration.
+ */
 export const generateToken = async (userId: string): Promise<string> => {
   const secret = process.env.JWT_SECRET;
   const expires = process.env.JWT_EXPIRES_IN;

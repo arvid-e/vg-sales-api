@@ -1,5 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 
+/**
+ * Handles Mongoose and MongoDB errors and sets the correct status code and error message.
+ */
 export const globalErrorHandler = (
   err: any,
   req: Request,
