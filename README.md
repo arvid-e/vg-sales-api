@@ -64,8 +64,9 @@ REST
 
 ### Seed script
 A seed script exists that fills the database with the sales data from the CSV file.  
+The seeding runs automatically if the databse is empty.   
 
-Usage:  
+To run manually:    
 - `npm run seed`
 
 ## Design Decisions
