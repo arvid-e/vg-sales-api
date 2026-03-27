@@ -298,7 +298,7 @@ paths:
     
   /users/{id}:
     delete:
-      summary: Delete a user
+      summary: Delete a user (can only delete your own user)
       tags: [Users]
       security:
         - bearerAuth: []
