@@ -2,6 +2,7 @@ import type {
   IGame,
   IGameDocument,
   IGameQuery,
+  IGroupedGameSales,
   IUpdateGamePayload,
 } from './game.js';
 
@@ -15,4 +16,5 @@ export interface IGameRepo {
     updateGamePayload: IUpdateGamePayload
   ): Promise<IGameDocument | null>;
   createGame(game: IGame): Promise<IGameDocument | null>;
+  getStats(groupBy: string): Promise<IGroupedGameSales[]>;
 }

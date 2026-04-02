@@ -40,3 +40,17 @@ export interface IGameQuery {
   page?: number;
   query: any;
 }
+
+export interface IGroupedGameSales {
+  name: string;
+  sales: number;
+  count: number;
+}
+
+export interface IGameSalesGroups {
+  genre: string;
+  platform: string;
+  publisher: string;
+}
+
+export const VALID_GROUPS: (keyof IGameSalesGroups)[] = ['genre', 'platform', 'publisher'];

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type { IGameService } from '../interfaces/game/game-service.js';
@@ -6,11 +7,13 @@ import type {
   IGame,
   IGameDocument,
   IGameQuery,
+  IGameSalesGroups,
+  IGroupedGameSales,
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
+import { VALID_GROUPS } from '../interfaces/game/game.js';
 import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
 import type { IPublisherRepo } from '../interfaces/publisher/publisher-repo.js';
-
 /**
  * Handles complex business logic for Game management.
  * Interfaces with multiple repositories to ensure data integrity across the domain.
@@ -25,7 +28,7 @@ export class GameService implements IGameService {
   /**
    * Fetches games with pagination and optional filtering by genre, platform and publisher.
    */
-  public getAllGames = async (
+  getAllGames = async (
     gameQuery: IGameQuery
   ): Promise<{ games: IGameDocument[]; total: number }> => {
     const { page = 1, limit = 20, query = {} } = gameQuery;
@@ -51,7 +54,7 @@ export class GameService implements IGameService {
     return await this.gameRepo.getAllGames({ page, limit, query: mongoQuery });
   };
 
-  public getGameById = async (id: string): Promise<IGameDocument | null> => {
+  getGameById = async (id: string): Promise<IGameDocument | null> => {
     const game = await this.gameRepo.getGameById(id);
 
     if (game == null) {
@@ -61,7 +64,7 @@ export class GameService implements IGameService {
     return game;
   };
 
-  public updateGame = async (
+  updateGame = async (
     updateGamePayload: IUpdateGamePayload
   ): Promise<IGameDocument | null> => {
     const game = await this.gameRepo.updateGame(updateGamePayload);
@@ -73,7 +76,7 @@ export class GameService implements IGameService {
     return game;
   };
 
-  public deleteGameById = async (id: string): Promise<boolean> => {
+  deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameRepo.deleteGameById(id);
 
     if (!deleted) {
@@ -87,7 +90,7 @@ export class GameService implements IGameService {
    * Orchestrates the creation of a game by validating that related
    * Platform and Publisher records exist first.
    */
-  public createGame = async (game: IGame): Promise<IGameDocument | null> => {
+  createGame = async (game: IGame): Promise<IGameDocument | null> => {
     // Validate both relationships in parallel to minimize database round-trip time
     const [platform, publisher] = await Promise.all([
       game.platform
@@ -107,5 +110,13 @@ export class GameService implements IGameService {
     }
 
     return await this.gameRepo.createGame(game);
+  };
+
+  getGroupedGameSales = async (field: string): Promise<IGroupedGameSales[]> => {
+    if (!VALID_GROUPS.includes(field as keyof IGameSalesGroups)) {
+      throw new BadRequestError(`Invalid grouping field: ${field}`);
+    }
+
+    return await this.gameRepo.getStats(field);
   };
 }

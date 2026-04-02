@@ -179,6 +179,25 @@ export class GameController {
     });
   });
 
+  getGroupedGameSales = catchAsync(async (req: UserRequest, res: Response) => {
+    const { groupBy } = req.query;
+
+    if (typeof groupBy !== 'string') {
+      throw new BadRequestError('groupBy must be of type string');
+    }
+
+    const groupedGames = await this.gameService.getGroupedGameSales(groupBy);
+
+    return res.status(201).json({
+      status: 'success',
+      data: {
+        groupedGames,
+      },
+    });
+  });
+
+
+
   /**
    * Generates HATEOAS links based on resource ID and user authorization status.
    */

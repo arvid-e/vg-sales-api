@@ -2,6 +2,8 @@ import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type {
   IGame,
   IGameDocument,
+  IGameSalesGroups,
+  IGroupedGameSales,
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
 import GamesModel from '../models/GamesModel.js';
@@ -9,7 +11,7 @@ import GamesModel from '../models/GamesModel.js';
 export class GameRepo implements IGameRepo {
   constructor(private gameModel: typeof GamesModel) {}
 
-  public getAllGames = async ({
+  getAllGames = async ({
     page = 1,
     limit = 20,
     query = {},
@@ -31,7 +33,7 @@ export class GameRepo implements IGameRepo {
     return { games, total };
   };
 
-  public getGameById = async (id: string): Promise<IGameDocument | null> => {
+  getGameById = async (id: string): Promise<IGameDocument | null> => {
     return await this.gameModel
       .findById(id)
       .populate('platform')
@@ -39,7 +41,7 @@ export class GameRepo implements IGameRepo {
       .exec();
   };
 
-  public updateGame = async (
+  updateGame = async (
     updatedGameData: IUpdateGamePayload
   ): Promise<IGameDocument | null> => {
     const { _id, ...updateFields } = updatedGameData;
@@ -58,12 +60,71 @@ export class GameRepo implements IGameRepo {
       .exec();
   };
 
-  public deleteGameById = async (id: string): Promise<boolean> => {
+  deleteGameById = async (id: string): Promise<boolean> => {
     const deleted = await this.gameModel.deleteOne({ _id: id });
     return deleted.deletedCount > 0;
   };
 
-  public createGame = async (game: IGame): Promise<IGameDocument | null> => {
+  createGame = async (game: IGame): Promise<IGameDocument | null> => {
     return await this.gameModel.create(game);
+  };
+
+  getStats = async (
+    groupBy: keyof IGameSalesGroups
+  ): Promise<IGroupedGameSales[]> => {
+    const collectionMap: Record<string, string> = {
+      publisher: 'publishers',
+      platform: 'platforms',
+    };
+
+    const targetCollection = collectionMap[groupBy];
+
+    // Initial Grouping 
+    const pipeline: any[] = [
+      {
+        $group: {
+          _id: `$${groupBy}`,
+          totalGlobalSales: { $sum: '$sales.global' },
+          gameCount: { $sum: 1 },
+        },
+      },
+      { $sort: { totalGlobalSales: -1 } },
+      { $limit: 15 },
+    ];
+
+    // Join only if it's a reference ID
+    if (targetCollection) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: targetCollection,
+            localField: '_id',
+            foreignField: '_id',
+            as: 'details',
+          },
+        },
+        { $unwind: '$details' },
+        {
+          $project: {
+            _id: 0,
+            name: '$details.name',
+            sales: { $round: ['$totalGlobalSales', 2] },
+            count: '$gameCount',
+          },
+        }
+      );
+    } else {
+      // Simple projection for plain strings like genre
+      pipeline.push({
+        $project: {
+          _id: 0,
+          name: '$_id',
+          sales: { $round: ['$totalGlobalSales', 2] },
+          count: '$gameCount',
+        },
+      });
+    }
+
+    return await this.gameModel.aggregate<IGroupedGameSales>(pipeline);
   };
 }
