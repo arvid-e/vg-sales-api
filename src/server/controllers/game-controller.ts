@@ -188,7 +188,7 @@ export class GameController {
 
     const groupedGames = await this.gameService.getGroupedGameSales(groupBy);
 
-    return res.status(201).json({
+    return res.status(200).json({
       status: 'success',
       data: {
         groupedGames,
