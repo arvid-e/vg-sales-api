@@ -79,16 +79,20 @@ export class GameRepo implements IGameRepo {
 
     const targetCollection = collectionMap[groupBy];
 
-    // Initial Grouping 
+    // Initial Grouping
     const pipeline: any[] = [
       {
         $group: {
           _id: `$${groupBy}`,
-          totalGlobalSales: { $sum: '$sales.global' },
-          gameCount: { $sum: 1 },
+          na_sales: { $sum: '$sales.na' },
+          eu_sales: { $sum: '$sales.eu' },
+          jp_sales: { $sum: '$sales.jp' },
+          other_sales: { $sum: '$sales.other' },
+          total_sales: { $sum: '$sales.global' },
+          count: { $sum: 1 },
         },
       },
-      { $sort: { totalGlobalSales: -1 } },
+      { $sort: { total_sales: -1 } },
       { $limit: 15 },
     ];
 
@@ -108,8 +112,12 @@ export class GameRepo implements IGameRepo {
           $project: {
             _id: 0,
             name: '$details.name',
-            sales: { $round: ['$totalGlobalSales', 2] },
-            count: '$gameCount',
+            na: { $round: ['$na_sales', 2] },
+            eu: { $round: ['$eu_sales', 2] },
+            jp: { $round: ['$jp_sales', 2] },
+            other: { $round: ['$other_sales', 2] },
+            total: { $round: ['$total_sales', 2] },
+            count: '$count',
           },
         }
       );
@@ -118,9 +126,12 @@ export class GameRepo implements IGameRepo {
       pipeline.push({
         $project: {
           _id: 0,
-          name: '$_id',
-          sales: { $round: ['$totalGlobalSales', 2] },
-          count: '$gameCount',
+          na: { $round: ['$na_sales', 2] },
+          eu: { $round: ['$eu_sales', 2] },
+          jp: { $round: ['$jp_sales', 2] },
+          other: { $round: ['$other_sales', 2] },
+          total: { $round: ['$total_sales', 2] },
+          count: '$count',
         },
       });
     }
