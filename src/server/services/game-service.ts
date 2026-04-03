@@ -112,6 +112,9 @@ export class GameService implements IGameService {
     return await this.gameRepo.createGame(game);
   };
 
+  /**
+   * Get the top 15 sales by genre, platform or publisher.
+   */
   getGroupedGameSales = async (field: string): Promise<IGroupedGameSales[]> => {
     if (!VALID_GROUPS.includes(field as keyof IGameSalesGroups)) {
       throw new BadRequestError(`Invalid grouping field: ${field}`);

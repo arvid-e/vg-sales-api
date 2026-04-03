@@ -179,6 +179,9 @@ export class GameController {
     });
   });
 
+  /**
+   * Get top 15 sales by genre, platform or publisher.
+   */
   getGroupedGameSales = catchAsync(async (req: UserRequest, res: Response) => {
     const { groupBy } = req.query;
 
