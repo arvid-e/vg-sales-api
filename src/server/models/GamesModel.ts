@@ -27,6 +27,10 @@ const gamesSchema = new Schema<IGameDocument>(
       other: Number,
       global: Number,
     },
+    title_embedding: {
+      type: [Number],
+      default: [],
+    },
   },
   {
     timestamps: true,
