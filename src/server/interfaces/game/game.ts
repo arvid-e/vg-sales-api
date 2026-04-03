@@ -1,6 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 
 export interface IGame {
+  _id: mongoose.Types.ObjectId;
   rank: number;
   name: string;
   platform: mongoose.Schema.Types.ObjectId;
@@ -37,9 +38,21 @@ export interface IUpdateGamePayload {
 }
 
 export interface IGameQuery {
-  limit?: number;
-  page?: number;
-  query: any;
+  limit?: number | undefined;
+  page?: number | undefined;
+  search?: string | undefined;
+  genre?: string | undefined;
+  platform?: string | undefined;
+  publisher?: string | undefined;
+}
+
+export interface IGameMongoFilter {
+  [key: string]: any;
+
+  name?: { $regex: RegExp } | undefined;
+  genre?: { $regex: RegExp } | undefined;
+  platform?: mongoose.Types.ObjectId | undefined;
+  publisher?: mongoose.Types.ObjectId | undefined;
 }
 
 export interface IGroupedGameSales {

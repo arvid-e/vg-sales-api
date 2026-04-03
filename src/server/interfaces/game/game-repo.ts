@@ -1,16 +1,18 @@
 import type {
   IGame,
   IGameDocument,
-  IGameQuery,
+  IGameMongoFilter,
   IGroupedGameSales,
   IUpdateGamePayload,
 } from './game.js';
 
 export interface IGameRepo {
   getAllGames(
-    gameQuery: IGameQuery
-  ): Promise<{ games: IGameDocument[]; total: number }>;
-  getGameById(id: string): Promise<IGameDocument | null>;
+    filter: IGameMongoFilter,
+    page: number,
+    limit: number
+  ): Promise<{ games: IGame[]; total: number }>;
+  getGameById(id: string): Promise<IGame | null>;
   deleteGameById(id: string): Promise<boolean>;
   updateGame(
     updateGamePayload: IUpdateGamePayload

@@ -14,6 +14,7 @@ import type {
 import { VALID_GROUPS } from '../interfaces/game/game.js';
 import type { IPlatFormRepo } from '../interfaces/platform/platform-repo.js';
 import type { IPublisherRepo } from '../interfaces/publisher/publisher-repo.js';
+
 /**
  * Handles complex business logic for Game management.
  * Interfaces with multiple repositories to ensure data integrity across the domain.
@@ -26,35 +27,30 @@ export class GameService implements IGameService {
   ) {}
 
   /**
-   * Fetches games with pagination and optional filtering by genre, platform and publisher.
+   * Fetches games with pagination and optional filtering.
    */
   getAllGames = async (
     gameQuery: IGameQuery
-  ): Promise<{ games: IGameDocument[]; total: number }> => {
-    const { page = 1, limit = 20, query = {} } = gameQuery;
-    const mongoQuery: any = {};
+  ): Promise<{ games: IGame[]; total: number }> => {
+    const { page = 1, limit = 20, ...filters } = gameQuery;
 
-    if (query.genre) {
-      // Escape special regex characters to prevent syntax errors from user input
-      const escapedGenre = query.genre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      mongoQuery.genre = { $regex: new RegExp(escapedGenre, 'i') };
+    if (filters.search) {
+      const semanticResults = await this.gameRepo.searchGamesLocally(
+        filters.search
+      );
+
+      return {
+        games: semanticResults,
+        total: semanticResults.length,
+      };
     }
 
-    if (query.platform) {
-      const platformId = await this.platformRepo.getIdByName(query.platform);
-      // If the platform name doesn't exist, use a dummy ID to ensure 0 results are returned
-      mongoQuery.platform = platformId || new mongoose.Types.ObjectId();
-    }
+    const query = await this.buildMongoQuery(filters);
 
-    if (query.publisher) {
-      const publisherId = await this.publisherRepo.getIdByName(query.publisher);
-      mongoQuery.publisher = publisherId || new mongoose.Types.ObjectId();
-    }
-
-    return await this.gameRepo.getAllGames({ page, limit, query: mongoQuery });
+    return await this.gameRepo.getAllGames(query, page, limit);
   };
 
-  getGameById = async (id: string): Promise<IGameDocument | null> => {
+  getGameById = async (id: string): Promise<IGame | null> => {
     const game = await this.gameRepo.getGameById(id);
 
     if (game == null) {
@@ -112,14 +108,6 @@ export class GameService implements IGameService {
     return await this.gameRepo.createGame(game);
   };
 
-  searchGame = async (query: string, page: number, limit: number) => {
-    if (query) {
-      return await this.gameRepo.searchGamesLocally(query);
-    } else {
-      return await this.gameRepo.getAllGames({ page, limit, query });
-    }
-  };
-
   /**
    * Get the top 15 sales by genre, platform or publisher.
    */
@@ -129,5 +117,30 @@ export class GameService implements IGameService {
     }
 
     return await this.gameRepo.getStats(field);
+  };
+
+  private buildMongoQuery = async (filters: IGameQuery) => {
+    const mongoQuery: any = {};
+
+    if (filters.genre) {
+      // Escape special regex characters to prevent syntax errors from user input
+      const escapedGenre = filters.genre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      mongoQuery.genre = { $regex: new RegExp(escapedGenre, 'i') };
+    }
+
+    if (filters.platform) {
+      const platformId = await this.platformRepo.getIdByName(filters.platform);
+      // If the platform name doesn't exist, use a dummy ID to ensure 0 results are returned
+      mongoQuery.platform = platformId || new mongoose.Types.ObjectId();
+    }
+
+    if (filters.publisher) {
+      const publisherId = await this.publisherRepo.getIdByName(
+        filters.publisher
+      );
+      mongoQuery.publisher = publisherId || new mongoose.Types.ObjectId();
+    }
+
+    return mongoQuery;
   };
 }

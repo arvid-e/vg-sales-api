@@ -3,6 +3,7 @@ import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type {
   IGame,
   IGameDocument,
+  IGameMongoFilter,
   IGameSalesGroups,
   IGroupedGameSales,
   IUpdateGamePayload,
@@ -13,33 +14,35 @@ import { AIService } from '../services/ai-service.js';
 export class GameRepo implements IGameRepo {
   constructor(private gameModel: typeof GamesModel) {}
 
-  getAllGames = async ({
-    page = 1,
-    limit = 20,
-    query = {},
-  }): Promise<{ games: IGameDocument[]; total: number }> => {
+  getAllGames = async (
+    filter: IGameMongoFilter = {},
+    page: number = 1,
+    limit: number = 1
+  ): Promise<{ games: IGame[]; total: number }> => {
     const skip = (page - 1) * limit;
 
     const [games, total] = await Promise.all([
       this.gameModel
-        .find(query)
+        .find(filter as any)
         .populate('platform')
         .populate('publisher')
+        .lean()
         .sort({ rank: 1 })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.gameModel.countDocuments(query),
+      this.gameModel.countDocuments(filter as any),
     ]);
 
     return { games, total };
   };
 
-  getGameById = async (id: string): Promise<IGameDocument | null> => {
+  getGameById = async (id: string): Promise<IGame | null> => {
     return await this.gameModel
       .findById(id)
       .populate('platform')
       .populate('publisher')
+      .lean()
       .exec();
   };
 
