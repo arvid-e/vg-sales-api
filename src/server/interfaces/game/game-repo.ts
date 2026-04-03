@@ -17,4 +17,5 @@ export interface IGameRepo {
   ): Promise<IGameDocument | null>;
   createGame(game: IGame): Promise<IGameDocument | null>;
   getStats(groupBy: string): Promise<IGroupedGameSales[]>;
+  searchGamesLocally(query: string): Promise<IGame[]>;
 }

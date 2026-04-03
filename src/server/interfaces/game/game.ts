@@ -14,7 +14,7 @@ export interface IGame {
     other: number;
     global: number;
   };
-  title_embedding: [number];
+  title_embedding: number[];
 }
 
 export interface IGameDocument extends IGame, Document {}

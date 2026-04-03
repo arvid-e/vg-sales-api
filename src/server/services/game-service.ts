@@ -112,6 +112,14 @@ export class GameService implements IGameService {
     return await this.gameRepo.createGame(game);
   };
 
+  searchGame = async (query: string, page: number, limit: number) => {
+    if (query) {
+      return await this.gameRepo.searchGamesLocally(query);
+    } else {
+      return await this.gameRepo.getAllGames({ page, limit, query });
+    }
+  };
+
   /**
    * Get the top 15 sales by genre, platform or publisher.
    */

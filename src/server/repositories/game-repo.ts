@@ -1,3 +1,4 @@
+import cosineSimilarity from 'compute-cosine-similarity';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type {
   IGame,
@@ -7,6 +8,7 @@ import type {
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
 import GamesModel from '../models/GamesModel.js';
+import { AIService } from '../services/ai-service.js';
 
 export class GameRepo implements IGameRepo {
   constructor(private gameModel: typeof GamesModel) {}
@@ -138,4 +140,27 @@ export class GameRepo implements IGameRepo {
 
     return await this.gameModel.aggregate<IGroupedGameSales>(pipeline);
   };
+
+  async searchGamesLocally(query: string): Promise<IGame[]> {
+    // Turn the user's string into a vector
+    const aiService = new AIService();
+    const queryVector = await aiService.generateVector(query);
+
+    // Get all games that have an embedding
+    const games = await this.gameModel
+      .find({
+        title_embedding: { $exists: true, $not: { $size: 0 } },
+      })
+      .lean();
+
+    // Map through and calculate similarity score
+    const scoredGames = games.map((game) => ({
+      ...game,
+      // Compare the Query Vector to the Game's Vector
+      score: cosineSimilarity(queryVector, game.title_embedding) || 0,
+    }));
+
+    // Sort by highest score and take the top 10
+    return scoredGames.sort((a, b) => b.score - a.score).slice(0, 10);
+  }
 }
