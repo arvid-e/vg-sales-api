@@ -7,11 +7,13 @@ import PublisherModel from '../models/PublisherModel.js';
 import { GameRepo } from '../repositories/game-repo.js';
 import { PlatformRepo } from '../repositories/platform-repo.js';
 import { PublisherRepo } from '../repositories/publisher-repo.js';
+import { AIService } from '../services/ai-service.js';
 import { GameService } from '../services/game-service.js';
 
 const platformRepo = new PlatformRepo(PlatformModel);
 const publisherRepo = new PublisherRepo(PublisherModel);
-const gameRepo = new GameRepo(GamesModel);
+const aiService = new AIService();
+const gameRepo = new GameRepo(GamesModel, aiService);
 const gameService = new GameService(gameRepo, platformRepo, publisherRepo);
 const gameController = new GameController(gameService);
 

@@ -1,4 +1,5 @@
 import cosineSimilarity from 'compute-cosine-similarity';
+import type { IAIService } from '../interfaces/ai/ai-service.js';
 import type { IGameRepo } from '../interfaces/game/game-repo.js';
 import type {
   IGame,
@@ -9,10 +10,12 @@ import type {
   IUpdateGamePayload,
 } from '../interfaces/game/game.js';
 import GamesModel from '../models/GamesModel.js';
-import { AIService } from '../services/ai-service.js';
 
 export class GameRepo implements IGameRepo {
-  constructor(private gameModel: typeof GamesModel) {}
+  constructor(
+    private gameModel: typeof GamesModel,
+    private readonly aiService: IAIService
+  ) {}
 
   getAllGames = async (
     filter: IGameMongoFilter = {},
@@ -74,6 +77,9 @@ export class GameRepo implements IGameRepo {
     return await this.gameModel.create(game);
   };
 
+  /**
+   * Aggregates the top 15 sales by specified grouping. (Genre, platform, publisher)
+   */
   getStats = async (
     groupBy: keyof IGameSalesGroups
   ): Promise<IGroupedGameSales[]> => {
@@ -146,8 +152,7 @@ export class GameRepo implements IGameRepo {
 
   async searchGamesLocally(query: string): Promise<IGame[]> {
     // Turn the user's string into a vector
-    const aiService = new AIService();
-    const queryVector = await aiService.generateVector(query);
+    const queryVector = await this.aiService.generateVector(query);
 
     // Get all games that have an embedding
     const games = await this.gameModel

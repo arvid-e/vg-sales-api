@@ -40,7 +40,7 @@ services:
       - /etc/letsencrypt/archive/${DOMAIN_NAME}:/etc/letsencrypt/archive/${DOMAIN_NAME}:ro
       - ./webroot:/var/www/html
     depends_on:
-      - api
+      api:
         condition: service_healthy
 
 volumes:
