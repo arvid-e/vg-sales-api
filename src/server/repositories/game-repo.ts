@@ -150,6 +150,9 @@ export class GameRepo implements IGameRepo {
     return await this.gameModel.aggregate<IGroupedGameSales>(pipeline);
   };
 
+  /**
+   * Search all games using semantic search and gives results based on a similarity score.
+   */
   async searchGamesLocally(query: string): Promise<IGame[]> {
     // Turn the user's string into a vector
     const queryVector = await this.aiService.generateVector(query);
