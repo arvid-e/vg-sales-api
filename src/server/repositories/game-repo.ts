@@ -137,6 +137,7 @@ export class GameRepo implements IGameRepo {
       pipeline.push({
         $project: {
           _id: 0,
+          name: '$_id',
           na: { $round: ['$na_sales', 2] },
           eu: { $round: ['$eu_sales', 2] },
           jp: { $round: ['$jp_sales', 2] },
