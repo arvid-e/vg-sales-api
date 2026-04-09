@@ -154,7 +154,7 @@ export class GameRepo implements IGameRepo {
   /**
    * Search all games using semantic search and gives results based on a similarity score.
    */
-  async searchGamesLocally(query: string): Promise<IGame[]> {
+  async searchGamesLocally(query: string, limit: number = 10): Promise<IGame[]> {
     // Turn the user's string into a vector
     const queryVector = await this.aiService.generateVector(query);
 
@@ -172,7 +172,7 @@ export class GameRepo implements IGameRepo {
       score: cosineSimilarity(queryVector, game.title_embedding) || 0,
     }));
 
-    // Sort by highest score and take the top 10
-    return scoredGames.sort((a, b) => b.score - a.score).slice(0, 10);
+    // Sort by highest score
+    return scoredGames.sort((a, b) => b.score - a.score).slice(0, limit);
   }
 }

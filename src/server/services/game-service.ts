@@ -36,7 +36,7 @@ export class GameService implements IGameService {
 
     if (filters.search) {
       const semanticResults = await this.gameRepo.searchGamesLocally(
-        filters.search
+        filters.search, limit
       );
 
       return {
