@@ -1,10 +1,14 @@
 import type { Request, Response } from 'express';
 import { isValidObjectId } from 'mongoose';
+import { AuthError } from '../errors/auth-error.js';
 import { BadRequestError } from '../errors/bad-request-error.js';
-import type { UserRequestWithId } from '../interfaces/requests/request-types.js';
+import { NotFoundError } from '../errors/not-found-error.js';
+import type {
+  UserRequest,
+  UserRequestWithId,
+} from '../interfaces/requests/request-types.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import { catchAsync } from '../utils/catch-async.js';
-import { NotFoundError } from '../errors/not-found-error.js';
 
 /**
  * Controller handling all User related HTTP requests.
@@ -19,7 +23,7 @@ export class UserController {
   createUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const { user, token } = await this.userService.createUser({
+    const { user, token } = await this.userService.create({
       username,
       password,
     });
@@ -49,7 +53,7 @@ export class UserController {
       throw new NotFoundError('User');
     }
 
-    await this.userService.deleteUser(id);
+    await this.userService.delete(id);
 
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const links = [
@@ -70,7 +74,7 @@ export class UserController {
   loginUser = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const { user, token } = await this.userService.loginUser({
+    const { user, token } = await this.userService.login({
       username,
       password,
     });
@@ -81,6 +85,26 @@ export class UserController {
       data: user,
       token,
       links: this.createLinks(req, userId),
+    });
+  });
+
+  /**
+   * Checks if the user is authenticated.
+   */
+  getMe = catchAsync(async (req: UserRequest, res: Response) => {
+    if (!req.user) {
+      throw new AuthError('Not authenticated');
+    }
+
+    const id = req.user?.id;
+    const user = await this.userService.getUser(id);
+
+    if (!user) {
+      throw new NotFoundError('User');
+    }
+    return res.status(200).json({
+      id: user._id,
+      username: user.username,
     });
   });
 

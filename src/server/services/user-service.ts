@@ -4,7 +4,7 @@ import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
-import type { IAuthResponse, ICredentials } from '../interfaces/user/user.js';
+import type { IAuthResponse, ICredentials, IUser, IUserDocument } from '../interfaces/user/user.js';
 import { generateToken } from '../middlewares/auth-middleware.js';
 
 /**
@@ -19,7 +19,7 @@ export class UserService implements IUserService {
    * @throws {BadRequestError} If the password does not meet requirements.
    * @throws {BadRequestError} If the username does not meet requirements.
    */
-  createUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
+  create = async (credentials: ICredentials): Promise<IAuthResponse> => {
     if (credentials.password == null || credentials.password.length < 10) {
       throw new BadRequestError('Password must be at least 10 characters long');
     }
@@ -31,7 +31,7 @@ export class UserService implements IUserService {
     const hashedPassword = await bcrypt.hash(credentials.password, 12);
     const userPayload = { ...credentials, password: hashedPassword };
 
-    const user = await this.userRepo.createUser(userPayload);
+    const user = await this.userRepo.create(userPayload);
 
     if (user == null) {
       throw new Error('User could not be created');
@@ -46,8 +46,8 @@ export class UserService implements IUserService {
    * A user can only delete their own account.
    * @throws {NotFoundError} If the user ID does not exist.
    */
-  deleteUser = async (userId: string): Promise<boolean> => {
-    const userDeleted = await this.userRepo.deleteUserById(userId);
+  delete = async (userId: string): Promise<boolean> => {
+    const userDeleted = await this.userRepo.deleteById(userId);
 
     if (!userDeleted) {
       throw new NotFoundError('User');
@@ -60,10 +60,10 @@ export class UserService implements IUserService {
    * Validates user credentials and issues an authentication token.
    * @throws {AuthError} For any failure to prevent account enumeration attacks.
    */
-  loginUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
+  login = async (credentials: ICredentials): Promise<IAuthResponse> => {
     const { username, password } = credentials;
 
-    const user = await this.userRepo.findUserByUsername(username);
+    const user = await this.userRepo.findByUsername(username);
 
     if (user == null) {
       throw new AuthError('Invalid username or password');
@@ -80,4 +80,17 @@ export class UserService implements IUserService {
 
     return { user, token };
   };
+
+  /**
+   * Get single user by userId.
+   */
+  getUser = async (id: string): Promise<IUserDocument | null> => {
+    const user = this.userRepo.findById(id);
+
+    if (user == null) {
+      throw new NotFoundError('User');
+    }
+
+    return user;
+  }
 }

@@ -5,16 +5,20 @@ import UserModel from '../models/UserModel.js';
 export class UserRepo implements IUserRepo {
   constructor(private userModel: typeof UserModel) {}
 
-  createUser = async (user: IUser): Promise<IUserDocument | null> => {
+  create = async (user: IUser): Promise<IUserDocument | null> => {
     return await this.userModel.create(user);
   };
 
-  deleteUserById = async (id: string): Promise<boolean> => {
+  deleteById = async (id: string): Promise<boolean> => {
     const deleted = await this.userModel.deleteOne({ _id: id });
     return deleted.deletedCount > 0;
   };
 
-  findUserByUsername = async (
+  findById = async (id: string): Promise<IUserDocument | null> => {
+    return await this.userModel.findById(id);
+  }
+
+  findByUsername = async (
     username: string
   ): Promise<IUserDocument | null> => {
     return await this.userModel.findOne({ username }).select('+password');
