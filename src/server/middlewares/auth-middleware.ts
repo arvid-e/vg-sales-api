@@ -15,29 +15,16 @@ export const authorize = async (
   next: NextFunction
 ) => {
   try {
-    if (!process.env.JWT_SECRET) {
-      return next(
-        new Error('JWT configuration is missing in environment variables')
-      );
-    }
+    const token =
+      req.cookies?.app_session || req.headers.authorization?.split(' ')[1];
 
-    let token: string | undefined;
-
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
-    }
-
-    if (!token) {
+    if (token == null) {
       return next(new AuthError('No authorization token provided'));
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: string;
     };
-
     req.user = decoded;
 
     next();
@@ -57,13 +44,10 @@ export const identify = async (
   next: NextFunction
 ) => {
   try {
-    let token: string | undefined;
+    const token =
+      req.cookies?.app_session || req.headers.authorization?.split(' ')[1];
 
-    if (req.headers.authorization?.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
-    }
-
-    if (!token) {
+    if (token == null) {
       return next();
     }
 
