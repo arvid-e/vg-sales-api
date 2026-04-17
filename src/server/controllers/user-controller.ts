@@ -20,7 +20,7 @@ export class UserController {
   /**
    * Registers a new user, saves it to the database and respons with a authentication token.
    */
-  createUser = catchAsync(async (req: Request, res: Response) => {
+  register = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     const { user, token } = await this.userService.create({
@@ -42,7 +42,7 @@ export class UserController {
    * @throws {BadRequestError} If provided ID is invalid.
    * @throws {NotFoundError} If provided user ID is not their own, 404 in order to hide the existance of other users.
    */
-  deleteUser = catchAsync(async (req: UserRequestWithId, res: Response) => {
+  delete = catchAsync(async (req: UserRequestWithId, res: Response) => {
     const { id } = req.params;
 
     if (id == null || !isValidObjectId(id)) {
@@ -71,7 +71,7 @@ export class UserController {
   /**
    * Logs in the user and responds with an authentication token.
    */
-  loginUser = catchAsync(async (req: Request, res: Response) => {
+  login = catchAsync(async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     const { user, token } = await this.userService.login({
@@ -86,6 +86,18 @@ export class UserController {
       token,
       links: this.createLinks(req, userId),
     });
+  });
+
+  /**
+   * Logs out the user by clearing the session cookie.
+   */
+  logout = catchAsync(async (req: Request, res: Response) => {
+    res.clearCookie('app_session', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+    return res.status(200).json({ message: 'Logged out successfully' });
   });
 
   /**

@@ -12,8 +12,9 @@ const userController = new UserController(userService);
 
 const router = Router();
 
-router.post('/register', userController.createUser);
-router.post('/login', userController.loginUser);
+router.post('/register', userController.register);
+router.post('/login', userController.login);
+router.post('logout', userController.logout);
 router.get('/me', identify, userController.getMe);
 
 export default router;
