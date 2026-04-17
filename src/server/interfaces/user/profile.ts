@@ -1,6 +1,6 @@
 export interface IGitHubProfile {
   id: number;           
-  username: string;       
+  login: string;       
   avatar_url: string;   
   email: string | null;
 }

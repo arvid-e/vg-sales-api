@@ -19,7 +19,7 @@ export class UserController {
 
 
   syncUser = catchAsync(async (req: Request, res: Response) => {
-    const { id, username, avatar_url, email } = req.body;
+    const { id, login, avatar_url, email } = req.body;
     const secret = req.headers['x-internal-secret'];
 
     if (secret !== process.env.INTERNAL_API_KEY) {
@@ -30,7 +30,7 @@ export class UserController {
       throw new BadRequestError('GitHub ID is required for syncing.');
     }
 
-    let user = await this.userService.syncWithProvider({id, username, avatar_url, email});
+    let user = await this.userService.syncWithProvider({id, login, avatar_url, email});
 
     res.status(200).json(user);
   });

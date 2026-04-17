@@ -19,7 +19,7 @@ export class UserService implements IUserService {
 
     const userPayload: IUser = {
       githubId: profile.id,
-      username: profile.username,
+      username: profile.login,
       avatarUrl: profile.avatar_url,
       role: 'user',
     };
