@@ -17,24 +17,22 @@ import { catchAsync } from '../utils/catch-async.js';
 export class UserController {
   constructor(private userService: IUserService) {}
 
-  /**
-   * Registers a new user, saves it to the database and respons with a authentication token.
-   */
-  register = catchAsync(async (req: Request, res: Response) => {
-    const { username, password } = req.body;
 
-    const { user, token } = await this.userService.create({
-      username,
-      password,
-    });
-    const userId = user._id.toString();
+  syncUser = catchAsync(async (req: Request, res: Response) => {
+    const { id, username, avatar_url, email } = req.body;
+    const secret = req.headers['x-internal-secret'];
 
-    return res.status(201).json({
-      status: 'success',
-      data: user,
-      token,
-      links: this.createLinks(req, userId),
-    });
+    if (secret !== process.env.INTERNAL_API_KEY) {
+      throw new AuthError('Internal route.');
+    }
+
+    if (!id) {
+      throw new BadRequestError('GitHub ID is required for syncing.');
+    }
+
+    let user = await this.userService.syncWithProvider({id, username, avatar_url, email});
+
+    res.status(200).json(user);
   });
 
   /**
@@ -69,26 +67,6 @@ export class UserController {
   });
 
   /**
-   * Logs in the user and responds with an authentication token.
-   */
-  login = catchAsync(async (req: Request, res: Response) => {
-    const { username, password } = req.body;
-
-    const { user, token } = await this.userService.login({
-      username,
-      password,
-    });
-    const userId = user._id.toString();
-
-    return res.status(200).json({
-      status: 'success',
-      data: user,
-      token,
-      links: this.createLinks(req, userId),
-    });
-  });
-
-  /**
    * Logs out the user by clearing the session cookie.
    */
   logout = catchAsync(async (req: Request, res: Response) => {
@@ -109,7 +87,7 @@ export class UserController {
     }
 
     const id = req.user?.id;
-    const user = await this.userService.getUser(id);
+    const user = await this.userService.getById(id);
 
     if (!user) {
       throw new NotFoundError('User');

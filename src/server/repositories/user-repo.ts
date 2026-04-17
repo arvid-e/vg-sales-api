@@ -9,6 +9,12 @@ export class UserRepo implements IUserRepo {
     return await this.userModel.create(user);
   };
 
+  update = async (user: IUser): Promise<IUserDocument | null> => {
+    return await this.userModel
+      .findByIdAndUpdate(user._id, user, { new: true, runValidators: true })
+      .exec();
+  };
+
   deleteById = async (id: string): Promise<boolean> => {
     const deleted = await this.userModel.deleteOne({ _id: id });
     return deleted.deletedCount > 0;
@@ -16,11 +22,9 @@ export class UserRepo implements IUserRepo {
 
   findById = async (id: string): Promise<IUserDocument | null> => {
     return await this.userModel.findById(id);
-  }
+  };
 
-  findByUsername = async (
-    username: string
-  ): Promise<IUserDocument | null> => {
-    return await this.userModel.findOne({ username }).select('+password');
+  findByGithubId = async (githubId: number): Promise<IUserDocument | null> => {
+    return await this.userModel.findOne({ githubId }).exec();
   };
 }

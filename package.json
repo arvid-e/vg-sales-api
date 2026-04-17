@@ -22,7 +22,7 @@
     "seed": "node dist/server/config/seed-db.js",
     "seed:embeddings": "node dist/server/config/seed-embeddings.js",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
