@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:18-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
@@ -7,7 +7,7 @@ COPY . .
 RUN npx tsc
 
 # Run Stage
-FROM node:18-alpine
+FROM node:20-slim
 RUN apk add --no-cache curl
 
 WORKDIR /usr/src/app
