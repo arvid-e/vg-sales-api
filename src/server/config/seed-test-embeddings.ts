@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import mongoose, { type AnyBulkWriteOperation } from 'mongoose';
-import type { IGameDocument } from '../interfaces/game/game.js';
+import mongoose from 'mongoose';
 import GamesModel from '../models/GamesModel.js';
+import { AIService } from '../services/ai-service.js';
 
 dotenv.config();
 
@@ -25,6 +25,8 @@ const runSeed = async () => {
 };
 
 const seed = async () => {
+  const ai = new AIService();
+
   const games = await GamesModel.find({
     $or: [
       { title_embedding: { $exists: false } },
@@ -34,17 +36,20 @@ const seed = async () => {
 
   if (games.length === 0) return;
 
-  const bulkOps: AnyBulkWriteOperation<IGameDocument>[] = games.map((game) => ({
-    updateOne: {
-      filter: { _id: game._id },
-      update: {
-        $set: { title_embedding: [0.1, 0.2, 0.3] },
+  const bulkOps = [];
+  for (const game of games) {
+    const textToEmbed = `${game.name} ${game.genre}`;
+    const vector = await ai.generateVector(textToEmbed);
+
+    bulkOps.push({
+      updateOne: {
+        filter: { _id: game._id },
+        update: { $set: { title_embedding: vector } },
       },
-    },
-  }));
+    });
+  }
 
   await GamesModel.bulkWrite(bulkOps);
-  console.log(`Successfully seeded ${bulkOps.length} games.`);
 };
 
 runSeed();
