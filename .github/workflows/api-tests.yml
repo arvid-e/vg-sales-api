@@ -75,6 +75,10 @@ jobs:
           JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
           INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
         
+      - name: Seed Embeddings
+        run: |
+          docker exec <container_name> node dist/server/config/seed-embeddings.js
+        
       - name: Install Test Dependencies
         run: npm install -D tsx
 
