@@ -73,10 +73,13 @@ jobs:
           MONGO_PASSWORD: ${{ env.MONGO_PASSWORD }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
+        
+      - name: Install Test Dependencies
+        run: npm install -D tsx
 
       - name: Generate Auth Token
         run: |
-          export TEST_TOKEN=$(npx ts-node src/server/config/generate-token.ts)
+          export TEST_TOKEN=$(npx tsx src/server/config/generate-token.ts)
           echo "TEST_TOKEN=$TEST_TOKEN" >> $GITHUB_ENV
 
       - name: Run Newman Tests
