@@ -8,8 +8,8 @@ import type {
   UserRequestWithId,
 } from '../interfaces/requests/request-types.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
-import { catchAsync } from '../utils/catch-async.js';
 import { generateToken } from '../middlewares/auth-middleware.js';
+import { catchAsync } from '../utils/catch-async.js';
 
 /**
  * Controller handling all User related HTTP requests.
@@ -56,7 +56,7 @@ export class UserController {
 
     return res.status(200).json({
       testUser,
-      token
+      token,
     });
   });
 

@@ -21,6 +21,7 @@
     "build": "tsc",
     "seed": "node dist/server/config/seed-db.js",
     "seed:embeddings": "node dist/server/config/seed-embeddings.js",
+    "seed:embeddings:test": "node dist/server/config/seed-embeddings-test.js",
     "start": "node dist/index.js",
     "dev": "nodemon"
   },
