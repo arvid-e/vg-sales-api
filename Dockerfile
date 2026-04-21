@@ -24,4 +24,4 @@ COPY --from=builder /usr/src/app/swagger.yml ./swagger.yml
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node dist/server/config/seed-db.js && node dist/server/config/seed-embeddings.js && node dist/index.js"]
+CMD ["sh", "-c", "node dist/server/config/seed-db.js && node dist/server/config/seed-test-embeddings.js && node dist/index.js"]
