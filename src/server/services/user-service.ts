@@ -2,18 +2,18 @@ import { NotFoundError } from '../errors/not-found-error.js';
 import type { IGitHubProfile } from '../interfaces/user/profile.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
-import type {
-  IUser,
-  IUserDocument,
-} from '../interfaces/user/user.js';
+import type { IUser, IUserDocument } from '../interfaces/user/user.js';
 
 /**
- * Service for managing User authentication and account lifecycle.
- * Handles sensitive data processing including password hashing and JWT generation.
+ * Service that syncs user accounts with the provider (Github).
  */
 export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
 
+  /**
+   * Syncs the user account information from the provider with the locally stores user data.
+   * Creates a new user if it does not exist.
+   */
   async syncWithProvider(profile: IGitHubProfile): Promise<IUserDocument> {
     const existingUser = await this.userRepo.findByGithubId(profile.id);
 
@@ -45,7 +45,6 @@ export class UserService implements IUserService {
   /**
    * Permanently removes a user account.
    * A user can only delete their own account.
-   * @throws {NotFoundError} If the user ID does not exist.
    */
   delete = async (userId: string): Promise<boolean> => {
     const userDeleted = await this.userRepo.deleteById(userId);
@@ -58,10 +57,30 @@ export class UserService implements IUserService {
   };
 
   /**
+   * Create a new user from a GitHub profile.
+   */
+  create = async (profile: IGitHubProfile): Promise<IUserDocument> => {
+    const userPayload: IUser = {
+      githubId: profile.id,
+      username: profile.login,
+      avatarUrl: profile.avatar_url,
+      role: 'user',
+    };
+
+    const testUser = await this.userRepo.create(userPayload);
+
+    if (!testUser) {
+      throw new Error(`Failed create user with GitHub ID: ${profile.id}`);
+    }
+
+    return testUser;
+  };
+
+  /**
    * Get single user by userId.
    */
   getById = async (id: string): Promise<IUserDocument | null> => {
-    const user = this.userRepo.findById(id);
+    const user = await this.userRepo.findById(id);
 
     if (user == null) {
       throw new NotFoundError('User');

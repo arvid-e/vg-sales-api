@@ -1,5 +1,6 @@
 # Build Stage
-FROM node:18-alpine AS builder
+FROM node:20-slim AS builder
+RUN apt-get update && apt-get install -y python3 build-essential
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
@@ -7,8 +8,8 @@ COPY . .
 RUN npx tsc
 
 # Run Stage
-FROM node:18-alpine
-RUN apk add --no-cache curl
+FROM node:20-slim
+RUN apt-get update && apt-get install -y python3 build-essential
 
 WORKDIR /usr/src/app
 
@@ -23,4 +24,4 @@ COPY --from=builder /usr/src/app/swagger.yml ./swagger.yml
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node dist/server/config/seed-db.js && node dist/index.js"]
+CMD ["sh", "-c", "node dist/server/config/seed-db.js && node dist/server/config/seed-test-embeddings.js && node dist/index.js"]

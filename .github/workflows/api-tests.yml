@@ -2,7 +2,8 @@ name: API CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '**'
 
 jobs:
   lint:
@@ -45,7 +46,7 @@ jobs:
           retention-days: 1
 
   api-tests:
-    needs: build 
+    needs: build
     runs-on: ubuntu-latest
     env:
       MONGO_USER: ${{ secrets.MONGO_USER }}
@@ -72,6 +73,15 @@ jobs:
           MONGO_PASSWORD: ${{ env.MONGO_PASSWORD }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
+          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
+        
+      - name: Install Test Dependencies
+        run: npm install -D tsx
+
+      - name: Generate Auth Token
+        run: |
+          export TEST_TOKEN=$(npx tsx src/server/config/generate-token.ts)
+          echo "TEST_TOKEN=$TEST_TOKEN" >> $GITHUB_ENV
 
       - name: Run Newman Tests
         run: |
@@ -80,6 +90,8 @@ jobs:
           ./node_modules/.bin/newman run ./tests/collection.json \
           -e ./tests/test.postman_environment.json \
           --env-var "base_url=http://localhost:3000" \
+          --env-var "auth_token=${{ env.TEST_TOKEN }}" \
+          --env-var "internal_api_key=${{ secrets.INTERNAL_API_KEY }}" \
           --reporters cli,htmlextra \
           --reporter-htmlextra-export ./newman/report.html
 
@@ -87,13 +99,9 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose.test.yml logs api
 
-      - name: Debug DB Logs
-        if: failure()
-        run: docker compose -f docker-compose.test.yml logs mongodb
-
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: API-Test-Report
-          path: ./newman/report.html    
+          path: ./newman/report.html

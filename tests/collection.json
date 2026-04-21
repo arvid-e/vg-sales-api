@@ -7,294 +7,7 @@
   },
   "item": [
     {
-      "name": "/auth/register",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              "const randomUser = \"user\" + pm.variables.replaceIn('{{$randomInt}}') + \"_user\";",
-              "const randomPass = \"Password123\" + pm.variables.replaceIn('{{$randomInt}}') + \"!\";",
-              "",
-              "",
-              "pm.environment.set(\"test_username\", randomUser);",
-              "pm.environment.set(\"test_password\", randomPass);"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const jsonData = pm.response.json();",
-              "",
-              "pm.test(\"Status code is 201 (Created)\", () => {",
-              "    pm.response.to.have.status(201);",
-              "});",
-              "",
-              "pm.test(\"Response contains success message\", () => {",
-              "    pm.expect(jsonData.status).to.eql(\"success\");",
-              "});",
-              "",
-              "pm.test(\"JWT token is returned\", () => {",
-              "    pm.expect(jsonData.token).to.be.a('string');",
-              "});",
-              "",
-              "const userId = jsonData.data.userId;",
-              "pm.environment.set(\"test_user_id\", userId);",
-              ""
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "username",
-              "value": "{{test_username}}",
-              "type": "text",
-              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
-            },
-            {
-              "key": "password",
-              "value": "{{test_password}}",
-              "type": "text",
-              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{base_url}}/api/v1/auth/register",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "register"
-          ]
-        },
-        "description": "Registers a new user account and returns a JWT token that can be used to authenticate subsequent requests.\n\n### Purpose\n\nUse this endpoint to create (register) a new user with a `username` + `password`.\n\n### Request\n\n**Method:** `POST`  \n**URL:** `{{base_url}}/auth/register`\n\n#### Body (x-www-form-urlencoded)\n\nRequired fields:\n\n| Field | Type | Required | Example |\n| --- | --- | --- | --- |\n| `username` | string | Yes | `{{test_username}}` |\n| `password` | string | Yes | `{{test_password}}` |\n\n#### Variable usage\n\n- `{{base_url}}` — Base API URL (set in the active environment, e.g. **Local**)\n    \n- `{{test_username}}`, `{{test_password}}` — Credentials used for registration\n    \n    - In this collection, these are typically generated dynamically by the **pre-request script**.\n        \n\n#### Example request (x-www-form-urlencoded)\n\n``` http\nPOST {{base_url}}/auth/register\nContent-Type: application/x-www-form-urlencoded\nusername={{test_username}}&password={{test_password}}\n\n ```\n\n### Expected response\n\n**Status:** `201 Created`\n\n#### Response body shape\n\n``` json\n{\n  \"status\": \"success\",\n  \"data\": {\n    \"username\": \"<string>\",\n    \"userId\": \"<string>\"\n  },\n  \"token\": \"<jwt>\"\n}\n\n ```\n\n#### Example response\n\n``` json\n{\n  \"status\": \"success\",\n  \"data\": {\n    \"username\": \"user2_user\",\n    \"userId\": \"69c1daf9c5cad527f93f38a1\"\n  },\n  \"token\": \"<jwt>\"\n}\n\n ```\n\n### Side effects / tests\n\n- The post-response tests extract `data.userId` and set it as an environment variable:\n    - `test_user_id =`\n        \n\n> Note: This request is designed for test automation—user credentials may be generated per-run via scripting."
-      },
-      "response": []
-    },
-    {
-      "name": "/auth/register - Username taken",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              ""
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 409\", () => {",
-              "    pm.response.to.have.status(409);",
-              "});",
-              "",
-              "pm.test(\"Error message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Username is already taken\");",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "username",
-              "value": "{{test_username}}",
-              "type": "text",
-              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
-            },
-            {
-              "key": "password",
-              "value": "{{test_password}}",
-              "type": "text",
-              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{base_url}}/api/v1/auth/register",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "register"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/auth/register - Invalid username",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              ""
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 400\", () => {",
-              "    pm.response.to.have.status(400);",
-              "});",
-              "",
-              "pm.test(\"Error message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Username must be at least\");",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "username",
-              "value": "h",
-              "type": "text",
-              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
-            },
-            {
-              "key": "password",
-              "value": "{{test_password}}",
-              "type": "text",
-              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{base_url}}/api/v1/auth/register",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "register"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/auth/register - Invalid password",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              ""
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 400\", () => {",
-              "    pm.response.to.have.status(400);",
-              "});",
-              "",
-              "pm.test(\"Error message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Password must be at least\");",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "username",
-              "value": "{{test_username}}",
-              "type": "text",
-              "uuid": "8d750137-85bf-4aa3-9bb0-8d8c2db153fd"
-            },
-            {
-              "key": "password",
-              "value": "11",
-              "type": "text",
-              "uuid": "63ee5b82-3ad7-4369-9503-4cb3158e3610"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{base_url}}/api/v1/auth/register",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "register"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/auth/login",
+      "name": "/internal/test-setup",
       "event": [
         {
           "listen": "test",
@@ -306,10 +19,11 @@
               "    pm.response.to.have.status(200);",
               "});",
               "",
-              "pm.test(\"JWT token is returned\", () => {",
-              "    pm.expect(jsonData.token).to.be.a('string');",
+              "pm.test(\"User data is returned\", () => {",
+              "    pm.expect(jsonData.testUser.username).to.be.a('string');",
               "});",
               "",
+              "pm.environment.set(\"test_user_id\", jsonData.testUser.id);",
               "pm.environment.set(\"token\", jsonData.token);"
             ],
             "type": "text/javascript",
@@ -320,71 +34,91 @@
         {
           "listen": "prerequest",
           "script": {
+            "exec": [
+              "pm.environment.set(\"test_github_id\", 123);",
+              "pm.environment.set(\"test_username\", \"abc\");",
+              "pm.environment.set(\"test_avatar_url\", \"asd\");",
+              "pm.environment.set(\"test_email\", \"test@test.com\");"
+            ],
+            "type": "text/javascript",
             "packages": {},
-            "type": "text/javascript"
+            "requests": {}
           }
         }
       ],
       "request": {
         "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{token}}",
-              "type": "string"
-            }
-          ]
+          "type": "noauth"
         },
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "x-internal-secret",
+            "value": "{{internal_api_key}}",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "urlencoded",
           "urlencoded": [
             {
-              "key": "username",
-              "value": "{{test_username}}",
+              "key": "id",
+              "value": "{{test_github_id}}",
               "type": "text",
-              "uuid": "7b7b5c30-de96-4905-ad35-6b921152821b"
+              "uuid": "a715359e-a547-45b8-92ed-f31c0177c350"
             },
             {
-              "key": "password",
-              "value": "{{test_password}}",
+              "key": "login",
+              "value": "{{test_username}}",
               "type": "text",
-              "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
+              "uuid": "d934cf51-1ba1-4585-b12a-fe3f3c048f19"
+            },
+            {
+              "key": "avatar_url",
+              "value": "{{test_avatar_url}}",
+              "type": "text",
+              "uuid": "fe8918df-762b-49e1-a4e2-a3113476b911"
+            },
+            {
+              "key": "email",
+              "value": "{{test_email}}",
+              "type": "text",
+              "uuid": "c6dbd92b-edba-44fa-9417-c2f4ebe881c7"
             }
           ]
         },
         "url": {
-          "raw": "{{base_url}}/api/v1/auth/login",
+          "raw": "{{base_url}}/api/v1/internal/test-setup",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
             "v1",
-            "auth",
-            "login"
+            "internal",
+            "test-setup"
           ]
         }
       },
       "response": []
     },
     {
-      "name": "/auth/login - Invalid username",
+      "name": "/auth/me",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"Status code is 401\", () => {",
-              "    pm.response.to.have.status(401);",
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Login successful\", () => {",
+              "    pm.response.to.have.status(200);",
               "});",
               "",
-              "pm.test(\"Error message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid username or password\");",
-              "});"
+              "pm.test(\"User data is returned\", () => {",
+              "    pm.expect(jsonData.username).to.be.a('string');",
+              "});",
+              ""
             ],
             "type": "text/javascript",
             "packages": {},
@@ -403,27 +137,10 @@
             }
           ]
         },
-        "method": "POST",
+        "method": "GET",
         "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "username",
-              "value": "{{test_username}}123",
-              "type": "text",
-              "uuid": "7b7b5c30-de96-4905-ad35-6b921152821b"
-            },
-            {
-              "key": "password",
-              "value": "{{test_password}}",
-              "type": "text",
-              "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
-            }
-          ]
-        },
         "url": {
-          "raw": "{{base_url}}/api/v1/auth/login",
+          "raw": "{{base_url}}/api/v1/auth/me",
           "host": [
             "{{base_url}}"
           ],
@@ -431,27 +148,30 @@
             "api",
             "v1",
             "auth",
-            "login"
+            "me"
           ]
         }
       },
       "response": []
     },
     {
-      "name": "/auth/login - Invalid password",
+      "name": "/auth/me - Not authenticated",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"Status code is 401\", () => {",
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Unauthorized 401\", () => {",
               "    pm.response.to.have.status(401);",
               "});",
               "",
-              "pm.test(\"Error message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid username or password\");",
-              "});"
+              "pm.test(\"Error message is returned\", () => {",
+              "    pm.expect(jsonData.error).to.be.a('string');",
+              "    pm.expect(jsonData.error).to.equal('Not authenticated');",
+              "});",
+              ""
             ],
             "type": "text/javascript",
             "packages": {},
@@ -465,32 +185,15 @@
           "bearer": [
             {
               "key": "token",
-              "value": "{{token}}",
+              "value": "{{token}}123",
               "type": "string"
             }
           ]
         },
-        "method": "POST",
+        "method": "GET",
         "header": [],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "username",
-              "value": "{{test_username}}",
-              "type": "text",
-              "uuid": "7b7b5c30-de96-4905-ad35-6b921152821b"
-            },
-            {
-              "key": "password",
-              "value": "123123123123123",
-              "type": "text",
-              "uuid": "93a874e7-b0e4-49f0-8d9c-33844af00b30"
-            }
-          ]
-        },
         "url": {
-          "raw": "{{base_url}}/api/v1/auth/login",
+          "raw": "{{base_url}}/api/v1/auth/me",
           "host": [
             "{{base_url}}"
           ],
@@ -498,7 +201,7 @@
             "api",
             "v1",
             "auth",
-            "login"
+            "me"
           ]
         }
       },
@@ -551,8 +254,8 @@
               "    jsonData.data.forEach((game) => {",
               "        pm.expect(game.platform.name).to.not.be.null;",
               "        pm.expect(game.publisher.name).to.not.be.null;",
-              "        pm.expect(game.platform.platformId).to.be.a('string');",
-              "        pm.expect(game.publisher.publisherId).to.be.a('string');",
+              "        pm.expect(game.platform.id).to.be.a('string');",
+              "        pm.expect(game.publisher.id).to.be.a('string');",
               "    });",
               "});",
               "",
@@ -596,7 +299,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "MzQ21c",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -630,7 +333,167 @@
       "response": []
     },
     {
-      "name": "/games - Filter Publisher",
+      "name": "/games/stats",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status is 200\", () => {",
+              "    pm.response.to.have.status(200); ",
+              "});",
+              "",
+              "pm.test(\"Data is correct type\", () => {",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "});",
+              "",
+              "pm.test(\"Stats have correct data types\", () => {",
+              "    const game = jsonData.data[0];",
+              "    pm.expect(game.name).to.be.a('string');",
+              "    pm.expect(game.na).to.be.a('number');",
+              "    pm.expect(game.eu).to.be.a('number');",
+              "    pm.expect(game.other).to.be.a('number');",
+              "    pm.expect(game.total).to.be.a('number');",
+              "    pm.expect(game.count).to.be.a('number');",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "id",
+              "value": "{{game_id}}",
+              "type": "text",
+              "uuid": "ac7dc0cd-506e-450a-9272-3adadcbfcc1e",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/games/stats?groupBy=genre",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "games",
+            "stats"
+          ],
+          "query": [
+            {
+              "key": "groupBy",
+              "value": "genre"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games  - Semantic Search",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Status is 200\", () => {",
+              "    pm.response.to.have.status(200); ",
+              "});",
+              "",
+              "pm.test(\"Data is correct type\", () => {",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "});",
+              "",
+              "pm.test(\"Search results should have at least one game\", () => {",
+              "    console.log(\"DEBUG: Search results count:\", jsonData.count);",
+              "    pm.expect(jsonData.data.length).to.be.at.least(1);",
+              "});",
+              "",
+              "pm.test(\"Search results have correct data types\", () => {",
+              "    if (jsonData.data.length > 0) {",
+              "        const game = jsonData.data[0];",
+              "        pm.expect(game.name).to.be.a('string');",
+              "        pm.expect(game.rank).to.be.a('number');",
+              "        pm.expect(game.year).to.be.a('number');",
+              "        pm.expect(game.genre).to.be.a('string');",
+              "        pm.expect(game.sales).to.be.an('object');",
+              "    } else {",
+              "        console.log(\"No games found for this search criteria; skipping type checks.\");",
+              "    }",
+              "});",
+              "",
+              "",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/games?search=1996",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "games"
+          ],
+          "query": [
+            {
+              "key": "search",
+              "value": "1996"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/games - Filter Publisher Copy",
       "event": [
         {
           "listen": "test",
@@ -661,6 +524,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -715,6 +588,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -769,6 +652,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -817,6 +710,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -900,7 +803,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzAzNzQ0NiwiZXhwIjoxNzgwODEzNDQ2fQ.Anc0b4bACaG78oed1-K1US0KA-UQ4SZ4cauabZLOG1c",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -961,6 +864,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1001,6 +914,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1088,7 +1011,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzA1MTg0MywiZXhwIjoxNzczMDczNDQzfQ.Aq7hCtQ7QU2gqj-EvDw70UZ-dFqJRibCLXNku1P0Bu4",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -1171,7 +1094,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzA1MTg0MywiZXhwIjoxNzczMDczNDQzfQ.Aq7hCtQ7QU2gqj-EvDw70UZ-dFqJRibCLXNku1P0Bu4",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -1251,6 +1174,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1291,6 +1224,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1331,6 +1274,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1409,6 +1362,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1474,6 +1437,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1544,6 +1517,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1584,6 +1567,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1624,6 +1617,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1675,8 +1678,12 @@
         {
           "listen": "prerequest",
           "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
             "packages": {},
-            "type": "text/javascript"
+            "requests": {}
           }
         }
       ],
@@ -2391,20 +2398,22 @@
       "response": []
     },
     {
-      "name": "/users/delete/:id",
+      "name": "/internal/test-teardown",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test(\"Status code is 204 or 200\", () => {",
-              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "const jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Test user deleted successfully\", () => {",
+              "    pm.response.to.have.status(200);",
               "});",
               "",
-              "pm.test(\"Success message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.message).to.include(\"deleted\");",
-              "});"
+              "pm.test(\"Has user deleted message\", () => {",
+              "    pm.expect(jsonData.message).to.be.a('string');",
+              "});",
+              ""
             ],
             "type": "text/javascript",
             "packages": {},
@@ -2414,54 +2423,8 @@
         {
           "listen": "prerequest",
           "script": {
-            "packages": {},
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{token}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/v1/users/{{test_user_id}}",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "users",
-            "{{test_user_id}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/users/delete/:id - Not Found",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
             "exec": [
-              "pm.test(\"Status code is 404\", () => {",
-              "    pm.response.to.have.status(404);",
-              "});",
-              "",
-              "pm.test(\"Success message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"not found\");",
-              "});"
+              ""
             ],
             "type": "text/javascript",
             "packages": {},
@@ -2480,68 +2443,35 @@
             }
           ]
         },
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/v1/users/{{test_user_id}}",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "users",
-            "{{test_user_id}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/users/delete/:id - Invalid ID",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 400\", () => {",
-              "    pm.response.to.have.status(400);",
-              "});",
-              "",
-              "pm.test(\"Success message is descriptive\", () => {",
-              "    const jsonData = pm.response.json();",
-              "    pm.expect(jsonData.error).to.include(\"Invalid ID\");",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-internal-secret",
+            "value": "{{internal_api_key}}",
+            "type": "text"
           }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
             {
-              "key": "token",
-              "value": "{{token}}",
-              "type": "string"
+              "key": "id",
+              "value": "{{test_user_id}}",
+              "type": "text",
+              "uuid": "a715359e-a547-45b8-92ed-f31c0177c350"
             }
           ]
         },
-        "method": "DELETE",
-        "header": [],
         "url": {
-          "raw": "{{base_url}}/api/v1/users/{{test_user_id}}123",
+          "raw": "{{base_url}}/api/v1/internal/test-teardown",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
             "v1",
-            "users",
-            "{{test_user_id}}123"
+            "internal",
+            "test-teardown"
           ]
         }
       },
