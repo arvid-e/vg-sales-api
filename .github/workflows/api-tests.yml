@@ -99,10 +99,6 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose.test.yml logs api
 
-      - name: Debug DB Logs
-        if: failure()
-        run: docker compose -f docker-compose.test.yml logs mongodb
-
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v4
