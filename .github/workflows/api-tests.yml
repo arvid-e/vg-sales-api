@@ -73,6 +73,7 @@ jobs:
           MONGO_PASSWORD: ${{ env.MONGO_PASSWORD }}
           JWT_SECRET: ${{ env.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
+          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
         
       - name: Install Test Dependencies
         run: npm install -D tsx
