@@ -24,15 +24,16 @@ const runSeed = async () => {
  */
 const seed = async () => {
   const ai = new AIService();
-
+  let processedCount = 0;
   let remaining = true;
+
   while (remaining) {
     const games = await GamesModel.find({
       $or: [
         { title_embedding: { $exists: false } },
         { title_embedding: { $size: 0 } },
       ],
-    }).limit(500); // Process in batches of 500 to avoid memory issues
+    }).limit(500);
 
     if (games.length === 0) {
       console.log('All games have been embedded!');
@@ -40,18 +41,28 @@ const seed = async () => {
       break;
     }
 
-    console.log(`Found ${games.length} games to embed...`);
-
+    // Prepare the bulk operations
+    const bulkOps = [];
     for (const game of games) {
-      // Combine title and genre for better search context
       const textToEmbed = `${game.name} ${game.genre}`;
       const vector = await ai.generateVector(textToEmbed);
 
-      game.title_embedding = vector;
-      await game.save();
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: game._id },
+          update: { $set: { title_embedding: vector } },
+        },
+      });
     }
 
-    console.log('Batch complete!');
+    // 3Execute bulk write
+    if (bulkOps.length > 0) {
+      await GamesModel.bulkWrite(bulkOps);
+      processedCount += bulkOps.length;
+      console.log(
+        `Successfully embedded batch. Total processed: ${processedCount}`
+      );
+    }
   }
 };
 
