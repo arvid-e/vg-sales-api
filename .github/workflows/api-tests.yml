@@ -74,6 +74,11 @@ jobs:
           JWT_SECRET: ${{ env.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
 
+      - name: Generate Auth Token
+        run: |
+          export TEST_TOKEN=$(npx ts-node src/server/config/generate-token.ts)
+          echo "TEST_TOKEN=$TEST_TOKEN" >> $GITHUB_ENV
+
       - name: Run Newman Tests
         run: |
           npm install newman newman-reporter-htmlextra
@@ -81,6 +86,7 @@ jobs:
           ./node_modules/.bin/newman run ./tests/collection.json \
           -e ./tests/test.postman_environment.json \
           --env-var "base_url=http://localhost:3000" \
+          --env-var "auth_token=${{ env.TEST_TOKEN }}" \
           --reporters cli,htmlextra \
           --reporter-htmlextra-export ./newman/report.html
 
