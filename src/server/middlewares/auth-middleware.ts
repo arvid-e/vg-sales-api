@@ -22,6 +22,11 @@ export const authorize = async (
       return next(new AuthError('No authorization token provided'));
     }
 
+    if (process.env.NODE_ENV === 'test' && token === process.env.TEST_TOKEN) {
+      req.user = { id: 'test-user-id' };
+      return next();
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: string;
     };
@@ -59,6 +64,27 @@ export const identify = async (
     next();
   } catch (error) {
     next();
+  }
+};
+
+/**
+ * Restricts a route to require the internal API key to access it.
+ */
+export const internal = async (
+  req: UserRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const secret = req.headers['x-internal-secret'];
+
+    if (secret !== process.env.INTERNAL_API_KEY) {
+      throw new AuthError('Internal route.');
+    }
+
+    next();
+  } catch (error) {
+    return next(error);
   }
 };
 

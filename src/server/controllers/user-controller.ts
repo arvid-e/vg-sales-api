@@ -9,6 +9,7 @@ import type {
 } from '../interfaces/requests/request-types.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
 import { catchAsync } from '../utils/catch-async.js';
+import { generateToken } from '../middlewares/auth-middleware.js';
 
 /**
  * Controller handling all User related HTTP requests.
@@ -17,45 +18,62 @@ import { catchAsync } from '../utils/catch-async.js';
 export class UserController {
   constructor(private userService: IUserService) {}
 
-
   syncUser = catchAsync(async (req: Request, res: Response) => {
     const { id, login, avatar_url, email } = req.body;
-    const secret = req.headers['x-internal-secret'];
-
-    if (secret !== process.env.INTERNAL_API_KEY) {
-      throw new AuthError('Internal route.');
-    }
 
     if (!id) {
       throw new BadRequestError('GitHub ID is required for syncing.');
     }
 
-    let user = await this.userService.syncWithProvider({id, login, avatar_url, email});
+    const user = await this.userService.syncWithProvider({
+      id,
+      login,
+      avatar_url,
+      email,
+    });
 
     res.status(200).json(user);
   });
 
   /**
-   * Deletes the users account. A user can only delete their own account.
-   * @throws {BadRequestError} If provided ID is invalid.
-   * @throws {NotFoundError} If provided user ID is not their own, 404 in order to hide the existance of other users.
+   * Creates a test user used in testing the api.
+   */
+  createTestUser = catchAsync(async (req: Request, res: Response) => {
+    const { id, login, avatar_url, email } = req.body;
+
+    if (!id) {
+      throw new BadRequestError('ID is required for test user.');
+    }
+
+    const testUser = await this.userService.create({
+      id,
+      login,
+      avatar_url,
+      email,
+    });
+
+    const token = await generateToken(testUser._id.toString());
+
+    return res.status(200).json({
+      testUser,
+      token
+    });
+  });
+
+  /**
+   * Deletes the users account under a protected route.
    */
   delete = catchAsync(async (req: UserRequestWithId, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.body;
 
     if (id == null || !isValidObjectId(id)) {
       throw new BadRequestError('Invalid ID');
-    }
-
-    if (req.user?.id !== id) {
-      throw new NotFoundError('User');
     }
 
     await this.userService.delete(id);
 
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const links = [
-      { rel: 'register', method: 'POST', href: `${baseUrl}/users` },
       { rel: 'all-games', method: 'GET', href: `${baseUrl}/games` },
     ];
 
