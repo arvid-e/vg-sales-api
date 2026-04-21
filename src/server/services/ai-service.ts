@@ -16,7 +16,7 @@ export class AIService implements IAIService {
   }
 
   /**
-   * Generates a normalized numerical vector (embedding) from text using 
+   * Generates a normalized numerical vector (embedding) from text using
    * a pre-trained feature extraction pipeline.
    */
   async generateVector(text: string): Promise<number[]> {

@@ -56,7 +56,7 @@ export class UserController {
 
     return res.status(200).json({
       testUser,
-      token
+      token,
     });
   });
 
