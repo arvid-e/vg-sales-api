@@ -19,9 +19,9 @@ const gameController = new GameController(gameService);
 
 const router = Router();
 
-router.get('/', identify, gameController.getAllGames);
-router.get('/stats', identify, gameController.getGroupedGameSales);
-router.get('/:id', identify, gameController.getGame);
+router.get('/', authorize, gameController.getAllGames);
+router.get('/stats', authorize, gameController.getGroupedGameSales);
+router.get('/:id', authorize, gameController.getGame);
 router.patch('/:id', authorize, gameController.updateGame);
 router.delete('/:id', authorize, gameController.deleteGame);
 router.post('/', authorize, gameController.createGame);
