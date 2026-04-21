@@ -306,7 +306,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "MzQ21c",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -382,7 +382,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "MzQ21c",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -458,6 +458,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -512,6 +522,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -566,6 +586,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -620,6 +650,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -668,6 +708,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -751,7 +801,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzAzNzQ0NiwiZXhwIjoxNzgwODEzNDQ2fQ.Anc0b4bACaG78oed1-K1US0KA-UQ4SZ4cauabZLOG1c",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -812,6 +862,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -852,6 +912,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -939,7 +1009,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzA1MTg0MywiZXhwIjoxNzczMDczNDQzfQ.Aq7hCtQ7QU2gqj-EvDw70UZ-dFqJRibCLXNku1P0Bu4",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -1022,7 +1092,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWE4OGQ0MzgxNjFmODFjYmJlODQxYSIsImlhdCI6MTc3MzA1MTg0MywiZXhwIjoxNzczMDczNDQzfQ.Aq7hCtQ7QU2gqj-EvDw70UZ-dFqJRibCLXNku1P0Bu4",
+              "value": "{{token}}",
               "type": "string"
             }
           ]
@@ -1102,6 +1172,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1142,6 +1222,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1182,6 +1272,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1260,6 +1360,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1325,6 +1435,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1395,6 +1515,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1435,6 +1565,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1475,6 +1615,16 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -1526,8 +1676,12 @@
         {
           "listen": "prerequest",
           "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
             "packages": {},
-            "type": "text/javascript"
+            "requests": {}
           }
         }
       ],
@@ -2267,8 +2421,12 @@
         {
           "listen": "prerequest",
           "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
             "packages": {},
-            "type": "text/javascript"
+            "requests": {}
           }
         }
       ],
