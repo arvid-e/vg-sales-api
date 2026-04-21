@@ -1,5 +1,6 @@
 # Build Stage
 FROM node:20-slim AS builder
+RUN apt-get update && apt-get install -y python3 build-essential
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
@@ -8,7 +9,7 @@ RUN npx tsc
 
 # Run Stage
 FROM node:20-slim
-RUN apk add --no-cache curl
+RUN apt-get update && apt-get install -y python3 build-essential
 
 WORKDIR /usr/src/app
 
