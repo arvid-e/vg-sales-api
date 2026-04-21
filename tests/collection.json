@@ -30,6 +30,20 @@
             "packages": {},
             "requests": {}
           }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"test_github_id\", 123);",
+              "pm.environment.set(\"test_username\", \"abc\");",
+              "pm.environment.set(\"test_avatar_url\", \"asd\");",
+              "pm.environment.set(\"test_email\", \"test@test.com\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
         }
       ],
       "request": {
@@ -56,25 +70,25 @@
           "urlencoded": [
             {
               "key": "id",
-              "value": "123",
+              "value": "{{test_github_id}}",
               "type": "text",
               "uuid": "a715359e-a547-45b8-92ed-f31c0177c350"
             },
             {
               "key": "login",
-              "value": "abc",
+              "value": "{{test_username}}",
               "type": "text",
               "uuid": "d934cf51-1ba1-4585-b12a-fe3f3c048f19"
             },
             {
               "key": "avatar_url",
-              "value": "asd",
+              "value": "{{test_avatar_url}}",
               "type": "text",
               "uuid": "fe8918df-762b-49e1-a4e2-a3113476b911"
             },
             {
               "key": "email",
-              "value": "",
+              "value": "{{test_email}}",
               "type": "text",
               "uuid": "c6dbd92b-edba-44fa-9417-c2f4ebe881c7"
             }
