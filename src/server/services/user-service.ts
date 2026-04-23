@@ -1,53 +1,53 @@
-import bcrypt from 'bcryptjs';
-import { AuthError } from '../errors/auth-error.js';
-import { BadRequestError } from '../errors/bad-request-error.js';
 import { NotFoundError } from '../errors/not-found-error.js';
+import type { IGitHubProfile } from '../interfaces/user/profile.js';
 import type { IUserRepo } from '../interfaces/user/user-repo.js';
 import type { IUserService } from '../interfaces/user/user-service.js';
-import type { IAuthResponse, ICredentials } from '../interfaces/user/user.js';
-import { generateToken } from '../middlewares/auth-middleware.js';
+import type { IUser, IUserDocument } from '../interfaces/user/user.js';
 
 /**
- * Service for managing User authentication and account lifecycle.
- * Handles sensitive data processing including password hashing and JWT generation.
+ * Service that syncs user accounts with the provider (Github).
  */
 export class UserService implements IUserService {
   constructor(private userRepo: IUserRepo) {}
 
   /**
-   * Registers a new user after validating password strength and hashing credentials.
-   * @throws {BadRequestError} If the password does not meet requirements.
-   * @throws {BadRequestError} If the username does not meet requirements.
+   * Syncs the user account information from the provider with the locally stores user data.
+   * Creates a new user if it does not exist.
    */
-  createUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
-    if (credentials.password == null || credentials.password.length < 10) {
-      throw new BadRequestError('Password must be at least 10 characters long');
+  async syncWithProvider(profile: IGitHubProfile): Promise<IUserDocument> {
+    const existingUser = await this.userRepo.findByGithubId(profile.id);
+
+    const userPayload: IUser = {
+      githubId: profile.id,
+      username: profile.login,
+      avatarUrl: profile.avatar_url,
+      role: 'user',
+    };
+
+    let user: IUserDocument | null;
+
+    if (existingUser) {
+      user = await this.userRepo.update({
+        ...userPayload,
+        _id: existingUser._id,
+      });
+    } else {
+      user = await this.userRepo.create(userPayload);
     }
 
-    if (credentials.username == null || credentials.password.length < 3) {
-      throw new BadRequestError('Username must be at least 3 characters long');
+    if (!user) {
+      throw new Error(`Failed to sync user with GitHub ID: ${profile.id}`);
     }
 
-    const hashedPassword = await bcrypt.hash(credentials.password, 12);
-    const userPayload = { ...credentials, password: hashedPassword };
-
-    const user = await this.userRepo.createUser(userPayload);
-
-    if (user == null) {
-      throw new Error('User could not be created');
-    }
-    const token = await generateToken(user._id.toString());
-
-    return { user, token };
-  };
+    return user;
+  }
 
   /**
    * Permanently removes a user account.
    * A user can only delete their own account.
-   * @throws {NotFoundError} If the user ID does not exist.
    */
-  deleteUser = async (userId: string): Promise<boolean> => {
-    const userDeleted = await this.userRepo.deleteUserById(userId);
+  delete = async (userId: string): Promise<boolean> => {
+    const userDeleted = await this.userRepo.deleteById(userId);
 
     if (!userDeleted) {
       throw new NotFoundError('User');
@@ -57,27 +57,35 @@ export class UserService implements IUserService {
   };
 
   /**
-   * Validates user credentials and issues an authentication token.
-   * @throws {AuthError} For any failure to prevent account enumeration attacks.
+   * Create a new user from a GitHub profile.
    */
-  loginUser = async (credentials: ICredentials): Promise<IAuthResponse> => {
-    const { username, password } = credentials;
+  create = async (profile: IGitHubProfile): Promise<IUserDocument> => {
+    const userPayload: IUser = {
+      githubId: profile.id,
+      username: profile.login,
+      avatarUrl: profile.avatar_url,
+      role: 'user',
+    };
 
-    const user = await this.userRepo.findUserByUsername(username);
+    const testUser = await this.userRepo.create(userPayload);
+
+    if (!testUser) {
+      throw new Error(`Failed create user with GitHub ID: ${profile.id}`);
+    }
+
+    return testUser;
+  };
+
+  /**
+   * Get single user by userId.
+   */
+  getById = async (id: string): Promise<IUserDocument | null> => {
+    const user = await this.userRepo.findById(id);
 
     if (user == null) {
-      throw new AuthError('Invalid username or password');
+      throw new NotFoundError('User');
     }
 
-    const savedPassword = user.password;
-    const match = await bcrypt.compare(password, savedPassword);
-
-    if (!match) {
-      throw new AuthError('Invalid username or password');
-    }
-
-    const token = await generateToken(user._id.toString());
-
-    return { user, token };
+    return user;
   };
 }

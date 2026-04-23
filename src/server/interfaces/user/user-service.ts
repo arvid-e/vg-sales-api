@@ -1,7 +1,9 @@
-import type { IAuthResponse, ICredentials } from './user.js';
+import type { IGitHubProfile } from './profile.js';
+import type { IUserDocument } from './user.js';
 
 export interface IUserService {
-  createUser(credentials: ICredentials): Promise<IAuthResponse>;
-  deleteUser(id: string): Promise<boolean>;
-  loginUser(credentials: ICredentials): Promise<IAuthResponse>;
+  syncWithProvider(profile: IGitHubProfile): Promise<IUserDocument>;
+  create(profile: IGitHubProfile): Promise<IUserDocument>;
+  delete(id: string): Promise<boolean>;
+  getById(id: string): Promise<IUserDocument | null>;
 }

@@ -13,9 +13,12 @@ services:
       - mongodb
     environment:
       - PORT=3000
+      - NODE_ENV=test
       - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/testdb?authSource=admin
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - TEST_TOKEN=${TEST_TOKEN}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
 
   mongodb:
     image: mongo:latest

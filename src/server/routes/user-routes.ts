@@ -11,6 +11,6 @@ const userController = new UserController(userService);
 
 const router = Router();
 
-router.delete('/:id', authorize, userController.deleteUser);
+router.delete('/:id', authorize, userController.delete);
 
 export default router;

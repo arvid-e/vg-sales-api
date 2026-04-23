@@ -10,7 +10,7 @@ import type {
 } from '../interfaces/requests/request-types.js';
 import { createPaginationLinks } from '../middlewares/create-pagination-links.js';
 import { catchAsync } from '../utils/catch-async.js';
-import { AuthError } from '../errors/auth-error.js';
+import { cleanNestedObject } from '../utils/clean-nested-object.js';
 
 /**
  * Controller handling all Game-related HTTP requests.
@@ -25,11 +25,12 @@ export class GameController {
    */
   public getAllGames = catchAsync(async (req: UserRequest, res: Response) => {
     // 1. Extract and normalize query parameters
-    const { page, limit, platform, publisher, genre } = req.query;
+    const { page, limit, search, platform, publisher, genre } = req.query;
 
     const parsedPage = typeof page === 'string' ? parseInt(page, 10) : 1;
     const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : 20;
 
+    const parsedSearch = typeof search === 'string' ? search : undefined;
     const platformName = typeof platform === 'string' ? platform : undefined;
     const publisherName = typeof publisher === 'string' ? publisher : undefined;
     const genreName = typeof genre === 'string' ? genre : undefined;
@@ -38,11 +39,10 @@ export class GameController {
     const { games, total } = await this.gameService.getAllGames({
       page: parsedPage,
       limit: parsedLimit,
-      query: {
-        platform: platformName,
-        publisher: publisherName,
-        genre: genreName,
-      },
+      search: parsedSearch,
+      platform: platformName,
+      publisher: publisherName,
+      genre: genreName,
     });
 
     // 3. Prepare response metadata
@@ -50,11 +50,25 @@ export class GameController {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
     const hasUser = !!req.user;
 
-    const gamesWithLinks = games.map((game) => {
-      const gameJson = game.toJSON();
+    const gamesWithLinks = games.map((game: any) => {
+      // Destructure the top-level game object to seperate unwanted fields
+      const {
+        _id,
+        __v,
+        title_embedding,
+        createdAt,
+        updatedAt,
+        platform,
+        publisher,
+        ...gameObject
+      } = game;
+
       return {
-        ...gameJson,
-        links: this.createLinks(req, gameJson.gameId),
+        ...gameObject,
+        gameId: _id.toString(),
+        platform: cleanNestedObject(platform),
+        publisher: cleanNestedObject(publisher),
+        links: this.createLinks(req, _id.toString()),
       };
     });
 
@@ -94,10 +108,13 @@ export class GameController {
       throw new NotFoundError('Game');
     }
 
+    const { _id, title_embedding, ...rest } = game;
+
     return res.status(200).json({
       status: 'success',
       data: {
-        ...game.toJSON(),
+        ...rest,
+        gameId: _id.toString(),
         links: this.createLinks(req, id),
       },
     });
@@ -176,6 +193,24 @@ export class GameController {
         ...game.toJSON(),
         links: this.createLinks(req, game._id.toString()),
       },
+    });
+  });
+
+  /**
+   * Get top 15 sales by genre, platform or publisher.
+   */
+  getGroupedGameSales = catchAsync(async (req: UserRequest, res: Response) => {
+    const { groupBy } = req.query;
+
+    if (typeof groupBy !== 'string') {
+      throw new BadRequestError('groupBy must be of type string');
+    }
+
+    const groupedGames = await this.gameService.getGroupedGameSales(groupBy);
+
+    return res.status(200).json({
+      status: 'success',
+      data: groupedGames,
     });
   });
 

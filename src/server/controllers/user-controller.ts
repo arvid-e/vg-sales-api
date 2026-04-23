@@ -1,10 +1,15 @@
 import type { Request, Response } from 'express';
 import { isValidObjectId } from 'mongoose';
+import { AuthError } from '../errors/auth-error.js';
 import { BadRequestError } from '../errors/bad-request-error.js';
-import type { UserRequestWithId } from '../interfaces/requests/request-types.js';
-import type { IUserService } from '../interfaces/user/user-service.js';
-import { catchAsync } from '../utils/catch-async.js';
 import { NotFoundError } from '../errors/not-found-error.js';
+import type {
+  UserRequest,
+  UserRequestWithId,
+} from '../interfaces/requests/request-types.js';
+import type { IUserService } from '../interfaces/user/user-service.js';
+import { generateToken } from '../middlewares/auth-middleware.js';
+import { catchAsync } from '../utils/catch-async.js';
 
 /**
  * Controller handling all User related HTTP requests.
@@ -13,47 +18,62 @@ import { NotFoundError } from '../errors/not-found-error.js';
 export class UserController {
   constructor(private userService: IUserService) {}
 
-  /**
-   * Registers a new user, saves it to the database and respons with a authentication token.
-   */
-  createUser = catchAsync(async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+  syncUser = catchAsync(async (req: Request, res: Response) => {
+    const { id, login, avatar_url, email } = req.body;
 
-    const { user, token } = await this.userService.createUser({
-      username,
-      password,
+    if (!id) {
+      throw new BadRequestError('GitHub ID is required for syncing.');
+    }
+
+    const user = await this.userService.syncWithProvider({
+      id,
+      login,
+      avatar_url,
+      email,
     });
-    const userId = user._id.toString();
 
-    return res.status(201).json({
-      status: 'success',
-      data: user,
+    res.status(200).json(user);
+  });
+
+  /**
+   * Creates a test user used in testing the api.
+   */
+  createTestUser = catchAsync(async (req: Request, res: Response) => {
+    const { id, login, avatar_url, email } = req.body;
+
+    if (!id) {
+      throw new BadRequestError('ID is required for test user.');
+    }
+
+    const testUser = await this.userService.create({
+      id,
+      login,
+      avatar_url,
+      email,
+    });
+
+    const token = await generateToken(testUser._id.toString());
+
+    return res.status(200).json({
+      testUser,
       token,
-      links: this.createLinks(req, userId),
     });
   });
 
   /**
-   * Deletes the users account. A user can only delete their own account.
-   * @throws {BadRequestError} If provided ID is invalid.
-   * @throws {NotFoundError} If provided user ID is not their own, 404 in order to hide the existance of other users.
+   * Deletes the users account under a protected route.
    */
-  deleteUser = catchAsync(async (req: UserRequestWithId, res: Response) => {
-    const { id } = req.params;
+  delete = catchAsync(async (req: UserRequestWithId, res: Response) => {
+    const { id } = req.body;
 
     if (id == null || !isValidObjectId(id)) {
       throw new BadRequestError('Invalid ID');
     }
 
-    if (req.user?.id !== id) {
-      throw new NotFoundError('User');
-    }
-
-    await this.userService.deleteUser(id);
+    await this.userService.delete(id);
 
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const links = [
-      { rel: 'register', method: 'POST', href: `${baseUrl}/users` },
       { rel: 'all-games', method: 'GET', href: `${baseUrl}/games` },
     ];
 
@@ -65,22 +85,34 @@ export class UserController {
   });
 
   /**
-   * Logs in the user and responds with an authentication token.
+   * Logs out the user by clearing the session cookie.
    */
-  loginUser = catchAsync(async (req: Request, res: Response) => {
-    const { username, password } = req.body;
-
-    const { user, token } = await this.userService.loginUser({
-      username,
-      password,
+  logout = catchAsync(async (req: Request, res: Response) => {
+    res.clearCookie('app_session', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
     });
-    const userId = user._id.toString();
+    return res.status(200).json({ message: 'Logged out successfully' });
+  });
 
+  /**
+   * Checks if the user is authenticated.
+   */
+  getMe = catchAsync(async (req: UserRequest, res: Response) => {
+    if (!req.user) {
+      throw new AuthError('Not authenticated');
+    }
+
+    const id = req.user?.id;
+    const user = await this.userService.getById(id);
+
+    if (!user) {
+      throw new NotFoundError('User');
+    }
     return res.status(200).json({
-      status: 'success',
-      data: user,
-      token,
-      links: this.createLinks(req, userId),
+      id: user._id,
+      username: user.username,
     });
   });
 

@@ -3,17 +3,24 @@ import type { IUserDocument } from '../interfaces/user/user.js';
 
 const userSchema = new Schema<IUserDocument>(
   {
+    githubId: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     username: {
       type: String,
       required: true,
-      unique: true,
-      minlength: [3, 'Username must be at least 3 characters'],
     },
-    password: {
+    avatarUrl: {
       type: String,
-      required: true,
-      minlength: [10, 'Password must be at least 10 characters'],
-      select: false,
+    },
+    email: {
+      type: String,
+    },
+    role: {
+      type: String,
+      default: 'user',
     },
   },
   {
@@ -21,17 +28,6 @@ const userSchema = new Schema<IUserDocument>(
     toJSON: {
       virtuals: true,
       versionKey: false,
-      transform: (doc, ret: any) => {
-        ret.userId = ret._id.toString();
-
-        delete ret._id;
-        delete ret.id;
-        delete ret.__v;
-        delete ret.createdAt;
-        delete ret.updatedAt;
-        delete ret.password;
-        return ret;
-      },
     },
     toObject: { virtuals: true },
   }
