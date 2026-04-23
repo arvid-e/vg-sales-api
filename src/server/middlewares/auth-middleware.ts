@@ -15,14 +15,16 @@ export const authorize = async (
   next: NextFunction
 ) => {
   try {
+    const authHeader = req.headers.authorization;
     const token =
-      req.cookies?.app_session || req.headers.authorization?.split(' ')[1];
+      req.cookies?.app_session ||
+      (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
 
     if (token == null) {
       return next(new AuthError('No authorization token provided'));
     }
 
-    if (process.env.NODE_ENV === 'test' && token === 'test-token') {
+    if (process.env.NODE_ENV === 'test' && token === process.env.TEST_TOKEN) {
       req.user = { id: 'test-user-id' };
       return next();
     }
