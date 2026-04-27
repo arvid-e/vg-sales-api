@@ -1,5 +1,7 @@
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express from 'express';
+import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import {
@@ -10,12 +12,20 @@ import {
 import { globalErrorHandler } from './middlewares/error-handler.js';
 import { handleUndefinedRoutes } from './middlewares/handle-undefined-routes.js';
 import router from './routes/router.js';
+
 const swaggerDocument = YAML.load('./swagger.yml');
 
 export const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN,
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 app.get('/', getRoot);
