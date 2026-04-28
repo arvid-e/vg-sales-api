@@ -1,3 +1,4 @@
+#!/bin/sh
 
 # Check if a marker file exists to see if seeding was already done
 if [ ! -f /usr/src/app/data/seeded.marker ]; then
