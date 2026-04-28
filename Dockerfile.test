@@ -1,3 +1,4 @@
+# Build Stage
 FROM node:20-slim AS builder
 RUN apt-get update && apt-get install -y python3 build-essential
 WORKDIR /usr/src/app
@@ -6,7 +7,10 @@ RUN npm install
 COPY . .
 RUN npx tsc
 
-FROM node:20-alpine
+# Run Stage
+FROM node:20-slim
+RUN apt-get update && apt-get install -y python3 build-essential
+
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
@@ -15,11 +19,9 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 COPY --from=builder /usr/src/app/dist ./dist
+COPY data ./data
 COPY --from=builder /usr/src/app/swagger.yml ./swagger.yml
-
-COPY entrypoint.sh ./entrypoint.sh
-RUN chmod +x entrypoint.sh
 
 EXPOSE 3000
 
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+CMD ["sh", "-c", "node dist/server/config/seed-db.js && node dist/server/config/seed-test-embeddings.js && node dist/index.js"]
